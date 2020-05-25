@@ -1,4 +1,5 @@
 var NAME = ['Rich'];
+var Grid=[];
 function Particle1(pos, r, ac, force, valocity)
 {
 
@@ -17,8 +18,8 @@ function Particle1(pos, r, ac, force, valocity)
    let startX = 0;
       let startY = 0;
       let angle = 0;   
-   let h = random(0, height);
-   let w = random(0, width);
+   let h = Math.random()*innerHeight;
+   let w = Math.random()*innerWidth;
    if (force) { this.force = createVector(0, 0.05); }
    if (valocity) {
       this.valocity = createVector(random(-1, 1), random(-1, 0));
@@ -28,6 +29,7 @@ function Particle1(pos, r, ac, force, valocity)
    } else {
       this.pos = createVector(startX+w, startY+h )
    }
+   
    if (r) {
       this.r = r * .5;
    } 
@@ -130,4 +132,24 @@ function Particle1(pos, r, ac, force, valocity)
 //                   }
 //             }
       }
+
+
+const zvalue=1;
+function createVector(x,y,z){
+  const X=innerWidth;
+   const Y= innerHeight;
+   var Z =X*zvalue
+   for(let h =0;h<X.length-1;h++){
+   for(let i =0;i<Y.length-1;i++){
+   for(let j =0;j<Z.length-1;j++){
+     
+
+
+
+}
+}
+}
+Grid.push((x*y)+(x*z)*y)
+}
+Grid
 

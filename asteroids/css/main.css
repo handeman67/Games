@@ -1,0 +1,31 @@
+<<<<<<< HEAD
+html {
+    margin: 0 auto;
+    padding: 0;
+}
+
+body {
+    margin: 0;
+    background-image: url("../IMG/stars.jpg");
+=======
+
+html {
+    margin: 0 auto;
+    padding: 0;
+}
+
+body {
+    margin: 0;
+    background-image: url("/IMG/stars.jpg");
+>>>>>>> 6e63db0a0b5a0b2aebb08a2ab60a835bbb8dfd3c
+    overflow: hidden;
+}
+
+canvas {
+    padding: 10px;
+    border: 3px solid yellow;
+<<<<<<< HEAD
+};
+=======
+}
+>>>>>>> 6e63db0a0b5a0b2aebb08a2ab60a835bbb8dfd3c

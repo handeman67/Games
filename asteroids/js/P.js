@@ -1,61 +1,74 @@
+
 class Particles {
-  constructor(pos, r)
-  {
-    if (pos) {
-      this.pos = pos.copy();
-    } else {
-      this.pos = createVector(0, 0);
-    }
-    if (r) {
-      this.r = r;
-    } else {
-      this.r = random(2, 15);
+    constructor(pos, r) {
+        let e = this;
+        e.Ifparticleinput(pos, e, r);
+        e.SetParticles(e);
+        e.Updateparticle(e);
+        e.Showparticle(e);
+        e.Clearparticle(e);
     }
 
-    this.vel = p5.Vector.random2D();
-    this.force = floor(random(0, 50));
-    this.vx = floor(random(sin(50),cos (120)));
-    this.vy = floor(random(cos(150), sin(50)));
-    this.col = random(255);
-    this.alpha = 255;
-    this.vl = this.vel + this.force;
-    this.ran = floor(random(1, 8));
-    this.offshape = floor(random(-this.r * 0.25, this.r * 0.25));
-  };
+    Ifparticleinput(pos, e, r) {
+        if (pos) {
+            e.pos = pos.copy();
+        } else {
+            e.pos = createVector(0, 0);
+        }
+        if (r) {
+            e.r = r;
+        } else {
+            e.r = random(2, 15);
+        }
+    }
 
-  update() {
-   // this.pos.add(this.vel);
-    this.pos.x += this.vx;
-    this.pos.y += this.vy;
-    this.alpha -= 4;
-  };
-  show() {
-    push();
-     stroke(200,this.alpha); //
-     strokeWeight(2);
-    fill(255, 255, 255, this.alpha); //
-    beginShape();
-    for (var i = 0; i < this.r; i++) {
-     var angle = map(this.r, 0, this.r, 0, TWO_PI);
-     var r = this.r 
-    var x = r * sin(angle);
-      var y = r* cos(angle);
-     
-      vertex(this.pos.x, this.pos.y);
-    //ellipse(this.pos.x, this.pos.y, this.r);
-     }
-     endShape(CLOSE);
-    // pop();
+    SetParticles(e) {
+        e.vel = p5.Vector.random2D();
+        e.force = floor(random(0, 50));
+        e.vx = floor(random(sin(50), cos(120)));
+        e.vy = floor(random(cos(150), sin(50)));
+        e.col = random(255);
+        e.alpha = 255;
+        e.vl = e.vel + e.force;
+        e.ran = floor(random(1, 8));
+        e.offshape = floor(random(-e.r * 0.25, e.r * 0.25));
+    }
 
-    //   push();
-    //  stroke(255)
-    //   fill(200, this.alpha);//
+    Clearparticle(e) {
+        e.cleared = () => {
+            if (e.alpha <= 0) {
+                return;
+            }
+        };
+    }
 
-    pop();
-  };
-  cleared() {
-    if (this.alpha <= 0) {
-    return;
-                         }
-  }
-}
+    Showparticle(e) {
+        e.show = () => {
+            push();
+            stroke(200, e.alpha); //
+            strokeWeight(random(10));
+            fill(255, 0, 0, e.alpha); //
+            e.Particleshape(e);
+             pop();
+        };
+    }
+
+    Particleshape(e) {
+        beginShape();
+        for (let i = 0; i < e.r; i++) {
+            // vertex(e.pos.x, e.pos.y);
+            // ellipse(e.pos.x, e.pos.y,e.r);
+            point(e.pos.x, e.pos.y, e.r);
+        }
+        endShape(CLOSE);
+    }
+
+    Updateparticle(e) {
+        e.update = () => {
+            // e.pos.add(e.vel);
+            e.pos.x += e.vx;
+            e.pos.y += e.vy;
+            e.alpha -= 4;
+        };
+    }
+};
