@@ -1,0 +1,46 @@
+
+
+@media only screen and (max-width: 600px) {
+  body {
+    background-color: lightblue;
+   font-size: 16px;
+  }
+  
+}
+
+body{
+  background:black;
+  font-family: 'Roboto', sans-serif;
+  font-variant-numeric: proportional-nums;
+  -moz-font-feature-settings: "ss01";
+  -webkit-font-feature-settings: "ss01";
+  font-feature-settings: "ss01";
+  /* overflow:none; */
+}
+.wrap{
+    position: absolute;
+    top:1rem;
+    left:1rem;
+    right:1rem;
+    bottom:1rem;
+  }
+canvas{
+  margin:0 auto;
+  width:100%;
+  height:auto;
+}
+
+#canv{
+ position: relative;
+width:100%;
+height:auto;
+
+  }
+.head{
+  margin: 0 auto;
+  position:  relative;
+  background-color: cadetblue;
+  width:100%;
+  height:50px;
+ 
+}

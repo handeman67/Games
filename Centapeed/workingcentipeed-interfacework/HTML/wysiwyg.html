@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+<script src="//cdn.ckeditor.com/4.9.2/full/ckeditor.js"></script>
+<script src="./libraries/p5.js" type="text/javascript"></script>
+<script src="./libraries/p5.dom.min.js" type="text/javascript"></script>
+<!-- http://example.com/ckeditor/plugins/imageuploader -->
+<!-- http://example.com/ckeditor/plugins/codesnippet -->
+<!-- http://example.com/ckeditor/plugins/widget -->
+<!-- http://example.com/ckeditor/plugins/lineutils -->
+<!-- http://example.com/ckeditor/plugins/widgetselection -->
+<!-- http://example.com/ckeditor/plugins/clipboard -->
+
+   <title>Document</title>
+</head>
+<body>
+<div>
+   <textarea name="editor1"></textarea>
+   <script>
+      CKEDITOR.replace('editor1');
+      // Enable local "abbr" plugin from /myplugins/abbr/ folder.
+      CKEDITOR.plugins.addExternal('abbr', '/myplugins/abbr/', 'plugin.js');
+config.extraPlugins = 'imageuploader';
+config.extraPlugins = 'codesnippet';
+config.extraPlugins = 'widget';
+config.extraPlugins = 'widgetselection';
+config.extraPlugins = 'lineutils';
+config.extraPlugins = 'clipboard';
+
+
+
+      // extraPlugins needs to be set too.
+      CKEDITOR.replace('editor1', {
+         extraPlugins: 'abbr'
+      });
+      CKEDITOR.replace('editor1', {
+         skin: 'moonocolor,/myskins/moonocolor/'
+      });
+   </script>
+</div>
+</body>
+</html>

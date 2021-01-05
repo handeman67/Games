@@ -1,18 +1,18 @@
 {
-  "name": "asteroids",
-  "version": "1.0.0",
-  "description": "Need to refactor code and debug has glitchen . you can tell when you listen to code",
-  "main": "index.js",
-  "scripts": {
-    "start": "./index.html",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "jest": "^25.1.0",
-    "mathjs": "^6.2.5",
-    "pug": "^2.0.4"
-  }
+    "name": "asteroids",
+    "version": "1.0.0",
+    "description": "Need to refactor code and debug has glitchen . you can tell when you listen to code",
+    "main": "index.js",
+    "scripts": {
+        "start": "./index.html",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "jest": "^25.1.0",
+        "mathjs": "^6.2.5",
+        "pug": "^2.0.4"
+    }
 }

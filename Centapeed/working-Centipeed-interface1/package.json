@@ -1,0 +1,19 @@
+{
+  "name": "workingcentipeed",
+  "version": "1.0.0",
+  "description": "- need to create mobile version; so canvas expands 100% . also need to add tilt movement",
+  "main": "index.js",
+  "browser": "cetapeed.js",
+  "scripts": {
+    "test":  "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "jest-cli": "^25.1.0"
+  }
+
+   
+  
+

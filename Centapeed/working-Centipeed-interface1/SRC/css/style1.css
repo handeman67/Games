@@ -1,0 +1,146 @@
+* {
+   margin: 0px auto;
+   padding: 0px;
+}
+canvas{ 
+   margin:0 auto;
+   padding:0;
+}
+
+body {
+   background-color: rgb(23, 23, 26);
+   display: flex;
+   flex-direction: column;
+   /* overflow: hidden; */
+}
+
+article {
+   position: relative;
+   justify-items: center;
+}
+
+a {
+   text-decoration: none;
+   color: black;
+}
+
+ul {
+   display: flex;
+   flex-grow: 1;
+   position: relative;
+   padding: 1px;
+   list-style: none;
+  
+}
+footer {
+   flex-direction: row;
+   text-shadow:0px 0px 2px aliceblue;
+   bottom:0;
+   position: fixed;
+}
+
+canvas {
+   border:4px solid pink;
+  
+}
+
+#can {  
+   background-image: linear-gradient(132deg, rgb(0, 0, 0) 0%, rgba(66, 25, 112, 0.15) 100%);
+}
+
+
+.wrapper {
+
+   margin: 0 auto;
+   width: 100%;
+   position: relative;
+   font-weight: bold;
+}
+
+.header {
+flex-grow: 1;
+   flex-direction: row;
+   text-align: center;
+   background: rgb(3, 1, 19);
+   color: rgb(50, 114, 241);
+   font-family: Arial, Helvetica, sans-serif;
+   border: 1px solid blueviolet;
+}
+
+.head {
+   width: 0px;
+   height: 0px;
+}
+
+.head:active {
+   display: block;
+   width: 100%;
+   height: 100px;
+}
+
+.head1 {
+
+   display: block;
+   width: 100%;
+   height: 100px;
+}
+
+.header h2 {
+   font-style: inherit;
+}
+
+.icon {
+   flex-grow: 1;
+   border: 0px solid blueviolet;
+   background-image: linear-gradient( blueviolet, rgb(50, 114, 241), rgb(3, 1, 19));
+}
+
+.title {
+   flex-grow: 2;
+}
+
+.main {
+   display: flex;
+   background-color: #4CAF50;
+   border:2px solid blueviolet;
+}
+
+.topnav {
+
+   background-color: rgb(43, 43, 43);
+   /* overflow: hidden; */
+}
+
+/* Style the links inside the navigation bar */
+
+
+/* Change the color of links on hover */
+
+
+li:hover,
+a:hover {
+   border: 1px solid rgb(211, 8, 8);
+   background-color: rgb(211, 8, 8);
+   box-shadow: 0 5px 10px rgba(236, 87, 87, 0.5);
+
+}
+
+li {
+   flex-direction: row;
+   border: 1px solid white;
+   color: #f2f2f2;
+   padding: 10px;
+   text-decoration: none;
+   font-size: 0.5rem;
+   box-shadow: 0, 5px, 15px black;
+   flex-grow: 1;
+  background-color: #4CAF50;
+}
+
+/* Add an active class to highlight the current page */
+
+
+/* Hide the link that should open and close the topnav on small screens */
+.topnav .icon {
+   display: none;
+}
