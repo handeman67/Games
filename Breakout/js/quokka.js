@@ -1,0 +1,3 @@
+babel: {
+  env: "dev"
+}

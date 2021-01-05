@@ -1,0 +1,20 @@
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #0f0f0f55;
+    display: grid;
+    place-content: center;
+    position: absolute;
+    top: 1em;
+    left: 1em;
+    bottom: 1em;
+    right: 1em;
+}
+
+canvas {
+    display: block;
+}
