@@ -1,11 +1,4 @@
 // Physics build up.Phsudo code 
-
-// userInput;
-// position;
-
-// velocity;
-// accelleration;
-// gravity;
 collisionDetect: {
     collisionType: {
         bounce: bounceDetect = () => {

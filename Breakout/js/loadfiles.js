@@ -1,3 +1,4 @@
+/*jshint esversion: 8 */
 const clientWin = window.clientInformation || {};
 const set = window.performance || {};
 const clientCaches = window.caches || {};
@@ -107,34 +108,34 @@ loadScripts = (script) => {
     if (ra.length > 0) {
         for (let i in ra) {
             if (script.css) {
-                let Css = script.css
+                let Css = script.css;
                 for (let c in Css) {
                     let C = `${c}`,
                         ploadC = document.createElement("link");
                     ploadC.id = C;
                     ploadC.href = Css[c];
-                    document.head.append(ploadC)
+                    document.head.append(ploadC);
                 }
             } else {
-                Alert
-            };
+                Alert("noCss");
+            }
             if (script.js) {
-                let Js = script.js
+                let Js = script.js;
 
                 for (let j in Js) {
                     let J = `${j}`,
                         ploadJ = document.createElement("script");
                     ploadJ.id = J;
                     ploadJ.src = Js[j];
-                    document.head.append(ploadJ)
+                    document.head.append(ploadJ);
                 }
             } else {
-                Alert
-            };
+                Alert("noJs");
+            }
             return this;
         }
     }
-}
+};
 async function getScript(sj) {
     const response = await fetch(sj);
     const data = await response.json();
@@ -145,7 +146,6 @@ async function getScript(sj) {
 // getComputedStyle(document.documentElement)
 //     .getPropertyValue('--my-variable-name'); // #999999
 
-/*jshint esversion: 8 */
 
 // document.addEventListener("DOMContentLoaded", function(event) {
 
@@ -168,13 +168,12 @@ let startOffset = 10;
 let endNode = 100;
 let endOffset = 110;
 let readystate = window.readyState;
-readystate
 var slider1 = document.createElement('input');
 slider1.attributes =
     ` type = "range",
   min = 0,
   max = 100,
-  value = 20;`
+  value = 20;`;
 
 
 

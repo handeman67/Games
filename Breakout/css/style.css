@@ -1,5 +1,4 @@
-html,
-body {
+html,body {
     margin: 0;
     padding: 0;
 }
@@ -13,8 +12,9 @@ body {
     left: 1em;
     bottom: 1em;
     right: 1em;
+    overflow:hidden;
 }
-
-canvas {
-    display: block;
+canvas{
+    width:80vw;
+    height:80vh
 }
