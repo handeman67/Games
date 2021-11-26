@@ -1,0 +1,10 @@
+{
+  "files":{
+    "css":"css/style.css"   ,
+    "P5":"https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/p5.js",
+    "P5Sound":"https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/addons/p5.sound.js",
+    "sketch": "js/sketch.js",
+   "ball":"js/ball.js",
+   "player":"js/player.js",
+   "blocks":"js/blocks.js"
+}}
