@@ -33,6 +33,7 @@ function preload(sounds, images) {
         return e
     }
 }
+
 function windowResized() {
     resizeCanvas(innerWidth - 60, innerHeight - 3);
 }
@@ -44,7 +45,41 @@ function setup() {
     
     
 }
+
+
+function preload() {
+    e = this;
+ 
+        bl = loadSound("sound/bangLarge.wav"),
+        sm = loadSound("sound/bangSmall.wav"),
+        bm = loadSound("sound/bangMedium.wav"),
+        bt2 = loadSound("sound/beat2.wav"),
+        bt1 = loadSound("sound/beat1.wav"),
+        fire = loadSound("sound/fire.wav"),
+        xtraship = loadSound("sound/extraShip.wav"),
+        ss = loadSound("sound/saucerSmall.wav"),
+        bs = loadSound("sound/saucerBig.wav"),
+        thrust = loadSound("sound/thrust.wav"),
+        bkg = loadImage("img/stars.jpg");
+    return e
+}
+
+function setup() {
+ let Agame= document.getElementById("agame")
+  let cans = createCanvas(innerWidth - 30, innerHeight - 3, WEBGL);//P2D
+
+  Agame.append(cans);
+  resetGame();
+  Controls();
+  button();
+ 
+}
+
+
+
+
 function draw() {
+
 
     Background();
     Shipdamage();
@@ -53,6 +88,12 @@ function draw() {
     Drawasteroids();
     Drawships();
     Drawparticles();    
+
+    // LEVELS();
+     damage();
+    lives();
+    words();
+
     Scored();
     lives();
     damage();
