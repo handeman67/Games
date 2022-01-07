@@ -9,4 +9,4 @@ let hud = () => {
    // document.getElementById('eight').innerHTML = floor(mouseX);
    // document.getElementById('nine').innerHTML = floor(mouseY);
    document.getElementById('ten').innerHTML = floor(frameRate());
-}
+};

@@ -5,7 +5,7 @@ class Laser
       let t = this;
       t.pos = createVector(spos.x, spos.y);
       t.s = size=4;
-      t.sp=8
+      t.sp=8;
       t.cl = color(250,250 ,0 , 255);
     
       t.show = function ()
@@ -23,12 +23,12 @@ class Laser
       function hits(inc){
         var d = dist(t.pos.x, t.pos.y, inc.pos.x, inc.pos.y);
         if (d < t.s + inc.s) {
-         console.log( "laser Hit")
+         console.log( "laser Hit");
           return true;
          
         }
       
-      };
+      }
       t.offScreen = () =>{
         if (t.pos.x < 0 || t.pos.x > width) {
           lasers.splice(0, 1);
@@ -37,13 +37,13 @@ class Laser
           lasers.splice(0, 1);
         }
       };
-    };
-  };
+    }
+  }
 
 loadLaser = () => {
   for (var l = 0; l < lasers.length; l++) {
     lasers[l].move();
-    lasers[l].show()
+    lasers[l].show();
     
     // for (let d of dots){
     //   if (dots[d].hits(lasers[l])) {
@@ -56,4 +56,4 @@ loadLaser = () => {
       lasers.splice(l, 1);
     }
   }
-}
+};

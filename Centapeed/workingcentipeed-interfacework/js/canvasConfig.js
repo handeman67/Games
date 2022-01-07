@@ -7,7 +7,6 @@ const lasercount = 2;
 function Can(w, h) {
     canvas = createCanvas(w, h, "2d");
     canvas.parent("can2");
-    canvas.posi
     colorMode(HSB, 360, 100, 100);
     bg = color(30, 80, 80, 1);
     document.getElementById("can2").style = `position:"relative";border:2px solid darkgreen;margin: 0 auto;`;

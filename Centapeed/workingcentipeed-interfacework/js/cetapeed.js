@@ -4,8 +4,8 @@ var dots = [];
 var mush = [];
 var lasers = [];
 var shroom = [];
-const wt = innerWidth / 1.95;
-const ht = innerHeight - 46;
+const wt = innerWidth / 1.2;
+const ht = innerHeight/ 1.5;
 
 function setup() {
     // canvas setup
@@ -19,7 +19,7 @@ function setup() {
             level = level + 1;
             Dts(2);
             // dots.sp = dots.sp += 1;
-        }
+        };
         //Game Text in hud
         /// create random Master FIELD
     loadField();
@@ -35,17 +35,17 @@ function draw() {
     MushLoad();
     loadLaser();
     //setInterval(draw, 60);
-};
+}
 
 fld = function() {
     for (var i = 0; i < field.length; i++) {
         field[i].show();
     }
-}
+};
 
 levelup = function() {
-    level = level + 1
+    level = level + 1;
     Dts();
     GameScore += 1;
 
-}
+};

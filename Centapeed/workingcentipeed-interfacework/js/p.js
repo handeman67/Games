@@ -4,7 +4,7 @@ class Player {
         let t = this;
         t.pos = createVector(spos.x, spos.y);
         t.s = size = 20;
-        t.sp = sp;
+        t.sp = sp||mouseX;
         t.cl = color(random(350), random(100), random(100), 1);
 
 
@@ -12,13 +12,7 @@ class Player {
 
         t.move = function() {
 
-            //      var d = dist(t.pos.x, t.pos.y, mouseX, mouseY);
-            //       if (d > t.s) {
-            //             t.edges()
-            //             t.pos.x = mouseX;
-            //             t.pos.y = mouseY
-
-            //       }
+                
             let KD = keyIsDown;
             if (KD(37)) {
                 t.pos.x -= t.sp;
