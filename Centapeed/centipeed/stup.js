@@ -31,7 +31,7 @@ window.addEventListener('deviceorientation', function (e) {
   var alpha = e.alpha;
   var beta = e.beta;
   var gamma = e.gamma;
-  var direction = 1
+  var direction = 1;
   // Do stuff with the new orientation data
   //     if (absolute){
   //       noLoop()
@@ -40,21 +40,21 @@ window.addEventListener('deviceorientation', function (e) {
   //     }else if(beta<0){
 
   //     }
-  console.log('absolute =' + absolute)
-  console.log('alpha = ' + alpha)
-  console.log('beta = ' + beta)
-  console.log('gamma = ' + gamma)
+  console.log('absolute =' + absolute);
+  console.log('alpha = ' + alpha);
+  console.log('beta = ' + beta);
+  console.log('gamma = ' + gamma);
 
   // elem.style.transform =
   //   'rotateZ(' + (e.alpha - 180) + 'deg) ' +
   //   'rotateX(' + e.beta + 'deg) ' +
   //   'rotateY(' + (-e.gamma) + 'deg)';
 
-})
+});
 
 function preload() {
   myfont = loadFont('img/fontawesome-webfont.woff'),
-    smile = loadImage('img/1280px-Smiley_green_alien_lol.svg.png'),
+    smile = loadImage('img/800px-Smiley_green_alien_deep_sleep.svg.png'),
     sleep = loadImage('img/800px-Smiley_green_alien_deep_sleep.svg.png'),
     flustered = loadImage('img/800px-Smiley_green_alien_flustered.svg.png'),
     satisfied = loadImage('img/800px-Smiley_green_alien_satisfied.svg.png'),

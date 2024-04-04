@@ -1,32 +1,32 @@
-var point = function(_x, _y) {
-    this.x = _x;
-    this.y = _y;
-};
-this.show = () => {
+class point {
+    constructor(_x, _y) {
+        this.x = _x;
+        this.y = _y;
+    }
+
+show(){
     beginPath();
     stroke(0);
     fill(360, 50, 200);
     arc(this.x, this.y, size, 0, 2 * Math.PI, true);
 
-};
-this.add = function(vectore) {
+}
+add(vectore) {
     return new Vector(this.x += vector.x, this.y += vector.y);
 
-};
-this.subtract = function(vector) {
+}
+subtract(vector) {
     return new Vector(this.x -= vector.x, this.y -= vector.y);
-};
-this._.multiply = function(multiplier) {
+}
+multiply(multiplier) {
     return new Vector(this.x *= multiplier, this.y *= multiplier);
-};
-this.length = function() {
+}
+length() {
     return Math.sqrt(this.x * this.x + this.y * this.y);
-};
-this.cross = function(vector) {
+}
+cross(vector) {
     return this.x * vector.y - this.y * vector.x;
-};
-this.dot = function(vector) {
+}
+dot(vector) {
     return this.x * vector.x + this.y * vector.y;
-
-
-};
+}}

@@ -1,33 +1,24 @@
 class Particles {
   constructor(pos, r)
   {
-    if (pos) {
-      this.pos = pos.copy();
-    } else {
-      this.pos = createVector(0, 0);
-    }
-    if (r) {
-      this.r = r;
-    } else {
-      this.r = random(2, 15);
-    }
-
+    pos? this.pos = pos.copy():this.pos = createVector(0, 0);
+    r? this.r = r:this.r = random(2, 15);
     this.vel = p5.Vector.random2D();
     this.force = floor(random(0, 50));
-    this.vx = floor(random(sin(50),cos (120)));
-    this.vy = floor(random(cos(150), sin(50)));
+    this.vx = floor(random(-1.6,1.6));
+    this.vy = floor(random(-1.6,1.6));
     this.col = random(255);
     this.alpha = 255;
     this.vl = this.vel + this.force;
-    this.ran = floor(random(1, 8));
-    this.offshape = floor(random(-this.r * 0.25, this.r * 0.25));
-  }
+    this.ran = floor(random(1, 2));
+    this.offshape = 5 ;
+  } 
 
   update() {
    // this.pos.add(this.vel);
     this.pos.x += this.vx;
     this.pos.y += this.vy;
-    this.alpha -= 4;
+    this.alpha -= 2;
   }
   show() {
     push();
@@ -35,22 +26,10 @@ class Particles {
      strokeWeight(2);
     fill(255, 255, 255, this.alpha); //
     beginShape();
-    for (var i = 0; i < this.r; i++) {
-     var angle = map(this.r, 0, this.r, 0, TWO_PI);
-     var r = this.r ;
-    var x = r * sin(angle);
-      var y = r* cos(angle);
-     
-      vertex(this.pos.x, this.pos.y);
-    //ellipse(this.pos.x, this.pos.y, this.r);
+    for (var i = 0; i <G.parts.length; i++) {
+   point(this.pos.x,this.pos.y,this.offshape);
      }
-     endShape(CLOSE);
-    // pop();
-
-    //   push();
-    //  stroke(255)
-    //   fill(200, this.alpha);//
-
+     endShape();
     pop();
   }
   cleared() {

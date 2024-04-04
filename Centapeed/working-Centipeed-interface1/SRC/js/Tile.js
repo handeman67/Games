@@ -54,7 +54,7 @@ class Tile {
                   case 1:
                         t.barrier = function () {
                               push();
-                              stroke(50, 10);
+                              stroke(50);
                               strokeWeight(1);
                               noFill();
                               rect(t.x * SIZE, t.y * SIZE, SIZE, SIZE);
@@ -77,7 +77,7 @@ class Tile {
                   case 3:
                         t.light = function () {
                                push();
-                               stroke(50, 10);
+                               stroke(50);
                               strokeWeight(1);
                               noFill();
                                rect(t.x * SIZE, t.y * SIZE, SIZE, SIZE);
@@ -104,11 +104,11 @@ class Tile {
                               t.pos = createVector(t.x,t.y)
                               ellipseMode(CORNER);
                               push();
-                              stroke(50, 10); 
+                              // stroke(50); 
                               noFill();
                               strokeWeight(1);
                               rect(t.x * SIZE, t.y * SIZE, SIZE, SIZE);
-                              fill(355, 80, 80, 255);
+                              fill(355);
                               pop();
                               push();
                               stroke(0);
@@ -119,7 +119,7 @@ class Tile {
                               pop();
                               push();
                               noStroke();
-                              fill(0,100,100);
+                              fill(50);
                               ellipse(t.x * SIZE + QUARTER_SIZE, t.y * SIZE + QUARTER_SIZE, HALF_SIZE);
                               stroke(0);
                               strokeWeight(5);

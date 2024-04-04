@@ -42,7 +42,7 @@ class Asteroid {
       sm.play();
       bm.play();
       var newA = [];
-      for (var j = 0; j < random(4); j++) {
+      for (var j = 0; j < random(4,6); j++) {
         newA.push(new Asteroid(e.pos, e.r));
         score += 5;
       }

@@ -12,6 +12,6 @@ enviroments.production = {
    'envName': 'production'
 };
 
-var currentEnvironment = typeof (process.env.NODE_ENV) == 'string'
-var enviromentToExport = typeof (enviroments[currentEnvironment])
+var currentEnvironment = typeof (process.env.NODE_ENV) == 'string';
+var enviromentToExport = typeof (enviroments[currentEnvironment]);
 module.export = enviromentToExport;

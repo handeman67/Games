@@ -6,18 +6,19 @@ window.onload = function() {
 
     ]
     const Fl = [
-        "https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js",
-        "https://code.getmdl.io/1.3.0/material.min.js",
-        "js/js.js",
+        // "https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js",
+        // "https://code.getmdl.io/1.3.0/material.min.js",
+       
         "js/gameReset.js",
+         "js/gamOver.js",
         "js/controls.js",
         "js/astroid.js",
         "js/ships.js",
         "js/P.js",
         "js/laser.js",
         "js/levels.js",
-        "js/gamOver.js",
-
+       
+ "js/js.js",
 
     ];
 

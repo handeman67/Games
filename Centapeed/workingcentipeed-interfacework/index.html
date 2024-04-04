@@ -9,15 +9,15 @@
     <script src="./libraries/p5.js" type="text/javascript"></script>
     <script src="./libraries/p5.dom.min.js" type="text/javascript"></script>
  <script src="js/canvasConfig.js" type="text/javascript"></script>
-
-    <script src="js/cetapeed.js" type="text/javascript"></script>
-    <script src="js/laser.js" type="text/javascript"></script>
+ <!-- <script src="js/collision.js" type="text/javascript"></script> -->
     <script src="js/p.js" type="text/javascript"></script>
     <script src="js/d.js" type="text/javascript"></script>
     <script src="js/Tile.js" type="text/javascript"></script>
+      <script src="js/laser.js" type="text/javascript"></script>
     <script src="js/hud.js" type="text/javascript"></script>
    
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+   
+    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"> -->
 
     <link rel="stylesheet" href="css/style.css">
     <title>Document</title>
@@ -26,6 +26,7 @@
 <body>
 
     <div class="wrapper">
+        <nav>
         <div class="header" id="header">
             <div class="centerHead">
                 <div class="titleBox">
@@ -88,12 +89,12 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div></nav>
         <div class="controlBoard">
             <section class="ast">
                 <div id="can1"></div>
             </section>
-            <section class="centapeed">
+            <section class="centapeed active">
                 <div id="can2"></div>
             </section>
             <section class="tictactoe">
@@ -113,5 +114,5 @@
 
 
 </body>
-
+ <script src="js/cetapeed.js" type="text/javascript"></script>
 </html>

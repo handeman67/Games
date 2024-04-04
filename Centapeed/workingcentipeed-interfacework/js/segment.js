@@ -1,8 +1,8 @@
 class segment {
     constructor(x1, y1, vecx, vecy) {
         const t = this;
-        t.x = x;
-        t.y = y;
+        t.x = x1;
+        t.y = y1;
         t.vecx = vecx;
         t.vecy = vecy;
         t.show = function(width, color) {

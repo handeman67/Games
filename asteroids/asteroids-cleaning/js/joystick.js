@@ -34,7 +34,8 @@ function shapes(x,y,r, c, w, h){
        var sY = event.screenY;
        var coords1 = "client - X: " + cX + ", Y coords: " + cY;
        var coords2 = "screen - X: " + sX + ", Y coords: " + sY;
-       document.getElementById("demo").innerHTML = coords1 + "<br>" + coords2;
+       console.log(coords1 , coords2)
+      
     };
 document.addEventListener('mousemove', this.showCoords);
 

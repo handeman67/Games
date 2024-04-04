@@ -4,45 +4,46 @@ var dots = [];
 var mush = [];
 var lasers = [];
 var shroom = [];
-const wt = innerWidth / 1.2;
-const ht = innerHeight/ 1.5;
+
+
+// const wt = 25*cr;
+// const ht = 25*hr;
+const ch=document.querySelector(".active");
+if(ch){
+console.log();
+}
+
+    wt=ch.clientWidth;
+    ht=ch.clientHeight; 
+
+
 
 function setup() {
-    // canvas setup
-    Can(wt, ht);
-    //loadJSON(config.json, [callback], [errorCallback], [datatype])
-    ///player setup   
-    plr();
-    ///dots setup
+    Can(wt, ht); 
+    plr(player);
     Dts();
-    levelup = function() {
-            level = level + 1;
-            Dts(2);
-            // dots.sp = dots.sp += 1;
-        };
-        //Game Text in hud
-        /// create random Master FIELD
     loadField();
+    mobilTouch();
 }
 
 function draw() {
-    console.log(keyCode);
-    background(bg);
-    hud();
+    // console.log(keyCode);
+   background(bg);
+   hud();
     fld();
     playerLoad();
     dotsLoad();
     MushLoad();
     loadLaser();
-    //setInterval(draw, 60);
+   
 }
 
 fld = function() {
     for (var i = 0; i < field.length; i++) {
         field[i].show();
-    }
+       
+}
 };
-
 levelup = function() {
     level = level + 1;
     Dts();

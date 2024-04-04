@@ -1,22 +1,20 @@
- bloc = function(x, y, size)
-{
-  this.x = x;
-  this.y = y;
-  this.size = size;
-  // this.hit = function(){
-    
-  // }
-  this.show = function ()
-  {
-    strokeWeight(2);
-    stroke(255, 255, 0);
-    fill(255, 255, 0);
-    ellipse(this.x, this.y, this.size);
+ class bloc {
+  constructor(x, y, size) {
+    this.x = x;
+    this.y = y;
+    this.size = size;
+    // this.hit = function(){
+    // }
+    this.show = function () {
+      strokeWeight(2);
+      stroke(255, 255, 0);
+      fill(255, 255, 0);
+      ellipse(this.x, this.y, this.size);
+    };
+    this.update = function () {
+    };
   }
-  this.update = function (){
-    
-  }
-};
+}
 
 function bit(spos, angle)
 {
@@ -49,5 +47,5 @@ function bit(spos, angle)
     } else {
       return false;
     }
-  }
+  };
 }

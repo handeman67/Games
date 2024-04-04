@@ -1,18 +1,18 @@
 import http from "http";
 import url from "url";
-import StringDecoder from ("string_decoder").StringDecoder;
+import StringDecoder from "string_decoder";
 import config  from "./config";
 
 server = http.createServer = (req, res) =>
 {
    parsedUrl = url.parse(req.url, true),
       path = paersedUrl.pathname,
-      trimmedPath = path.replace(/^\/+|\/+$/g, '')
+      trimmedPath = path.replace(/^\/+|\/+$/g, '');
 
-   queryStringObject = parsedUrl.query
-   method = req.method.toLowerCase()
-   headers = req.headers
-   decoder = new StringDecoder('utf-8')
+   queryStringObject = parsedUrl;
+   method = req.method.toLowerCase();
+   headers = req.headers;
+   decoder = new StringDecoder('utf-8');
    buffer = '';
    req.on('data', function (data)
    {
@@ -22,7 +22,7 @@ server = http.createServer = (req, res) =>
    req.on('end', function ()
    {
       buffer += decoder.end();
-   })
-}
+   });
+};
 
 //to call server

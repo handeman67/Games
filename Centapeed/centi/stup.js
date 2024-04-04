@@ -9,9 +9,9 @@ var rgb;
 const sizes = 20;
 
 let rq=function requestAnimationFrame(){
-   console.log(window.frameCount)
-}
-console.log(rq())//?
+   console.log(window.frameCount);
+};
+console.log(rq());//?
 
 // function opts(){
  
@@ -27,10 +27,10 @@ const rows = sizes;
 
 var SIZE = w / cols;
 var THIRD_SIZE = SIZE / 3;
-var HALF_SIZE = SIZE / 2
-var QUARTER_SIZE = SIZE / 4
+var HALF_SIZE = SIZE / 2;
+var QUARTER_SIZE = SIZE / 4;
 
-const center = w / 2
+const center = w / 2;
 let scroll;
 
 window.addEventListener('deviceorientation', function (e) {
@@ -40,7 +40,7 @@ window.addEventListener('deviceorientation', function (e) {
   var alpha = e.alpha;
   var beta = e.beta;
   var gamma = e.gamma;
-  var direction = 1
+  var direction = 1;
   // Do stuff with the new orientation data
   //     if (absolute){
   //       noLoop()
@@ -49,36 +49,37 @@ window.addEventListener('deviceorientation', function (e) {
   //     }else if(beta<0){
 
   //     }
-  console.log('absolute =' + absolute)
-  console.log('alpha = ' + alpha)
-  console.log('beta = ' + beta)
-  console.log('gamma = ' + gamma)
+  console.log('absolute =' + absolute);
+  console.log('alpha = ' + alpha);
+  console.log('beta = ' + beta);
+  console.log('gamma = ' + gamma);
 
   // elem.style.transform =
   //   'rotateZ(' + (e.alpha - 180) + 'deg) ' +
   //   'rotateX(' + e.beta + 'deg) ' +
   //   'rotateY(' + (-e.gamma) + 'deg)';
 
-})
+});
 
 function preload() {
-  myfont = loadFont('img/fontawesome-webfont.woff'),
-    smile = loadImage('img/1280px-Smiley_green_alien_lol.svg.png'),
-    sleep = loadImage('img/800px-Smiley_green_alien_deep_sleep.svg.png'),
-    flustered = loadImage('img/800px-Smiley_green_alien_flustered.svg.png'),
-    satisfied = loadImage('img/800px-Smiley_green_alien_satisfied.svg.png'),
-    Grr = loadImage('img/800px-Smiley_green_alien_GRRR.svg.png'),
-    blush = loadImage('img/Smiley_green_alien_blush.svg.png'),
-    big = loadImage('img/Smiley_green_alien_big_eyes.svg.png'),
-    sick = loadImage('img/Smiley_green_alien_sickoff.svg.png'),
-    mushroom = loadImage('img/mushroom.svg'),
-    mushroom1 = loadImage('img/mushroom1.svg'),
-    mushroom2 = loadImage('img/mushroom2.svg'),
-    spider = loadImage('img/spider.svg'),
-    grass = loadImage('img/grass.svg'),
-    grass1 = loadImage('img/grass1.svg'),
-    grass3 = loadImage('img/grass3.svg'),
-    stinkbug = loadImage('img/stink-bug.svg')
+  this.myfont = loadFont('img/fontawesome-webfont.woff'),
+    this.smile = loadImage('img/1280px-Smiley_green_alien_lol.svg.png'),
+    this.sleep = loadImage('img/800px-Smiley_green_alien_deep_sleep.svg.png'),
+    this.flustered = loadImage('img/800px-Smiley_green_alien_flustered.svg.png'),
+    this.satisfied = loadImage('img/800px-Smiley_green_alien_satisfied.svg.png'),
+    this.Grr = loadImage('img/800px-Smiley_green_alien_GRRR.svg.png'),
+    this.blush = loadImage('img/Smiley_green_alien_blush.svg.png'),
+    this.big = loadImage('img/Smiley_green_alien_big_eyes.svg.png'),
+    this.sick = loadImage('img/Smiley_green_alien_sickoff.svg.png'),
+    this.mushroom = loadImage('img/mushroom.svg'),
+    this.mushroom1 = loadImage('img/mushroom1.svg'),
+    this.mushroom2 = loadImage('img/mushroom2.svg'),
+    this.spider = loadImage('img/spider.svg'),
+    this.grass = loadImage('img/grass.svg'),
+    this.grass1 = loadImage('img/grass1.svg'),
+    this.grass3 = loadImage('img/grass3.svg'),
+    this.stinkbug = loadImage('img/stink-bug.svg');
+    return this;
 
 }
 
@@ -94,23 +95,23 @@ function setup() {
   for (let p = 0; p < 1; p++) {
     let s = 4;
     player.push(new Player(0 * p, 10, 90, s))
-  };
+  }
   // Gnerate dots
   for (let d = 0; d < 10; d++) {
     let dotx = width / 4 + SIZE * d;
     let doty =SIZE;
     dot.push(new Dot(dotx, doty, SIZE, 12, 2))
-  };
+  }
   // Generate obsticles
   //  for (let m = 0; m <size; m++) { for (let n = 0; n < 27; n++) { let r = 20;mush.push(new Mush(20+r*2*m , 80+r * 2 + r * n, r))}};
   //scroll for movement
-  scroll = createSlider(0, w, center, 1)
-  scroll.position(center, h)
+  scroll = createSlider(0, w, center, 1);
+  scroll.position(center, h);
   const obs = cols * rows;
-  field = []
+  field = [];
   for (var f = 0; f < obs; f++) {
-    num = floor(random(0, 6))
-    FIELD.push(num)
+    num = floor(random(0, 6));
+    FIELD.push(num);
   }
   //distribute field with Tiles using FIELD
   for (var i = 0; i < FIELD.length; i++) {
@@ -123,8 +124,8 @@ function setup() {
 // Draw the the game
 function draw() {
   // translate(-cw, -ch, z)
-  const slide = scroll.value()
-  background(50, 50, 50, 0.8);
+  const slide = scroll.value();
+  background(0, 0, 0, 100);
   fld(field);
 
 
@@ -174,20 +175,21 @@ function draw() {
       if (dot[d].hits(field[f])) {
 
 
-        dot[d].drop()
+        dot[d].drop();
       }
     }
-    for (l in lasers) {
-      dot[d].hits(lasers[l])
-    };
+    for (let l in lasers) {
+      dot[d].hits(lasers[l]);
+    }
     if (dot.length === 0) {
-      level++
-      break
+      level++;
+      
       //let lv =0
-      for (let d = 0; d < 10; d++) {
-        let r = 20;
-        dot.push(new Dot(width / 2 + SIZE * d,SIZE,SIZE, 12));
-      }
+      // for (let d = 0; d < 10; d++) {
+      //   let r = 20;
+      //   dot.push(new Dot(width / 2 + SIZE * d,SIZE,SIZE, 12));
+      // }
+      break;
       //lv++
     }
   }
@@ -201,7 +203,7 @@ function draw() {
     }
 
 
-  }
+  };
   words();
 }
 
@@ -210,17 +212,17 @@ class Dot {
     //
     this.pos = createVector(x, y);
     this.num = 2;
-    this.sp =sp
-    this.color = color(random(255), random(0), random(100))
+    this.sp =sp;
+    this.color = color(random(255), random(0), random(100));
 
 
 
     this.show = () => {
       push();
-      stroke(0, 100, 0)
-      strokeWeight(.005);
+      stroke(0, 100, 0);
+      strokeWeight(0.005);
       image(smile, this.pos.x, this.pos.y, SIZE, SIZE);
-      ellipse(this.pos.x, this.pos.y, SIZE)
+      ellipse(this.pos.x, this.pos.y, SIZE);
       pop();
     };
     ///hit detection
@@ -230,7 +232,7 @@ class Dot {
       var d = dist(this.pos.x, this.pos.y, inc.pos.x, inc.pos.y);
       if (d <SIZE + inc.SIZE) {
 
-console.log('dot hit this -->'+inc)
+console.log('dot hit this -->'+inc);
 
 
       }
@@ -251,8 +253,8 @@ console.log('dot hit this -->'+inc)
       this.sp = -this.sp;
       if (this.pos.y > height -SIZE) {
         if (this.dt >= dot.length) {
-          level++
-        this.sp++
+          level++;
+        this.sp++;
         this.pos.y = 100;
         this.pos.x = width / 2;
 }
@@ -263,9 +265,9 @@ console.log('dot hit this -->'+inc)
 
 words = () => {
   
-push()
+push();
   fill(255,255,255);
-  rect(0, 0, 200, 300, 20, 20, 0, 0)
+  rect(0, 0, 200, 300, 20, 20, 0, 0);
    stroke(0);
    strokeWeight(4);
   textSize(20);
@@ -281,7 +283,7 @@ textStyle(BOLD);
   text("Dot #   " + dot.dd, 20, 125, 200, 20);
   text("Level   " + level, 20, 150, 200, 20);
   text("player   " + player.length, 20, 175, 200, 20);
-  pop()
+  pop();
   if (lasers.length >= 8) {
     push();
     stroke(255, 0, 0);
@@ -289,7 +291,7 @@ textStyle(BOLD);
     pop();
 
   }
-}
+};
 class Mush {
 
   constructor(x, y,SIZE) {
@@ -305,7 +307,7 @@ class Mush {
     this.update = () => {
 
       //this.r=this.r-1
-    }
+    };
     ///hit detection
     this.inc = [];
     this.inc.push("");

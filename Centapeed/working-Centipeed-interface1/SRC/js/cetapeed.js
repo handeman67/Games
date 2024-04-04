@@ -12,7 +12,6 @@ let windowResized;
 let width=document.window;
 let height=document.window;
 let rs;
-console.log(width)
 function setup() {
 new Canvas(300,600,WEBGL)
 pos()
@@ -173,12 +172,12 @@ pos()
     }
 
   }
-
-
+  fld();
+rs=resizeCanvas(350,600);
 }
 
 function draw() {
-  orbitControl();
+  // orbitControl();
   translate( -200,-300,-75);
   background(30, 80, 80, 100);
   
@@ -187,12 +186,12 @@ function draw() {
   document.getElementById('three').innerHTML = dots.length;
   document.getElementById('four').innerHTML = lasers.length;
   document.getElementById('five').innerHTML = field.length;
-  fld();
+  
   msh();
   dotsLoad();
   playerLoad();  
   loadLaser();
-rs=resizeCanvas(350,600);
+
 };
 
 windowResized=() =>{
@@ -201,9 +200,11 @@ windowResized=() =>{
 
 
 fld = function () {
-  for (var i = 0; i < field.length; i++) {
-    field[i].draw();
-  }
+
+  field.forEach((fl)=>{
+fl.draw();
+  })
+  
 }
 msh = function () {
   for (var j = 0; j < mush.length; j++) {
@@ -225,7 +226,7 @@ class Canvas{
   if(!y){y=600};
   if(contentType){contentType=WEBGL};
   const canvas=createCanvas(x,y, contentType).parent("can");
-  let xl= canvas.position().x;
-  let yl= canvas.position().y;
+  // let xl= canvas.position().x;
+  // let yl= canvas.position().y;
   document.getElementById("can").style.position = "inherit";
 }}

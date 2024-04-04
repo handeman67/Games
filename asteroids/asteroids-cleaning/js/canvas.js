@@ -33,6 +33,7 @@ function Can(w, h, web) {
 
          lasers.push(new Laser(player[0].pos, 5, 5));
       }
+  
       return
    };
 }

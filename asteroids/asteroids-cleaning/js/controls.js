@@ -1,50 +1,60 @@
 function Controls() {
+  this.myred = 255;
+  this.mygreen = 255 - this.damg;
+  this.myblue = 255 - this.damg;
   //GAME
-  button = () => {
-    button2 = createButton("Reset"),
-      button2.mousePressed(resetGame),
-      button2.position(width / 2, 30),
-      button3 = createButton("close"),
-      //button3.mousePressed(level),
-      button3.position(width / 2 + 60, 30);
-  };
+  let gg =
+    button = () => {
+      button2 = createButton("Reset"),
+        button2.mousePressed(() => {
+          return new resetGame
+        }),
+        button2.position(width / 2, 30),
+        button3 = createButton("close"),
+        button3.position(width / 2 + 60, 30);
+      button4 = createButton("sound"),
+        button4.position(width / 2 + 120, 30);
+    };
 
   Scored = () => {
     stroke(0, 200, 20);
     fill(255);
     textSize(25);
-    text("Score" + "  " + score, 10, 10, 200, 100);
+    text(`Score:${G.score}`, 10, 10, 200, 100);
   };
 
   LevelT = () => {
     stroke(0, 200, 20);
     fill(255);
     textSize(25);
-    text("Level" + "  " + level, width / 1.3, 10, 200, 100);
+    text(`Level: ${G.level.length}`, width / 1.3, 10, 200, 100);
 
   };
-
-  lives = () => {
-    var red = 255;
-    var green = 255 - this.damg;
-    var blue = 255 - this.damg;
+   FRAMERATE = () => {
     stroke(0, 200, 20);
     fill(255);
     textSize(25);
-    text("lives" + "  " + ship.length, 73, 40, 200, 100);
+    text(`framerate: ${Math.floor(window.frameRate())}`, width / 1.3, 70, 200, 100);
+
+  };
+ 
+  lives = () => {
+
+    stroke(this.myred, this.mygreen, this.myblue);
+    fill(255);
+    textSize(25);
+    text(`lives ${G.ship.length}`, 73, 40, 200, 100);
     push();
     translate(40, 55);
-    fill(red, green, blue, 255);
-    triangle(-10, 10, 10, 10, 0, -10);
+    fill(this.myred, this.mygreen, this.myblue, 255);
+    triangle(-10, 10, 10, 10, 0, -15);
     pop();
   };
   damage = () => {
-    var red = 255;
-    var green = 255 - this.damg;
-    var blue = 255 - this.damg;
+    !G.ship[0] ? b = G.ship.length : b = G.ship[0].damg;
     push();
-    fill(red, green, blue, 255);
-    text("Damage" + "  " + this.damg, 30, 70, 225, 100);
+    fill(this.myred, this.mygreen, this.myblue, 255);
+    text(`Damage ${b}`, 30, 70, 225, 100);
     pop();
 
   };
@@ -53,39 +63,96 @@ function Controls() {
       return false;
     } else {
       var script = document.createElement("script");
+      let r = document.querySelector(".result");
       script.onload = function () {
         var stats = new Stats();
-        stats.domElement.style.position = "absolute";
-        stats.domElement.style.left = "210px";
-        stats.domElement.style.top = "40px";
-        document.body.appendChild(stats.dom);
-        requestAnimationFrame(function loop() {
-          stats.update();
-          requestAnimationFrame(loop);
-        });
+
+        r.append(stats.dom);
+        // requestAnimationFrame(function loop() {
+        //   stats.update();
+        //   requestAnimationFrame(loop);
+        // });
       };
-      script.src = "//rawgit.com/mrdoob/stats.js/master/build/stats.min.js";
+      script.src = "./js/Stats.js";
       document.head.appendChild(script);
     }
   };
 
   words = (x, y) => {
+    let t = this;
+    t.mx = width - 220;
+    t.my = height - 225;
+    t.fx = 225;
+    t.fy = height - 225;
+
+    t.heading = 0;
+    t.rotation = 0;
+    t.mpos = createVector(t.mx, t.my);
+    t.fpos = createVector(t.fx, t.fy);
+    t.fire = {
+      "x": t.fpos.x,
+      "y": t.fpos.y
+    }
+    t.move = {
+      "x": t.mpos.x,
+      "y": t.mpos.y
+    }
+    fill(20, 20, 20, 150);
     push();
-    fill(200, 200, 20, 150);    
+
     ellipseMode(RADIUS);
-    ellipse(width - 225, height - 125,50);
-    ellipse(225, height - 125,50);
-    pop();
-    push();
-    fill(0, 200, 20, 150);    
+    ellipse(t.move.x, t.move.y, 50);
+    ellipse(t.fire.x, t.fire.y, 50);
+
+    fill(0, 200, 20, 150);
     textAlign(CENTER);
-    this.text("Move", width - 270, height - 135, 100, 100);
-    this.text("Fire", 180, height - 135, 100, 100);
-    pop();
-    return;
-    
-   
-  
+
+    ellipse(fire.x, fire.y, 10);
+    this.text("Move", width - 220 - 50, height - 225 + 60, 100, 100);
+    this.text("Fire", 225 - 50, height - 225 + 60, 100, 100);
+    pop()
+    if (new MouseEvent("mousedown")) {
+
+      fill(0, 200, 20, 150);
+      if (mouseY > t.mpos.y - 50 && mouseY < t.mpos.y + 50 && mouseX > t.mpos.x - 50 && mouseX < t.mpos.x + 50) {
+
+        t.mx = mouseX;
+        t.my = mouseY;
+        let d = dist(t.mx, t.my, t.mpos.x, t.mpos.y);
+
+        var force = p5.Vector.fromAngle(d);
+        t.heading += force;
+        //  rotate(t.heading);
+console.log(t.heading);
+        while (Math.floor(t.heading) > 0) {
+          G.ship[0].setRotation(0.1);
+        }
+        while (Math.floor(t.heading) < 0) {
+          G.ship[0].setRotation(-0.1);
+        }
+
+
+        // console.log(this.heading);
+        if ("mousePressed") {
+
+          push()
+          fill(200, 200, 20, 150);
+          translate(t.mx, t.my);
+        }
+        ellipse(0, 0, 20)
+        pop()
+      }
+      // var force = p5.Vector.fromAngle(this.heading)
+      ellipse(move.x, move.y, 20)
+
+    }
+
+
+
+
+
+
+
   };
   // var ast =[];
   // var sss;

@@ -2,58 +2,67 @@
 class Laser
 {  
     constructor(spos, size){
-      let t = this;
+      const t = this;
       t.pos = createVector(spos.x, spos.y);
       t.s = size=4;
       t.sp=8;
       t.cl = color(250,250 ,0 , 255);
-    
-      t.show = function ()
-      {
+      t.inc = [];
+      t.inc.push("");
+      t.hit=false;
+    }
+      show(){
+        const t = this;
         stroke(t.cl);
         strokeWeight(t.s);
         noFill();
         point(t.pos.x, t.pos.y);
         
-      };
-      t.move = () => { t.pos.y -= t.sp; };
-
-      t.inc = [];
-      t.inc.push("");
-      function hits(inc){
+      }
+      move(){const t = this; t.pos.y -= t.sp; }
+      hits(inc){
+        const t = this;
         var d = dist(t.pos.x, t.pos.y, inc.pos.x, inc.pos.y);
         if (d < t.s + inc.s) {
-         console.log( "laser Hit");
+          inc.hit=true;
+          t.hit=true;
+         console.log( "laser Hit",t,inc);
           return true;
-         
+         }
         }
-      
-      }
-      t.offScreen = () =>{
+      offScreen(){
+        const t = this;
         if (t.pos.x < 0 || t.pos.x > width) {
           lasers.splice(0, 1);
         }
         if (t.pos.y < 0 || t.pos.y > height) {
           lasers.splice(0, 1);
         }
-      };
-    }
-  }
+      }
+     }
 
-loadLaser = () => {
+loadLaser = (a) => {
   for (var l = 0; l < lasers.length; l++) {
     lasers[l].move();
     lasers[l].show();
-    
-    // for (let d of dots){
-    //   if (dots[d].hits(lasers[l])) {
-    //     console.log("hit")
-    //     dots.splice(d, 1);
-    //     lasers.splice(l, 1);
-    //   }}
+
+    mush.forEach((m)=>{
       
+       lasers[l].hits(m);
+       if(m.hit){
+        console.log("MUSHROOMS");  
+        }
+    });
+   dots.forEach((d)=>{
+    
+    lasers[l].hits(d);
+    if(d.hit){
+    console.log("DOTS");  
+    }
+   });
     if (lasers[l].offScreen()) {
       lasers.splice(l, 1);
+
     }
   }
 };

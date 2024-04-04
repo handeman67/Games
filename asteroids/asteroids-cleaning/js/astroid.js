@@ -1,84 +1,80 @@
-function Asteroid(pos, r)
-{
-  let beat = 2000;
-  //Create a vector position
-  if (pos) {
-    this.pos = pos.copy();
-  } else {
-    this.pos = createVector(random(width), random(height));
-  }
-  //Control radius
-  if (r) {
-    this.r = r * 0.5;
-  } else {
-    this.r = random(random(10, 15), 60);
-  }
-  // if (asteroids[0]) {
-  //   this.ac = this.render;
-  // }
-//add a velocity
-  this.vel = p5.Vector.random2D();
-  // number of verticies
-  this.total = floor(random(5, 10));
-  //offset of verticies
-  this.offset = [];
-  for (var i = 0; i < this.total; i++) {
-    this.offset[i] = random(-this.r * 0.25, this.r * 0.25);
+
+class Asteroid {
+  constructor(pos, radius,v) {
+    let beat = 2000, t = this;
+    pos ? t.pos = pos.copy() : t.pos =
+     createVector(random(width),random(height),random(width));
+    radius ? t.r = radius * 0.5 : t.r = random(5, 60);
+    
+    t.vel = p5.Vector.random2D();
+    t.vel.add(random(-1, 1) % t.r);
+    v? t.vertices =t.v:t.vertices =floor(random(7, 10)); 
+   
+    // ;
+    for (let i = 0; i < t.vertices; i++) {
+      G.offset.push(random(2, t.r*0.25));
+    }
   }
 
-  this.update = function() {
-    this.pos.add(this.vel);
-  };
+    update = function () {
+      let t = this;
+      t.pos.add(t.vel);
+      // this.setRotation();
+    };
+ 
+    render = function () {
+      let t = this;
+      push();
+      stroke(255);
+      strokeWeight(2);
+      fill(100, 100, 100, 125);
+      translate(t.pos.x, t.pos.y);
 
-  this.render = function() {
-    push();
-    stroke(255);
-    strokeWeight(2);
-    fill(100, 100, 100, 125);
-    translate(this.pos.x, this.pos.y);
-    beginShape();
-    for (var i = 0; i < this.total; i++) {
-      var angle = map(i, 0, this.total, 0, TWO_PI);
-      var r = this.r + this.offset[i];
-      var x = r * cos(angle);
-      var y = r * sin(angle);
-      vertex(x, y);
-         }
-    endShape(CLOSE);
+
+
+   
+      
+      beginShape();
+      rotate(noise(0.005*this.r , .360*this.r));
+      for (let i = 0; i < t.vertices; i++) {
+        let ro= t.r + G.offset[i];
+        let angle= map(i, 0.5, t.vertices, 0, TWO_PI);
+        
+        rotate(360)
+        let x = ro * cos(angle)- atan(angle);
+        let y = ro * sin(angle)- tan(-angle);
+        vertex(x, y); 
+      }
+      endShape(CLOSE);
     pop();
-  };
+   
+  }
+    pts = function () {
+      for (let i = 0; i <random(2,4); i++) {
+        G.parts.push(new Particles(this.pos));
+      }return G.parts;
+    }
+ 
+    breakup = function () {
+      G.newA=[];
+      for (var i = 0; i < random(2,4); i++) {
+        G.asteroids.push(new Asteroid(this.pos,this.r));
+      } return G.newA;
+    };
 
-  this.pts = function() {
-    push();
-    parts = [];
-    for (let i = 0; i < this.r; i++) {
-      parts.push(new Particles(this.pos));
-    }
-    pop();
-    return parts;
-  };
-  this.breakup = function(newA) {
-    sm.play();
-    bm.play();
+    edges = function () {
+      let t = this;
 
-    var newA = [];
-    for (var j = 0; j < random(4); j++) {
-      newA.push(new Asteroid(this.pos, this.r));
-      score += 5;
-    }
-    return newA;
-  };
-
-  this.edges = function() {
-    if (this.pos.x > width + this.r) {
-      this.pos.x = -this.r;
-    } else if (this.pos.x < -this.r) {
-      this.pos.x = width + this.r;
-    }
-    if (this.pos.y > height + this.r) {
-      this.pos.y = -this.r;
-    } else if (this.pos.y < -this.r) {
-      this.pos.y = height + this.r;
-    }
-  };
+      if (t.pos.x > width + t.r) {
+        t.pos.x = -t.r;
+      } else if (t.pos.x < -t.r) {
+        t.pos.x = width + t.r;
+      }
+      if (t.pos.y > height + t.r) {
+        t.pos.y = -t.r;
+      } else if (t.pos.y < -t.r) {
+        t.pos.y = height + t.r;
+      }
+    };
+  
 }

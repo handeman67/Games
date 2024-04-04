@@ -3,7 +3,7 @@ class Mush {
     constructor(x, y, r) {
         const t = this;
         t.pos = createVector(x, y);
-        t.r = r = 15;
+        t.r = r = innerWidth/50;
         // this.sp = 5;
         t.show = () => {
             stroke(10, 255, 100, 255);
@@ -37,6 +37,7 @@ Msh = function() {
 
     let r = 25;
     for (var m = 0; m < 1; m++) {
-        mush.push(new Mush(this.x, this.y, r))
+        mush.push(new Mush(this.x, this.y, r));
+        
     }
 }

@@ -1,42 +1,59 @@
-function Ship() {
-  this.pos = createVector(width / 2, height / 2);
-  this.r = 10;
-  this.heading = 0;
-  this.rotation = 0;
-  this.vel = createVector(0, 0);
-  this.isBoosting = false;
-  this.damg = 0;
-  this.boosting = function(b) {
-    this.isBoosting = b;
-  };
-  
-  this.render = function(x, y) {
-    let red = 255;
-    let green = 255 - damg;
-    let blue = 255 - damg;
+G.lasers = [];
+class Ship {
+  constructor() {
+    this.pos = createVector(width / 2, height / 2);
+    this.r = 10;
+    this.heading = 0;
+    this.rotation = 0;
+    this.vel = createVector(0, 0);
+    this.isBoosting = false;
+    this.damg = 0;
+    this.v = 255;
+    this.v1 = 0;
+    this.v2 = random(255);
+    this.red = 255;
+    this.green = 255 - this.damg;
+    this.blue = 255 - this.damg;
+
+
+    this.inc = [];
+    this.inc.push("");
+    this.boosting = function (b) {
+      this.isBoosting = b;
+
+    };
+    this.setRotation = function (a) {
+      this.rotation += a;
+    }
+  }
+
+  render = function () {
+
     push();
     translate(this.pos.x, this.pos.y);
     rotate(this.heading + PI / 2);
     this.shipFrame = stroke(0, 0, 255);
-    fill(red, green, blue);
+    fill(this.red, this.green, this.blue);
     triangle(-this.r, this.r, this.r, this.r, 0, -this.r);
     noStroke();
     fill(0);
     triangle(-this.r + 4, this.r - 4, this.r - 4, this.r - 5, 0, -this.r + 20);
     pop();
-  };
-  this.update = function() {
+  }
+  update = function () {
+    this.render();
+    this.move();
+    this.turn();
+    this.edges();
+    this.shiphits();
     if (this.isBoosting) {
-      this.boost();
+      this.boost(0.5);
     }
     this.pos.add(this.vel);
     this.vel.mult(0.98);
-  };
+  }
 
-  this.thrust = function() {
-    this.v = 255;
-    this.v1 = 0;
-    this.v2 = random(255);
+  thrust = function () {
     //this.vv =
     push();
     translate(this.pos.x, this.pos.y);
@@ -55,10 +72,10 @@ function Ship() {
     );
     endShape();
     pop();
-    thrust.play();
-  };
+    // G.thrust.play();
+  }
 
-  this.edges = function() {
+  edges = function () {
     if (this.pos.x > width + this.r) {
       this.pos.x = -this.r;
     } else if (this.pos.x < -this.r) {
@@ -69,141 +86,78 @@ function Ship() {
     } else if (this.pos.y < -this.r) {
       this.pos.y = height + this.r;
     }
-  };
+  }
 
-  this.boost = function() {
-    var force = p5.Vector.fromAngle(this.heading);
-    force.mult(0.5);
+  boost = function (a) {
+    let force = p5.Vector.fromAngle(this.heading);
+    force.mult(a);
     this.vel.add(force);
     this.thrust();
-  };
+  }
 
-  this.inc = [];
-  this.inc.push("");
-
-  this.hits = function(inc) {
-    var d = dist(this.pos.x, this.pos.y, inc.pos.x, inc.pos.y);
+  hits = function (inc) {
+    let d = dist(this.pos.x, this.pos.y, inc.pos.x, inc.pos.y);
     if (d < this.r + inc.r) {
       return true;
     }
-  };
+  }
 
-  this.setRotation = function(a) {
-    this.rotation = a;
-  };
-
-  this.turn = function() {
+  turn = function () {
     this.heading += this.rotation;
-  };
+  }
 
-  this.shiphits = function(spec) {
-    for (var s = ship.length - 1; s >= 0; s--) {
-      for (var j = asteroids.length - 1; j >= 0; j--) {
-        if (ship[0].hits(asteroids[j])) {
-          var newParts = asteroids[j].pts();
-          parts = parts.concat(newParts);
+  shiphits = function () {
+    for (let s = G.ship.length - 1; s >= 0; s--) {
+      for (let j = G.asteroids.length - 1; j >= 0; j--) {
+        if (G.ship[s].hits(G.asteroids[j])) {
+          G.asteroids[j].pts();
+          G.bl.play();
+          G.score += -10;
+          this.damg += 20;
 
-          bl.play();
-          score += -10;
-          damg += 2*this.r;
-
-          if (asteroids[j].r > 10) {
-            var newAsteroids = asteroids[j].breakup();
-            asteroids = asteroids.concat(newAsteroids);
+          if (G.asteroids[j].r > 10) {
+            G.asteroids[j].breakup();;
           }
-          this.setRotation(random(-0.2, 0.2));
-          asteroids.splice(j, 1);
-          if (damg >= 255) {
-            ship.splice(0, 1);
-            damg = 0;
-          }  
+          G.asteroids.splice(j, 1);
           break;
         }
       }
     }
   };
-  // var level = []
-  // level[3]= function ()
-  // {
-  //         for (var j = asteroids.length - 1; j >= 0; j--) {
-  //             if (ship[0].hits(asteroids[j])) {
-  //                 bl.play();
-  //                score += -10;
-  //                 if (asteroids[j].r > 10) {
 
-  //                     var newAsteroids = asteroids[j].breakup();
-  //                     asteroids = asteroids.concat(newAsteroids);
-  //                 }
-  //                 this.setRotation(random(-0.2, 0.2));
-  //                 asteroids.splice(j, 1);
+  move = function () {
+    // console.log("move");
 
-  //                 //ship.splice(0, 1);
-  //                 break;
-  //             }
-
-  //         }
-
-  //level [2]
-  // this.Level = function ()
-  // {
-
-  // var ob = function (l, s, as)
-  // {
-  //     for (var as = asteroids.length - 1; as >= 0; as--) {
-  //         for (var s = ship.length - 1; s >= 0; s--) {
-
-  //             if (lasers[l].hits(asteroids[as])) {
-  //                 score += 10;
-  //                 bl.play();
-  //             }
-  //             if (ship[s].hits(asteroids[as])) {
-
-  //                 bl.play();
-  //                 background(125);
-  //                 score += -30;
-  //                 { //if (forceField){
-  //                     //hitValue=damageValue;
-  //                     //damageValue.push(hitValue);
-  //                     //}
-  //                     //this is the shipLeveling block
-  //                     // this.setRotation(random(-0.2,0.2));
-  //                 }
-  //             }
-  //             if (asteroids[as].r > 10) {
-
-  //                 var newAsteroids = asteroids[j].breakup();
-  //                 asteroids = asteroids.concat(newAsteroids);
-  //             }
-
-  //             lasers.splice(0, 1);
-  //             asteroids.splice(0, 1);
-  //             ship.splice(0, 1);
-  //             break;
-  //             return
-  //             ////
-  //         }
-  //     }
-  //};
-  this.move = function() {
     if (keyIsDown((keyCode = 37))) {
-      ship[0].setRotation(-0.1);
+      
+      this.setRotation(-0.1);
+      console.log("left",this.rotation);
     }
     if (keyIsDown((keyCode = 39))) {
-      ship[0].setRotation(0.1);
+      
+     this.setRotation(0.1);
+      console.log("right",this.rotation);
     }
     if (keyIsDown((keyCode = 38))) {
-      ship[0].boosting(true);
+     
+      this.boosting(true);
+       console.log("down");
     }
 
-    keyReleased = function(keyCode = 37 || 38) {
-      ship[0].setRotation(false);
-      ship[0].boosting(false);
+    this.keyReleased = function (keyCode = 37 || 38) {
+      
+      this.setRotation(0);
+      this.boosting(false);
+      console.log("released");
     };
 
-    keyPressed = function(e) {
+    this.keyPressed = function (e) {
+
+
       if (e.keyCode == 32) {
-        lasers.push(new Laser(ship[0].pos, ship[0].heading));
+        G.lasers.push(new Laser(G.ship[0].pos, G.ship[0].heading));
         fire.play();
+        console.log("fire");
       }
     };
   };

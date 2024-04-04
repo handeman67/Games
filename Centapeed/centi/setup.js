@@ -8,12 +8,12 @@ background(0);
 
  bodyPart=(A)=>{
    if (!A) A=0;
-   let part=[]
-   let parts=5
+   let part=[];
+   let parts=5;
    
     stroke(255);
     let Fill=(num)=>{
-      colors=[]
+      colors=[];
       let r =num;
           let ran=Math.random();
           let R=ran*r;
@@ -22,8 +22,8 @@ background(0);
      let Clr=(R,G,B);
      colors.push(Clr);
       
-      return random(colors)
-    }
+      return random(colors);
+    };
   fill(Fill(10),Fill(100),Fill(200));
    for(let c=0;c<parts;c++){
        let Part=(Ax,Ay)=>{
@@ -31,13 +31,13 @@ background(0);
  if(!Ay)Ay=A;
 ellipse(Ax+size*c,Ay, w/size);
 
-return this
-}
-part.push(Part())
+return this;
+};
+part.push(Part());
 
    }
  
-  }
+  };
 
 
   let move = () => {
@@ -53,9 +53,9 @@ part.push(Part())
     this.sp = -this.sp;
     if (this.pos.y > height - this.r) {
       if (this.dt >= dot.length) {
-        level++
+        level++;
       }
-      this.sp
+      
       this.pos.y = 100;
       this.pos.x = width / 2;
 
@@ -65,6 +65,6 @@ part.push(Part())
 function draw(){
  
 
- bodyPart(50)
+ bodyPart(50);
  
 }
