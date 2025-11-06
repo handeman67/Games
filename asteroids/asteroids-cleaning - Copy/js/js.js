@@ -38,12 +38,12 @@ background(G.bkg);
   
   if (G.ship.length >= 1) {
     let s=new Ship();
-    s.move();
-    s.render();
+    
     s.update();
     s.turn();
     s.edges();
     s.shiphits();
+   
     //ship[0].defend();
   }else{
     gameOver()}

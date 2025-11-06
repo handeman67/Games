@@ -48,7 +48,7 @@ function setup() {
 
 
 function preload() {
-    e = this;
+   
  
         bl = loadSound("sound/bangLarge.wav"),
         sm = loadSound("sound/bangSmall.wav"),
@@ -61,7 +61,7 @@ function preload() {
         bs = loadSound("sound/saucerBig.wav"),
         thrust = loadSound("sound/thrust.wav"),
         bkg = loadImage("img/stars.jpg");
-    return e
+  
 }
 
 function setup() {
@@ -181,7 +181,7 @@ function draw() {
     }
 
     function Background() {
-        background(bkg);
+        background(0);
     }
     // play(startTime, rate, amp, _cueStart, duration);
     // defend();

@@ -1,151 +1,163 @@
-function Controls() {
-  this.myred = 255;
-  this.mygreen = 255 - this.damg;
-  this.myblue = 255 - this.damg;
-  //GAME
-  let gg =
-    button = () => {
-      button2 = createButton("Reset"),
+class Controls {
+  constructor() {
+    this.myred = 255;
+    this.mygreen = 255 - this.damg;
+    this.myblue = 255 - this.damg;
+    //GAME
+    this.button = () => {
+     let button2 = createButton("Reset");
         button2.mousePressed(() => {
-          return new resetGame
+          return new resetGame;
         }),
-        button2.position(width / 2, 30),
-        button3 = createButton("close"),
+        button2.position(width / 2, 30);
+        let button3 = createButton("close");
         button3.position(width / 2 + 60, 30);
-      button4 = createButton("sound"),
+      let button4 = createButton("sound");
         button4.position(width / 2 + 120, 30);
     };
 
-  Scored = () => {
-    stroke(0, 200, 20);
-    fill(255);
-    textSize(25);
-    text(`Score:${G.score}`, 10, 10, 200, 100);
-  };
+    this.Scored = () => {
+      stroke(0, 200, 20);
+      fill(255);
+      textSize(25);
+      text(`Score:${G.score}`, 10, 10, 200, 100);
+    };
 
-  LevelT = () => {
-    stroke(0, 200, 20);
-    fill(255);
-    textSize(25);
-    text(`Level: ${G.level.length}`, width / 1.3, 10, 200, 100);
+    this.LevelT = () => {
+      stroke(0, 200, 20);
+      fill(255);
+      textSize(25);
+      text(`Level: ${G.level.length}`, width / 1.3, 10, 200, 100);
 
-  };
-   FRAMERATE = () => {
-    stroke(0, 200, 20);
-    fill(255);
-    textSize(25);
-    text(`framerate: ${Math.floor(window.frameRate())}`, width / 1.3, 70, 200, 100);
+    };
+    this.FRAMERATE = () => {
+      stroke(0, 200, 20);
+      fill(255);
+      textSize(25);
+      text(`framerate: ${Math.floor(window.frameRate())}`, width / 1.3, 70, 200, 100);
 
-  };
- 
-  lives = () => {
+    };
 
-    stroke(this.myred, this.mygreen, this.myblue);
-    fill(255);
-    textSize(25);
-    text(`lives ${G.ship.length}`, 73, 40, 200, 100);
-    push();
-    translate(40, 55);
-    fill(this.myred, this.mygreen, this.myblue, 255);
-    triangle(-10, 10, 10, 10, 0, -15);
-    pop();
-  };
-  damage = () => {
-    !G.ship[0] ? b = G.ship.length : b = G.ship[0].damg;
-    push();
-    fill(this.myred, this.mygreen, this.myblue, 255);
-    text(`Damage ${b}`, 30, 70, 225, 100);
-    pop();
+    this.lives = () => {
 
-  };
-  st = () => {
-    if (st === true) {
-      return false;
-    } else {
-      var script = document.createElement("script");
-      let r = document.querySelector(".result");
-      script.onload = function () {
-        var stats = new Stats();
+      stroke(this.myred, this.mygreen, this.myblue);
+      fill(255);
+      textSize(25);
+      text(`lives ${G.ship.length}`, 73, 40, 200, 100);
+      push();
+      translate(40, 55);
+      fill(this.myred, this.mygreen, this.myblue, 255);
+      triangle(-10, 10, 10, 10, 0, -15);
+      pop();
+    };
+    this.damage = () => {
+      !G.ship[0] ? b = G.ship.length : b = G.ship[0].damg;
+      push();
+      fill(this.myred, this.mygreen, this.myblue, 255);
+      text(`Damage ${b}`, 30, 70, 225, 100);
+      pop();
 
-        r.append(stats.dom);
-        // requestAnimationFrame(function loop() {
-        //   stats.update();
-        //   requestAnimationFrame(loop);
-        // });
+    };
+    this.st = () => {
+      if (st === true) {
+        return false;
+      } else {
+        var script = document.createElement("script");
+        let r = document.querySelector(".result");
+        script.onload = function () {
+          var stats = new Stats();
+
+          r.append(stats.dom);
+          // requestAnimationFrame(function loop() {
+          //   stats.update();
+          //   requestAnimationFrame(loop);
+          // });
+        };
+        script.src = "./js/Stats.js";
+        document.head.appendChild(script);
+      }
+    };
+
+    this.words = (x, y) => {
+      let t = this;
+      t.mx = width - 220;
+      t.my = height - 225;
+      t.fx = 225;
+      t.fy = height - 225;
+
+      t.heading = 0;
+      t.rotation = 0;
+      t.mpos = createVector(t.mx, t.my);
+      t.fpos = createVector(t.fx, t.fy);
+      t.fire = {
+        "x": t.fpos.x,
+        "y": t.fpos.y
       };
-      script.src = "./js/Stats.js";
-      document.head.appendChild(script);
-    }
-  };
+      t.move = {
+        "x": t.mpos.x,
+        "y": t.mpos.y
+      };
+      fill(20, 20, 20, 150);
+      push();
 
-  words = (x, y) => {
-    let t = this;
-    t.mx = width - 220;
-    t.my = height - 225;
-    t.fx = 225;
-    t.fy = height - 225;
-
-    t.heading = 0;
-    t.rotation = 0;
-    t.mpos = createVector(t.mx, t.my);
-    t.fpos = createVector(t.fx, t.fy);
-    t.fire = {
-      "x": t.fpos.x,
-      "y": t.fpos.y
-    }
-    t.move = {
-      "x": t.mpos.x,
-      "y": t.mpos.y
-    }
-    fill(20, 20, 20, 150);
-    push();
-
-    ellipseMode(RADIUS);
-    ellipse(t.move.x, t.move.y, 50);
-    ellipse(t.fire.x, t.fire.y, 50);
-
-    fill(0, 200, 20, 150);
-    textAlign(CENTER);
-
-    ellipse(fire.x, fire.y, 10);
-    this.text("Move", width - 220 - 50, height - 225 + 60, 100, 100);
-    this.text("Fire", 225 - 50, height - 225 + 60, 100, 100);
-    pop()
-    if (new MouseEvent("mousedown")) {
+      ellipseMode(RADIUS);
+      ellipse(t.move.x, t.move.y, 50);
+      ellipse(t.fire.x, t.fire.y, 50);
 
       fill(0, 200, 20, 150);
-      if (mouseY > t.mpos.y - 50 && mouseY < t.mpos.y + 50 && mouseX > t.mpos.x - 50 && mouseX < t.mpos.x + 50) {
+      textAlign(CENTER);
 
-        t.mx = mouseX;
-        t.my = mouseY;
-        let d = dist(t.mx, t.my, t.mpos.x, t.mpos.y);
+      ellipse(t.fire.x, t.fire.y, 10);
+      text("Move", width - 220 - 50, height - 225 + 60, 100, 100);
+      text("Fire", 225 - 50, height - 225 + 60, 100, 100);
+      pop();
+      if (new MouseEvent("mousedown")) {
 
-        var force = p5.Vector.fromAngle(d);
-        t.heading += force;
-        //  rotate(t.heading);
-console.log(t.heading);
-        while (Math.floor(t.heading) > 0) {
-          G.ship[0].setRotation(0.1);
+        fill(0, 200, 20, 150);
+        if (mouseY > t.mpos.y - 50 && mouseY < t.mpos.y + 50 && mouseX > t.mpos.x - 50 && mouseX < t.mpos.x + 50) {
+
+          t.mx = mouseX;
+          t.my = mouseY;
+          let d = dist(t.mx, t.my, t.mpos.x, t.mpos.y);
+
+          var force = p5.Vector.fromAngle(d);
+          t.heading += force;
+// console.log(force);
+
+
+         
+          if (MouseEvent) {
+
+            push();
+            fill(200, 200, 20, 150);
+            translate(t.mx, t.my);
+
+
+            // G.ship[0].Moves = true;
+            //  G.ship[0].heading += force; 
+            
+ 
+            //  if(move.x < 0){
+            //     G.ship[0].heading[0] = t.headin[0]++ ;
+            //     G.ship[0].heading[1] = t.heading[1]++;
+            //   } if(move.x > 0){
+            //     G.ship[0].heading[0] = t.heading[0]++ ;
+            //     G.ship[0].heading[1] = t.heading[1]++;
+            //   }
+          }
+          ellipse(0, 0, 20);
+          pop();
         }
-        while (Math.floor(t.heading) < 0) {
-          G.ship[0].setRotation(-0.1);
-        }
+        // var force = p5.Vector.fromAngle(this.heading)
+        ellipse(t.move.x, t.move.y, 20);
 
-
-        // console.log(this.heading);
-        if ("mousePressed") {
-
-          push()
-          fill(200, 200, 20, 150);
-          translate(t.mx, t.my);
-        }
-        ellipse(0, 0, 20)
-        pop()
+        // while (t.heading > 0) {
+        //           G.ship[0].heading+ -1;
+        //         }
+        //         while (t.heading < 0) {
+        //           G.ship[0].heading+ 1;
+        //         }
       }
-      // var force = p5.Vector.fromAngle(this.heading)
-      ellipse(move.x, move.y, 20)
-
-    }
 
 
 
@@ -153,25 +165,25 @@ console.log(t.heading);
 
 
 
-  };
-  // var ast =[];
-  // var sss;
-  // var xx;
-  // var yy;
-  // var aa;
-  // var q;
-
-  // = rslidebar.value();
-  // var g = gslidebar.value();
-  // var b = bslidebar.value();
-  // var a = aslidebar.value();
-  // var sss = slidderVolume0.value();
-  // var xx = slidderVolume1.value();
-  // var yy = slidderVolume2.value();
-  // var aa = slidderVolume3.value();
-  // var q = slidderVolume4.value();
-  // var wm = windowWidth / 2;
-  // var hm = windowHeight / 2;
+    };
+    // var ast =[];
+    // var sss;
+    // var xx;
+    // var yy;
+    // var aa;
+    // var q;
+    // = rslidebar.value();
+    // var g = gslidebar.value();
+    // var b = bslidebar.value();
+    // var a = aslidebar.value();
+    // var sss = slidderVolume0.value();
+    // var xx = slidderVolume1.value();
+    // var yy = slidderVolume2.value();
+    // var aa = slidderVolume3.value();
+    // var q = slidderVolume4.value();
+    // var wm = windowWidth / 2;
+    // var hm = windowHeight / 2;
+  }
 }
 // function Life(damg) {
 //   damg = this.damg;

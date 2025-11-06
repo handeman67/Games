@@ -23,7 +23,7 @@ function resetGame() {
         console.log(allTime.length);
     };
 
-    for (var i = 0; i < shipnum; i++) {
+    for (var i = 0; i < e.shipnum; i++) {
         if (ship.length > e.shipNum) {
             ship.splice(0, 1);
             return;
@@ -32,7 +32,7 @@ function resetGame() {
     }
 
 
-    for (var j = 0; j < astnum; j++) {
+    for (var j = 0; j < e.astnum; j++) {
         if (asteroids.length > e.astNum) {
             asteroids = [];
             return;

@@ -25,9 +25,32 @@ class Ship {
     this.setRotation = function(a) {
       return this.rotation = a;
      }
-  }
+     this.move = function() {
+      if (keyIsDown((keyCode = 37))) {
+        G.ship[0].setRotation(-0.1);
+      }
+      if (keyIsDown((keyCode = 39))) {
+        G.ship[0].setRotation(0.1);
+      }
+      if (keyIsDown((keyCode = 38))) {
+        G.ship[0].boosting(true);
+      }
+  
+      this.keyReleased = function(keyCode = 37 || 38) {
+        G.ship[0].setRotation(0);
+        G.ship[0].boosting(false);
+      };
+  
+      this.keyPressed = function(e) {
+        if (e.keyCode == 32) {
+          lasers.push(new Laser(G.ship[0].pos, G.ship[0].heading));
+          fire.play();
+        }
+      };
+    };
+  
 
- render = function() {
+    this.render = function() {
     
     push();
     translate(this.pos.x, this.pos.y);
@@ -40,15 +63,19 @@ class Ship {
     triangle(-this.r + 4, this.r - 4, this.r - 4, this.r - 5, 0, -this.r + 20);
     pop();
   }
-  update = function() {
+  this.update = function() {
     if (this.isBoosting) {
       this.boost();
     }
     this.pos.add(this.vel);
     this.vel.mult(0.98);
+
+    this.move();
+    this.render();
+
   }
 
-  thrust = function() {
+  this.thrust = function() {
     //this.vv =
     push();
     translate(this.pos.x, this.pos.y);
@@ -70,7 +97,7 @@ class Ship {
     // G.thrust.play();
   }
 
-  edges = function() {
+  this.edges = function() {
     if (this.pos.x > width + this.r) {
       this.pos.x = -this.r;
     } else if (this.pos.x < -this.r) {
@@ -83,14 +110,14 @@ class Ship {
     }
   }
 
-  boost = function() {
+  this.boost = function() {
     let force = p5.Vector.fromAngle(this.heading);
     force.mult(0.5);
     this.vel.add(force);
     this.thrust();
   }
 
-  hits = function(inc) {
+  this.hits = function(inc) {
     let d = dist(this.pos.x, this.pos.y, inc.pos.x, inc.pos.y);
     if (d < this.r + inc.r) {
       return true;
@@ -99,11 +126,11 @@ class Ship {
 
  
 
-  turn = function() {
+  this.turn = function() {
     this.heading += this.rotation;
   }
 
- shiphits = function() {
+  this.shiphits = function(ship,asteroids) {
     for (let s = G.ship.length - 1; s >= 0; s--) {
       for (let j = G.asteroids.length - 1; j >= 0; j--) {
         if (G.ship[0].hits(G.asteroids[j])) {
@@ -130,38 +157,8 @@ class Ship {
     }
   };
 
-  move = function() {
-    // console.log("move");
 
-    if (keyIsDown((keyCode = 37))) {
-      console.log("left");
-      this.setRotation(-0.1);
-    }
-    if (keyIsDown((keyCode = 39))) {
-      console.log("right");
-      this.setRotation(0.1);
-    }
-    if (keyIsDown((keyCode = 38))) {
-      console.log("down");
-      this.boosting(true);
-    }
-
-    this.keyReleased = function(keyCode = 37 || 38) {
-      console.log("released");
-      this.setRotation(false);
-      this.boosting(false);
-    };
-
-    this.keyPressed = function(e) {
-      console.log("fire");
-    
-      if (e.keyCode == 32) {
-        G.lasers.push(new Laser(G.ship[0].pos, G.ship[0].heading));
-        fire.play();
-      }
-    };
-  };
-}
+}}
 
 
   

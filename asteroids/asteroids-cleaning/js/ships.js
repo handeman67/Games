@@ -1,5 +1,5 @@
 G.lasers = [];
-class Ship {
+class Ships {
   constructor() {
     this.pos = createVector(width / 2, height / 2);
     this.r = 10;
@@ -12,153 +12,169 @@ class Ship {
     this.v1 = 0;
     this.v2 = random(255);
     this.red = 255;
-    this.green = 255 - this.damg;
-    this.blue = 255 - this.damg;
-
-
+    this.green = 255;
+    this.blue = 255;
+    this.Moves = false;
+    this.contact = false;
+    this.num = this.heading * PI;
     this.inc = [];
     this.inc.push("");
+    this.gs = G.gameStats;
     this.boosting = function (b) {
       this.isBoosting = b;
-
     };
-    this.setRotation = function (a) {
-      this.rotation += a;
+
+    this.render = function (a) {
+      push();
+      translate(this.pos.x, this.pos.y);
+      rotate(this.heading + PI / 2);
+      this.shipFrame = stroke(0, 0, 255);
+      fill(this.red, this.green, this.blue);
+      triangle(-this.r, this.r, this.r, this.r, 0, -this.r);
+      noStroke();
+      fill(0);
+      triangle(-this.r + 4, this.r - 4, this.r - 4, this.r - 5, 0, -this.r + 20);
+      pop();
+    };
+
+    this.update = function () {
+      if (this.isBoosting) {
+        this.boost(0.5);
+      }
+      if (this.contact) {
+        resolve_contact();
+      }
+      this.pos.add(this.vel);
+      this.vel.mult(0.98);
+      keyReleased();
+      keyPressed();
+      this.edges();
+      this.green - this.damg;
+      this.blue - this.damg;
+      // this.contact?console.log("ship has been hit",this.contact):console.log("ship has not been hit",this.contact);
+      // console.log(rotate());
+    };
+
+    this.thrust = function () {
+      push();
+      translate(this.pos.x, this.pos.y);
+      rotate(this.heading + PI / 2);
+      stroke(this.v, this.v - 50, this.v2, this.v);
+      strokeWeight(random(2));
+      fill(this.v, this.v, this.v1 + this.v2, this.v2);
+      beginShape();
+      triangle(
+        -this.r + 2,
+        this.r - 2,
+        this.r - 2,
+        this.r - 2,
+        0,
+        -this.r + random(20, 40)
+      );
+      endShape();
+      pop();
+      G.thruster.play();
+    };
+
+    this.edges = function () {
+      if (this.pos.x > width + this.r) {
+        this.pos.x = -this.r;
+      } else if (this.pos.x < -this.r) {
+        this.pos.x = width + this.r;
+      }
+      if (this.pos.y > height + this.r) {
+        this.pos.y = -this.r;
+      } else if (this.pos.y < -this.r) {
+        this.pos.y = height + this.r;
+      }
+    };
+
+    this.boost = function (a) {
+      let force = p5.Vector.fromAngle(this.heading);
+      force.mult(a);
+      this.vel.add(force);
+      this.thrust();
+    };
+    //  this.hits= new it_hit()
+
+    // this.hits = function () {
+
+    //   let d = dist(this.pos.x, this.pos.y, this.inc.pos.x, this.inc.pos.y);
+    //   d < this.r + this.inc.r ? () => {
+    //     return this.contact = true,
+    //     this.inc.contact = true
+    //   } : () => {
+    //     return this.contact = false,
+    //     this.inc.contact = false;
+    //   };
+    //   G.gameStats.shipContact = this.contact;
+    //   console.log(G.gameStats.shipContact);
+    // };
+
+    this.turn = function () {
+      this.heading += this.rotation;
+      G.gameStats.headings = this.heading;
+    };
+  }
+}
+
+function shipDamage(a) {
+  if (G.ship[0]) {
+    if (G.ship[0].damg >= a) {
+      G.ship.splice(0, 1);
     }
+    return G;
   }
+}
 
-  render = function () {
-
-    push();
-    translate(this.pos.x, this.pos.y);
-    rotate(this.heading + PI / 2);
-    this.shipFrame = stroke(0, 0, 255);
-    fill(this.red, this.green, this.blue);
-    triangle(-this.r, this.r, this.r, this.r, 0, -this.r);
-    noStroke();
-    fill(0);
-    triangle(-this.r + 4, this.r - 4, this.r - 4, this.r - 5, 0, -this.r + 20);
-    pop();
+function clearShip() {
+  if (G.ship.length <= 0 || undefined) {
+    return;
   }
-  update = function () {
-    this.render();
-    this.move();
-    this.turn();
-    this.edges();
-    this.shiphits();
-    if (this.isBoosting) {
-      this.boost(0.5);
-    }
-    this.pos.add(this.vel);
-    this.vel.mult(0.98);
+  if(G.ship[0]){
+  if (G.ship[0].damg >= 250) {
+    G.ship[0].splice(0, 1);
   }
+  return G;
+}}
+let cnt = 0;
 
-  thrust = function () {
-    //this.vv =
-    push();
-    translate(this.pos.x, this.pos.y);
-    rotate(this.heading + PI / 2);
-    stroke(this.v, this.v - 50, this.v2, this.v);
-    strokeWeight(random(2));
-    fill(this.v, this.v, this.v1 + this.v2, this.v2);
-    beginShape();
-    triangle(
-      -this.r + 2,
-      this.r - 2,
-      this.r - 2,
-      this.r - 2,
-      0,
-      -this.r + random(20, 40)
-    );
-    endShape();
-    pop();
-    // G.thrust.play();
-  }
+function resolve_contact() {
+  cnt++;
+  G.asteroids.forEach((a, index) => {
 
-  edges = function () {
-    if (this.pos.x > width + this.r) {
-      this.pos.x = -this.r;
-    } else if (this.pos.x < -this.r) {
-      this.pos.x = width + this.r;
-    }
-    if (this.pos.y > height + this.r) {
-      this.pos.y = -this.r;
-    } else if (this.pos.y < -this.r) {
-      this.pos.y = height + this.r;
-    }
-  }
+    if (a.contact) {
 
-  boost = function (a) {
-    let force = p5.Vector.fromAngle(this.heading);
-    force.mult(a);
-    this.vel.add(force);
-    this.thrust();
-  }
-
-  hits = function (inc) {
-    let d = dist(this.pos.x, this.pos.y, inc.pos.x, inc.pos.y);
-    if (d < this.r + inc.r) {
-      return true;
-    }
-  }
-
-  turn = function () {
-    this.heading += this.rotation;
-  }
-
-  shiphits = function () {
-    for (let s = G.ship.length - 1; s >= 0; s--) {
-      for (let j = G.asteroids.length - 1; j >= 0; j--) {
-        if (G.ship[s].hits(G.asteroids[j])) {
-          G.asteroids[j].pts();
-          G.bl.play();
-          G.score += -10;
-          this.damg += 20;
-
-          if (G.asteroids[j].r > 10) {
-            G.asteroids[j].breakup();;
-          }
-          G.asteroids.splice(j, 1);
-          break;
+      G.bl.play();
+      G.score += -10;
+      G.ship[0].damg += 20;
+      let limit = 25;
+      // console.log(a.r);
+      if (a.r > limit) {
+        if (G.asteroids.length <= 0) {
+          return;
         }
+        a.breakup();
+        G.asteroids.splice(index, 1);
+      } else {
+        G.asteroids.splice(index, 1);
+       
       }
     }
-  };
+  });
 
-  move = function () {
-    // console.log("move");
+}
 
-    if (keyIsDown((keyCode = 37))) {
-      
-      this.setRotation(-0.1);
-      console.log("left",this.rotation);
-    }
-    if (keyIsDown((keyCode = 39))) {
-      
-     this.setRotation(0.1);
-      console.log("right",this.rotation);
-    }
-    if (keyIsDown((keyCode = 38))) {
-     
-      this.boosting(true);
-       console.log("down");
-    }
-
-    this.keyReleased = function (keyCode = 37 || 38) {
-      
-      this.setRotation(0);
-      this.boosting(false);
-      console.log("released");
-    };
-
-    this.keyPressed = function (e) {
-
-
-      if (e.keyCode == 32) {
-        G.lasers.push(new Laser(G.ship[0].pos, G.ship[0].heading));
-        fire.play();
-        console.log("fire");
-      }
-    };
-  };
+function drawShip() {
+  if (G.ship.length >= 1) {
+    let s = G.ship[0];
+    s.render(this.damg);
+    s.update();
+    s.turn();
+    shoot();
+    clearShip();
+    //ship[0].defend();
+  } else {
+    gameOver();
+  }
 }
