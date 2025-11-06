@@ -8,9 +8,9 @@ var level = 0;
 var rgb;
 const sizes = 30;
 // function opts(){
- 
-const w =document.getElementsByClassName("wrap")[0].clientWidth;//?
-const h =document.getElementsByClassName("wrap")[0].clientHeight-50;//?
+
+const w = document.getElementsByClassName("wrap")[0].clientWidth; //?
+const h = document.getElementsByClassName("wrap")[0].clientHeight - 50; //?
 let centerw = w / 2;
 let centerh = h / 2;
 let lw = centerw / 2 - 35;
@@ -40,10 +40,10 @@ window.addEventListener('deviceorientation', function (e) {
   //     }else if(beta<0){
 
   //     }
-  console.log('absolute =' + absolute);
-  console.log('alpha = ' + alpha);
-  console.log('beta = ' + beta);
-  console.log('gamma = ' + gamma);
+  // console.log('absolute =' + absolute);
+  // console.log('alpha = ' + alpha);
+  // console.log('beta = ' + beta);
+  // console.log('gamma = ' + gamma);
 
   // elem.style.transform =
   //   'rotateZ(' + (e.alpha - 180) + 'deg) ' +
@@ -53,8 +53,8 @@ window.addEventListener('deviceorientation', function (e) {
 });
 
 function preload() {
-  myfont = loadFont('img/fontawesome-webfont.woff'),
-    smile = loadImage('img/800px-Smiley_green_alien_deep_sleep.svg.png'),
+  // myfont = loadFont('img/fontawesome-webfont.woff'),
+  smile = loadImage('img/800px-Smiley_green_alien_deep_sleep.svg.png'),
     sleep = loadImage('img/800px-Smiley_green_alien_deep_sleep.svg.png'),
     flustered = loadImage('img/800px-Smiley_green_alien_flustered.svg.png'),
     satisfied = loadImage('img/800px-Smiley_green_alien_satisfied.svg.png'),
@@ -75,7 +75,7 @@ function preload() {
 
 function setup() {
   angleMode(DEGREES);
-  const canvas = createCanvas(w, h).parent("canv"); 
+  const canvas = createCanvas(w, h).parent("#canv");
   PlayerLoad();
   DotLoad();
   // Generate obsticles
@@ -87,36 +87,37 @@ function FieldLoad() {
   field = [];
   fieldSet();
   fieldLoad();
+
   function fieldLoad() {
     for (var i = 0; i < FIELD.length; i++) {
       var row = FIELD[i];
       field.push(new Tile(i % cols, Math.floor(i / cols), row));
     }
   }
+
   function fieldSet() {
-       const obs = cols * rows-(15*rows);
+    const obs = cols * rows - (10 * rows);
     for (var f = 0; f < obs; f++) {
-      num = floor(random(0, 6));
+      num = floor(random(1, 4));
       FIELD.push(num);
+      // console.log(num);
     }
   }
 }
 
 function DotLoad() {
-  for (let d = 0; d < 10; d++) {
+  for (let d = 0; d < 1; d++) {
     let dotx = width / 4 + SIZE * d;
     let doty = SIZE;
-    dot.push(new Dot(dotx, doty, SIZE, 10, 0.005));
-  }
-  ;
+    dot.push(new Dot(dotx, doty, SIZE, 1.5));
+  };
 }
 
 function PlayerLoad() {
   for (let p = 0; p < 1; p++) {
     let s = 4;
     player.push(new Player(0 * p, 10, 10, s));
-  }
-  ;
+  };
 }
 
 // Draw the the game
@@ -126,6 +127,7 @@ function draw() {
   fld(field);
   PlayerAction();
   shootingAction();
+  laserHit();
   // console.log(rq())//?
   //render mush
   // for (let m = mush.length - 1; m > -1; m--) {
@@ -133,28 +135,33 @@ function draw() {
 
   // }
 
-  
+
 
 
   for (let d = dot.length - 1; d > -1; d--) {
     dot[d].move();
     dot[d].show();
-    for (let f in field.length) {
-      if (dot[d].hits(Tile(100,100,1))) {
-console.log("dot hit mushroom")
+    for (let f in field) {
+      // if(field[f].type ===2 || field[f].type === 5) {
+      if(dot[d].hit === true) {
+      
+      console.log("field",field[f]);
+    //   if (dot[d].hits(field[f])) {
+    //     if (field[f].type === 2) {
+    //     console.log("dot hit mushroom");
 
-        dot[d].drop()
-      }
+    //     dot[d].drop();
+    //   }
+    // }
+  // }
+}
     }
-    for (l in lasers) {
-      dot[d].hits(lasers[l])
-    };
     if (dot.length === 0) {
       level++
       //let lv =0
       for (let d = 0; d < 10; d++) {
         let r = 20;
-        dot.push(new Dot(dotx, doty, SIZE, 10,0));
+        dot.push(new Dot(dotx, doty, SIZE, 0));
       }
       //lv++
     }
@@ -177,22 +184,25 @@ console.log("dot hit mushroom")
       lasers[l].move();
       lasers[l].show();
       lasers[l].offScreen();
-      laserHit(l);
-          }
-
-    function laserHit(l) {
-      for (let d in field.length) {
-        if (lasers == 0) {
-          console.log("no lasers");
-        }
-        else {
-          if (lasers[l].hits(field[d])) {
-            console.log("laser hit"+field[d]);
-          }
-        }
-      }
+      
     }
-  }
+ }
+    function laserHit() {
+      for(let dt in dot.length) {
+      for (let d in field.length) {
+        for(let L in lasers.length) {
+        lasers[L].hits(field[d]);
+        lasers[L].hits(dot[dt]);
+        if (lasers[L].hit) {
+          lasers.splice(L, 1);
+        }
+     
+        if (lasers == 0) {
+          console.log("no lasers",d);
+        }
+      } }}
+    }
+ 
 
   function PlayerAction() {
     for (let p in player) {
@@ -200,9 +210,12 @@ console.log("dot hit mushroom")
       player[p].move();
       player[p].edges();
       player[p].turn();
+     
       for (let d in dot) {
+        // console.log('dot', dot[d]);
+        // console.log('player', player[p]);
         player[p].hits(dot[d]);
-        if (player.hits) {
+        if (dot[d].hit) {
           console.log('player hit');
         }
       }
@@ -214,7 +227,7 @@ fld = function (field) {
   for (var i = 0; i < field.length; i++) {
     field[i].draw();
   }
-}
+};
 
 function windowResized() {
   resizeCanvas(innerWidth, innerHeight)

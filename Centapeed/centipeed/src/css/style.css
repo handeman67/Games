@@ -9,6 +9,9 @@
 }
 
 body{
+  display:flex ;
+  place-content: center;
+  width: 100%;
   background:black;
   font-family: 'Roboto', sans-serif;
   font-variant-numeric: proportional-nums;
@@ -19,21 +22,21 @@ body{
 }
 .wrap{
     position: absolute;
-    top:1rem;
-    left:1rem;
-    right:1rem;
-    bottom:1rem;
+    border: 1px solid red;
+    inset: 1em;
+    max-width: 900px;
+
   }
 canvas{
-  margin:0 auto;
-  width:100%;
-  height:auto;
+  /* width: 100%; */
 }
 
-#canv{
- position: relative;
-width:100%;
-height:auto;
+.canv{
+  position: absolute;
+  inset: 1em;
+  /* max-width: 900px; */
+  height:auto;
+  border: 1px solid red;
 
   }
 .head{

@@ -1,147 +1,97 @@
+/**
+ * Laser class for ship projectiles
+ * Handles laser physics, rendering, and collision detection
+ */
 class Laser {
   constructor(spos, angle) {
-
     this.pos = createVector(spos.x, spos.y);
     this.vel = p5.Vector.fromAngle(angle);
-    this.vel.mult(10);
-    this.contact = false;
-    this.release = false;
-    this.inc = [];
-    this.inc.push("");
-    this.r=2;
-    this.update = function () {
-      this.pos.add(this.vel);
-      // if (this.contact) {
-      //   resolve_contact();
-      // }
-      if (this.release) {
-        // this.shoot();
-      }
-      if(this.contact){
-        G.lasers.splice(0,1);
-      }
-    };
+    this.vel.mult(10); // Laser speed
+    this.r = 2; // Laser radius for collision detection
 
-    this.render = function () {
-      push();
-      stroke(255);
-      strokeWeight(4);
-      ellipse(this.pos.x, this.pos.y, this.r);
-      pop();
+    // State flags
+    this.contact = false; // Has hit something
+    this.active = true; // Is still active in game
+  }
 
-    };
+  /**
+   * Update laser position and check bounds
+   */
+  update() {
+    if (!this.active) return;
 
+    this.pos.add(this.vel);
 
-  
+    // Check if laser is off-screen
+    if (this.offscreen()) {
+      this.active = false;
+    }
+  }
 
-    this.offscreen = function () {
-      if (this.pos.x > width || this.pos.x < 0) {
-        return true;
-      }
-      if (this.pos.y > height || this.pos.y < 0) {
-        return true;
-      }
+  /**
+   * Render the laser as a small white circle
+   */
+  render() {
+    if (!this.active) return;
 
-    };
+    push();
+    stroke(255);
+    strokeWeight(4);
+    fill(255);
+    ellipse(this.pos.x, this.pos.y, this.r * 2);
+    pop();
+  }
 
-    // this.hits = function (inc) {
-    // console.log("inside",this.pos.x, this.pos.y,inc.pos.x, inc.pos.y);
-    //   let d = dist(this.pos.x, this.pos.y,inc.pos.x, inc.pos.y);
-    //   d < this.r + this.inc.r ? () => {
-    //     return this.contact = true,
-    //     inc.contact = true;
-    //   } : () => {
-    //     return this.contact = false,
-    //     inc.contact = false;
-    //   };
-    //   G.gameStats.laserContact = this.contact;
-    //   console.log(G.gameStats.laserContact);
-    // };
+  /**
+   * Check if laser is outside the game bounds
+   * @returns {boolean} True if off-screen
+   */
+  offscreen() {
+    return this.pos.x > width + this.r ||
+           this.pos.x < -this.r ||
+           this.pos.y > height + this.r ||
+           this.pos.y < -this.r;
+  }
 
-    // this.laserhits = function () {
-    //   G.asteroids.forEach((l, index) => {
-    //     // console.log(this,G.asteroids[index]);
-    //     // this.hits(G.asteroids[index]);
-    //     if (this.contact) {
+  /**
+   * Check collision with another object
+   * @param {Object} inc - Object to check collision with
+   * @returns {boolean} True if collision detected
+   */
+  hits(inc) {
+    if (!this.active || !inc || !inc.active) return false;
 
-    //       l.pts();
-    //       G.bl.play();
-    //       G.score += 10;
-    //       console.log(l);
-    //       this.contact ? console.log("laser has been hit", this.contact) : console.log("laser has not been hit", this.contact);
-
-    //       if (l.r > 10) {
-    //         if (G.asteroids.length <= 0) {
-    //           return;
-    //         }
-    //         l.breakup();
-    //         G.asteroids.splice(index, 1);
-    //       }
-    //       G.asteroids.splice(index, 1);
-    //     }
-    //   });
-    // };
+    let d = dist(this.pos.x, this.pos.y, inc.pos.x, inc.pos.y);
+    if (d < this.r + inc.r) {
+      this.contact = true;
+      this.active = false; // Deactivate laser on hit
+      return true;
+    }
+    return false;
   }
 }
 
+/**
+ * Update and render all active lasers
+ * Handles laser lifecycle management
+ */
 function shoot() {
-
   for (let l = G.lasers.length - 1; l >= 0; l--) {
+    let laser = G.lasers[l];
 
-    let L = G.lasers[l];
-    L.render();
-    L.update();
-    // L.laserhits();          
-    // console.log()
-    if (L.offscreen()) {
+    // Update laser physics
+    laser.update();
+
+    // Render if still active
+    if (laser.active) {
+      laser.render();
+    } else {
+      // Remove inactive lasers
       G.lasers.splice(l, 1);
     }
-    // if (G.asteroids.length <= 0) {
-    //   G.level.push(l);
-    //   new resetGame();
-    // }
   }
 }
 
-// function drawLaser() {
-//   if (G.laser.length >= 1) {
-//     G.laser.forEach((l) => {
-//       l.render();
-//       l.update();
-//       l.turn();
 
-//     });
-// // target(G.laser,G.asteroids);
 
-//     //ship[0].defend();
-//   } else {
-//     gameOver();
-//   }
-// }
 
-function target(a, b) {
-   console.log("lazer target",a,b);
-  if (a) {
-    for (let j = a.length - 1; j >= 0; j--) {
-      let A = a[j];
-      if (b) {
-        for (let i = b.length - 1; i >= 0; i--) {
-          b[i].hits(A);
-          if (!b) {
-            return;
-          } else if (b.contact) {
-            G.bl.play();
-            G.score += 1 * floor(A.r);
-            A.pts();
-            if (A.r > 15) {
-              A.breakup();
-              // G.score += 3 * floor(A.r);
-            }
-            a.splice(j, 1);
-            b.splice(l, 1);
-          }
-        }
-      }
-    }
-  }
-}

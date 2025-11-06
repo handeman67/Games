@@ -72,8 +72,9 @@ class Player {
 
     this.hits = (inc) => {
       var d = dist(this.pos.x, this.pos.y, inc.pos.x, inc.pos.y);
+      
       if (d < SIZE + inc.SIZE) {
-
+console.log("d", d, inc.pos.x, inc.pos.y, this.pos.x, this.pos.y);
         player.fill(255, 0, 0);
 
         return true;

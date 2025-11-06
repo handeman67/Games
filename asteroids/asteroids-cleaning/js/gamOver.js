@@ -1,22 +1,40 @@
 
-const wcenter=innerWidth / 2;
-const hcenter=innerHeight / 2;
-let game_over=false;
+/**
+ * Game over screen constants and utilities
+ */
+const wcenter = innerWidth / 2;
+const hcenter = innerHeight / 2;
+let game_over = false;
 
-function setText(tx1,tx2,x,y){
- return text(
-    `${tx1}:${tx2}`,width / 2 - x,height / 2 + y,
-200,200);}
+/**
+ * Display text on game over screen
+ * @param {string} tx1 - First text component
+ * @param {string|number} tx2 - Second text component
+ * @param {number} x - X offset from center
+ * @param {number} y - Y offset from center
+ */
+function setText(tx1, tx2, x, y) {
+  return text(
+    `${tx1}:${tx2}`,
+    width / 2 - x,
+    height / 2 + y,
+    200,
+    200
+  );
+}
 
+/**
+ * Display game over screen with scores and restart option
+ */
 function gameOver() {
-  game_over=true;
-  
+  game_over = true;
+
   push();
   stroke(0);
   fill(255);
   textSize(20);
   let t;
-  G.allTime[0] > G.score? t= G.allTime[0]: t= G.score;
+  G.allTime[0] > G.score ? t = G.allTime[0] : t = G.score;
 
   setText('High Score',t,200,0);
   setText('Your Score',G.score,200,25);

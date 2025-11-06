@@ -7,7 +7,7 @@ class Mush {
       stroke(10, 255, 100, 255);
       strokeWeight(1);
       fill(100, 100, 100, 255);
-      image(mushroom, this.x * SIZE, this.y * SIZE, SIZE, SIZE);
+      image(mushroom1, this.x * SIZE, this.y * SIZE, SIZE, SIZE);
       ellipse(this.pos.x, this.pos.y, SIZE);
     };
     this.update = () => {
