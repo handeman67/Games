@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asteroids Game - Unit Tests</title>
+    <link rel="stylesheet" href="css/main.css">
+    <style>
+        .test-results {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .test-passed {
+            color: green;
+        }
+        .test-failed {
+            color: red;
+            cursor: pointer;
+        }
+        .test-failed:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            background: #333;
+            color: #fff;
+            padding: 5px;
+            border-radius: 3px;
+            white-space: pre-wrap;
+            z-index: 1000;
+        }
+        .test-summary {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container grid" id="wrapper" name="wrap"></div>
+    <div class="header" id="topheader" name="top">Asteroids Game Unit Tests</div>
+    <div class="navigation" id="navwindow" name="navcontainer"></div>
+    <div class="logo" id="logo" name="companyLogo"></div>
+    <div class="search" id="search" name="sitesearch"></div>
+    <div class="navbar" id="navbuttons" name="navbar"></div>
+    <div class="section asteroid" id="testsection" name="testsection">
+        <button id="runTestsBtn">Run Unit Tests</button>
+        <div id="testOutput" class="test-results"></div>
+    </div>
+    <div class="footer" id="" name=""></div>
+
+    <!-- Load scripts -->
+    <script language="javascript" src="./p5/p5.min.js"></script>
+    <script language="javascript" src="./p5/addons/p5.dom.min.js"></script>
+    <script language="javascript" src="./p5/addons/p5.sound.min.js"></script>
+    <script language="javascript" src="js/material.min.js"></script>
+    <script language="javascript" src="js/Particles.js"></script>
+    <script language="javascript" src="js/gameReset.js"></script>
+    <script language="javascript" src="js/gamOver.js"></script>
+    <script language="javascript" src="js/shipExplosion.js"></script>
+    <script language="javascript" src="js/asteroid.js"></script>
+    <script language="javascript" src="js/ships.js"></script>
+    <script language="javascript" src="js/laser.js"></script>
+    <script language="javascript" src="js/controls.js"></script>
+    <script language="javascript" src="js/Stats.js"></script>
+    <script language="javascript" src="js/js.js"></script>
+
+    <script>
+        // Mock p5.js functions for testing without canvas
+        let mockCanvas = {
+            parent: function() {},
+            resize: function() {}
+        };
+        window.createCanvas = function() { return mockCanvas; };
+        window.createVector = p5.Vector;
+        window.random = Math.random;
+        window.dist = function(x1, y1, x2, y2) {
+            return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+        };
+        window.width = 800;
+        window.height = 600;
+        window.innerWidth = 800;
+        window.innerHeight = 600;
+        window.TWO_PI = Math.PI * 2;
+        window.PI = Math.PI;
+        window.push = function() {};
+        window.pop = function() {};
+        window.translate = function() {};
+        window.rotate = function() {};
+        window.scale = function() {};
+        window.fill = function() {};
+        window.stroke = function() {};
+        window.strokeWeight = function() {};
+        window.noStroke = function() {};
+        window.noFill = function() {};
+        window.ellipse = function() {};
+        window.triangle = function() {};
+        window.image = function() {};
+        window.text = function() {};
+        window.textAlign = function() {};
+        window.textSize = function() {};
+        window.background = function() {};
+        window.loadImage = function() { return {}; };
+        window.loadSound = function() { return { play: function() {} }; };
+        window.keyIsDown = function() { return false; };
+        window.frameCount = 0;
+
+        // Test framework
+        let testResults = [];
+        let passed = 0;
+        let failed = 0;
+
+        function assert(condition, message, location) {
+            if (condition) {
+                testResults.push({ status: 'passed', message });
+                passed++;
+            } else {
+                testResults.push({ status: 'failed', message, location });
+                failed++;
+            }
+        }
+
+        function runTests() {
+            testResults = [];
+            passed = 0;
+            failed = 0;
+
+            // Test Ship creation and basic properties
+            testShipCreation();
+
+            // Test Asteroid creation and properties
+            testAsteroidCreation();
+
+            // Test Laser creation and movement
+            testLaserCreation();
+
+            // Test Particle creation
+            testParticleCreation();
+
+            // Test Game Reset functionality
+            testGameReset();
+
+            // Test Collision detection
+            testCollisions();
+
+            // Display results
+            displayResults();
+        }
+
+        function testShipCreation() {
+            let ship = new Ships();
+            assert(ship instanceof Ships, 'Ship should be instance of Ships', 'js/ships.js: Ships constructor');
+            assert(ship.pos instanceof p5.Vector, 'Ship should have position vector', 'js/ships.js: constructor');
+            assert(typeof ship.heading === 'number', 'Ship should have heading', 'js/ships.js: constructor');
+            assert(typeof ship.r === 'number', 'Ship should have radius', 'js/ships.js: constructor');
+        }
+
+        function testAsteroidCreation() {
+            let pos = createVector(100, 100);
+            let asteroid = new Asteroid(pos, 30);
+            assert(asteroid instanceof Asteroid, 'Asteroid should be instance of Asteroid', 'js/asteroid.js: Asteroid constructor');
+            assert(asteroid.pos instanceof p5.Vector, 'Asteroid should have position', 'js/asteroid.js: constructor');
+            assert(typeof asteroid.r === 'number', 'Asteroid should have radius', 'js/asteroid.js: constructor');
+            assert(asteroid.active === true, 'Asteroid should be active by default', 'js/asteroid.js: constructor');
+        }
+
+        function testLaserCreation() {
+            let pos = createVector(200, 200);
+            let laser = new Laser(pos, 0);
+            assert(laser instanceof Laser, 'Laser should be instance of Laser', 'js/laser.js: Laser constructor');
+            assert(laser.pos instanceof p5.Vector, 'Laser should have position', 'js/laser.js: constructor');
+            assert(laser.vel instanceof p5.Vector, 'Laser should have velocity', 'js/laser.js: constructor');
+            assert(laser.active === true, 'Laser should be active by default', 'js/laser.js: constructor');
+        }
+
+        function testParticleCreation() {
+            let pos = createVector(300, 300);
+            let particle = new Particles(pos);
+            assert(particle instanceof Particles, 'Particle should be instance of Particles', 'js/Particles.js: Particles constructor');
+            assert(particle.pos instanceof p5.Vector, 'Particle should have position', 'js/Particles.js: constructor');
+            assert(typeof particle.alpha === 'number', 'Particle should have alpha', 'js/Particles.js: constructor');
+        }
+
+        function testGameReset() {
+            let reset = new resetGame();
+            assert(reset instanceof resetGame, 'resetGame should be instance of resetGame', 'js/gameReset.js: resetGame constructor');
+            assert(Array.isArray(G.ship), 'G.ship should be an array', 'js/gameReset.js: constructor');
+            assert(Array.isArray(G.asteroids), 'G.asteroids should be an array', 'js/gameReset.js: constructor');
+        }
+
+        function testCollisions() {
+            let ship = new Ships();
+            ship.pos = createVector(100, 100);
+            ship.r = 10;
+
+            let asteroid = new Asteroid(createVector(100, 100), 15);
+            asteroid.pos = createVector(100, 100);
+
+            let hit = ship.hits(asteroid);
+            assert(hit === true, 'Ship should detect collision with asteroid', 'js/ships.js: hits method');
+
+            let laser = new Laser(createVector(100, 100), 0);
+            let laserHit = asteroid.hits(laser);
+            assert(laserHit === true, 'Asteroid should detect collision with laser', 'js/asteroid.js: hits method');
+        }
+
+        function displayResults() {
+            let output = document.getElementById('testOutput');
+            output.innerHTML = `<div class="test-summary">Tests Completed: ${passed + failed} | Passed: ${passed} | Failed: ${failed}</div>`;
+
+            testResults.forEach(result => {
+                let div = document.createElement('div');
+                div.className = `test-${result.status}`;
+                div.textContent = result.message;
+                if (result.status === 'failed') {
+                    div.setAttribute('data-tooltip', `Error Location: ${result.location}\nDescription: ${result.message}`);
+                }
+                output.appendChild(div);
+            });
+        }
+
+        document.getElementById('runTestsBtn').addEventListener('click', runTests);
+    </script>
+</body>
+</html>

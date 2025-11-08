@@ -1,14 +1,18 @@
 {
-  "name": "asteroids",
+  "name": "asteroids-cleaning",
   "version": "1.0.0",
-  "description": "Need to refactor code and debug has glitchen . you can tell when you listen to code",
-  "main": "asteroids-cleaning/js.js",
+  "description": "base asteroid version ",
+  "main": "index.html",
+  "path":"./asteroids-cleaning",
   "scripts": {
-    "start": "index.html",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --coverage"
   },
-  "keywords": [],
-  "author": "",
+  "author": "handeman67",
   "license": "ISC",
-
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "dependencies": {
+    "p5js": "^1.2.18"
+  }
 }
