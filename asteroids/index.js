@@ -1771,39 +1771,60 @@ class Controls {
     let thiscolor = color(255, 255, 255, 190); // White with transparency
     // Only create buttons if they don't already exist
     if (!this.buttonsCreated) {
-      // Reset game button
+      // Hamburger menu button
+      let menuBtn = createButton("|||");
+      menuBtn.mousePressed(() => {
+        this.toggleMenu();
+      });
+      menuBtn.size(50, 30);
+      menuBtn.position(20, 20);
+      menuBtn.style('color', 'yellow');
+      menuBtn.class('hamburger-menu');
+
+      // Reset game button (initially hidden)
       let resetBtn = createButton("Reset");
       resetBtn.mousePressed(() => {
         return new resetGame(true); // true means full reset
       });
       resetBtn.size(70, 30);
-      resetBtn.position(20, 20);
+      resetBtn.position(80, 20);
       resetBtn.style('color', 'yellow');
+      resetBtn.class('menu-button');
+      resetBtn.hide(); // Initially hidden
 
-      // Sound toggle button (placeholder)
+      // Sound toggle button (initially hidden)
       let soundBtn = createButton("🔊");
-
       soundBtn.size(70, 30);
-      soundBtn.position(100, 20)
+      soundBtn.position(160, 20);
       soundBtn.mousePressed(() => {
         G.soundOn = !G.soundOn;
         soundBtn.html(G.soundOn ? "🔊" : "🔈");
-      })
-      // Test page button
-      let testBtn = createButton("Tests");
-       testBtn.position(180, 20);
-       testBtn.style('color', 'yellow');
-      testBtn.mousePressed(() => {
-        if (window.showTestModal) {
-          window.showTestModal();
-        } else {
-          window.open('test.html', '_blank');
-        }
       });
-     
-      testBtn.size(80, 30);
+      soundBtn.style('color', 'yellow');
+      soundBtn.class('menu-button');
+      soundBtn.hide(); // Initially hidden
+
+      // Store references for toggling
+      this.menuBtn = menuBtn;
+      this.resetBtn = resetBtn;
+      this.soundBtn = soundBtn;
+      this.menuVisible = false;
 
       this.buttonsCreated = true;
+    }
+  }
+
+  /**
+   * Toggle the visibility of the menu buttons
+   */
+  toggleMenu() {
+    this.menuVisible = !this.menuVisible;
+    if (this.menuVisible) {
+      this.resetBtn.show();
+      this.soundBtn.show();
+    } else {
+      this.resetBtn.hide();
+      this.soundBtn.hide();
     }
   }
 
@@ -1813,7 +1834,7 @@ class Controls {
   displayHUD() {
     // Set text properties for HUD
     textAlign(LEFT, CENTER);
-    textSize(18 * gameScale);
+    textSize(24 * gameScale);
     fill(255);
 
     // Score display
@@ -1958,8 +1979,8 @@ function draw() {
 
   // Handle mobile joystick input
   if (Joystick.isMobile() && rightJoystick) {
-    let moveVec = rightJoystick.getVector();
-    if (moveVec.mag() > 0.1) {
+    let moveVec = rightJoystick.targetDirection || rightJoystick.getVector();
+    if (moveVec && moveVec.mag() > 0.1) {
       let playerShip = G.ship.find(s => !s.isEnemy);
       if (playerShip) {
         // Calculate target heading from joystick
@@ -2272,10 +2293,20 @@ this.id = 'joystick_' + Math.random().toString(36).substr(2, 9); // Unique ID fo
            (window.innerWidth <= 768 && window.innerHeight <= 1024);
   }
 
-isTouchInRadius(touch) {
+  isTouchInRadius(touch) {
+    // Ensure we have valid touch coordinates
+    if (!touch || typeof touch.x !== 'number' || typeof touch.y !== 'number') {
+      return false;
+    }
+
     const dx = touch.x - this.basePos.x;
     const dy = touch.y - this.basePos.y;
-    return Math.sqrt(dx * dx + dy * dy) <= this.radius;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    // For movement joystick, use double radius for touch detection
+    const effectiveRadius = this.isMovement ? this.radius * 2 : this.radius;
+
+    return distance <= effectiveRadius;
   }
   isTrackingTouch(touch) {
     return this.touchId === touch.identifier;
@@ -2302,10 +2333,15 @@ isTouchInRadius(touch) {
    */
   touchMoved(touch) {
     if (this.isTrackingTouch(touch)) {
-      console.log(`Touch moved for joystick ${this.id}`);
-      this.updateStickPosition(touch);
-      //  this.isActive = true;
-      return true;
+      // Check if touch is still within the allowed area
+      if (this.isTouchInRadius(touch)) {
+        this.updateStickPosition(touch);
+        return true;
+      } else {
+        // Touch moved outside allowed area - deactivate
+        this.touchEnded(touch);
+        return false;
+      }
     }
     return false;
   }
@@ -2317,9 +2353,10 @@ isTouchInRadius(touch) {
     if (this.isTrackingTouch(touch)) {
       this.isActive = false;
       this.touchId = null;
-      // Immediately reset to center position
-      this.stickPos = this.basePos.copy();
+      // Clear movement state immediately
       this.vector.set(0, 0);
+      this.targetDirection = null; // Clear target direction for movement
+      // The update() method will handle smooth spring-back to center
       return true;
     }
     return false;
@@ -2334,7 +2371,12 @@ isTouchInRadius(touch) {
     let dir = createVector(touch.x - this.basePos.x, touch.y - this.basePos.y);
     let mag = dir.mag();
 
-    if (mag > this.radius) {
+    // For movement joystick, allow movement up to double radius
+    // For fire button, constrain to radius
+    if (this.isMovement && mag > this.radius * 2) {
+      dir.normalize();
+      dir.mult(this.radius * 2);
+    } else if (!this.isMovement && mag > this.radius) {
       dir.normalize();
       dir.mult(this.radius);
     }
@@ -2344,29 +2386,38 @@ isTouchInRadius(touch) {
     // Calculate normalized vector for movement
     this.vector = dir.copy();
     this.vector.div(this.radius);
+
+    // For movement joystick, store the direction for continuous movement
+    if (this.isMovement) {
+      this.targetDirection = this.vector.copy();
+    }
   }
 
   /**
    * Update joystick state (called every frame)
    */
   update() {
-    // Always spring back to center for movement joystick
-    let dir = p5.Vector.sub(this.basePos, this.stickPos);
-    let distance = dir.mag();
+    // Only spring back to center if joystick is not active (finger not touching)
+    if (!this.isActive) {
+      let dir = p5.Vector.sub(this.basePos, this.stickPos);
+      let distance = dir.mag();
 
-    if (distance > 0.1) { // Only animate if not already at center
-      // Use lerp for smooth spring effect - increased speed for better responsiveness
-      this.stickPos.lerp(this.basePos, 0.25); // Increased from 0.15 to 0.25 for faster spring
+      if (distance > 0.1) { // Only animate if not already at center
+        // Use lerp for smooth spring effect
+        this.stickPos.lerp(this.basePos, 0.25);
 
-      // Update vector based on current position
-      let currentDir = p5.Vector.sub(this.stickPos, this.basePos);
-      this.vector = currentDir.copy();
-      this.vector.div(this.radius);
-    } else {
-      // Snap to exact center when very close
-      this.stickPos = this.basePos.copy();
-      this.vector.set(0, 0);
+        // Update vector based on current position
+        let currentDir = p5.Vector.sub(this.stickPos, this.basePos);
+        this.vector = currentDir.copy();
+        this.vector.div(this.radius);
+      } else {
+        // Snap to exact center when very close
+        this.stickPos = this.basePos.copy();
+        this.vector.set(0, 0);
+        this.targetDirection = null; // Clear target direction
+      }
     }
+    // If active, maintain the target direction set during touch events
   }
 
   /**
@@ -2431,14 +2482,14 @@ let rightJoystick = null; // Movement joystick (right side)
 function initJoysticks() {
   if (!Joystick.isMobile()) return;
 
-  let joystickRadius = 50;
-  let bottomMargin = 100;
+  let joystickRadius = 60; // Increased radius for better touch detection
+  let bottomMargin = 120; // Increased margin from bottom
 
-  // Fire button (left side)
-  leftJoystick = new Joystick(width * 0.25, height - bottomMargin, joystickRadius/2, false);
+  // Fire button (left side) - smaller radius since it's just a button
+  leftJoystick = new Joystick(width * 0.25, height - bottomMargin, joystickRadius/3, false);
 
-  // Right joystick (movement)
-  rightJoystick = new Joystick(width * 0.75, height - bottomMargin, joystickRadius/2, true);
+  // Right joystick (movement) - larger radius for movement control
+  rightJoystick = new Joystick(width * 0.75, height - bottomMargin, joystickRadius, true);
 }
 
 /**
@@ -2449,35 +2500,36 @@ function handleJoystickTouches(touches, eventType) {
 
   for (let touch of touches) {
     if (eventType === 'start') {
-      // Check if touch is within each joystick's radius
-      if (leftJoystick.isTouchInRadius(touch)) {
-        leftJoystick.touchStarted(touch);
-        leftJoystick.fireLaser()
-       
-      }
-      if (rightJoystick.isTouchInRadius(touch)) {
+      // Check joysticks in priority order (right first, then left) to prevent conflicts
+      let touchHandled = false;
+
+      // Check right joystick first (movement has priority)
+      if (rightJoystick.isTouchInRadius(touch) && !touchHandled) {
         rightJoystick.touchStarted(touch);
-        
+        touchHandled = true;
+      }
+
+      // Check left joystick second (fire button)
+      if (leftJoystick.isTouchInRadius(touch) && !touchHandled) {
+        leftJoystick.touchStarted(touch);
+        leftJoystick.fireLaser();
+        touchHandled = true;
       }
     } else if (eventType === 'move') {
-      // Only update joysticks that are active and tracking this touch
-      if (leftJoystick.isActive && leftJoystick.isTrackingTouch(touch)) {
-        rightJoystick.isActive = false;
-      }
+      // Update joysticks that are active and tracking this specific touch
       if (rightJoystick.isActive && rightJoystick.isTrackingTouch(touch)) {
         rightJoystick.touchMoved(touch);
       }
+      // Left joystick (fire button) doesn't need move updates
     } else if (eventType === 'end') {
       // Only deactivate if the ending touch matches the tracked touch
-      if (leftJoystick.isTrackingTouch(touch)) {
-        leftJoystick.touchEnded(touch);
-        leftJoystick.isActive = false;
-        
-      }
       if (rightJoystick.isTrackingTouch(touch)) {
         rightJoystick.touchEnded(touch);
         rightJoystick.isActive = false;
-       
+      }
+      if (leftJoystick.isTrackingTouch(touch)) {
+        leftJoystick.touchEnded(touch);
+        leftJoystick.isActive = false;
       }
     }
   }

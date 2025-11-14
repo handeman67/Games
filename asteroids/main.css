@@ -54,6 +54,16 @@ button{
     width: auto;
     height: 3.75vh;
 }
+
+.hamburger-menu {
+    font-weight: bold;
+    background: rgba(0, 0, 0, 0.9);
+    border: 2px solid #ffff00;
+}
+
+.menu-button {
+    transition: opacity 0.3s ease;
+}
  
 #start-button {
  /*    position: relative;
