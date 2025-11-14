@@ -2797,27 +2797,28 @@ function handleJoystickTouches(touches, eventType) {
 
   for (let touch of touches) {
     if (eventType === 'start') {
-      // Check if touch is within each joystick's radius
-      // Allow both joysticks to be active simultaneously for multi-touch
+      // Check BOTH joysticks independently - remove else-if to allow both to activate
       if (leftJoystick.isTouchInRadius(touch) && !leftJoystick.isTrackingTouch(touch)) {
         leftJoystick.touchStarted(touch);
-        // Fire immediately on touch
         leftJoystick.fireLaser();
-      } else if (rightJoystick.isTouchInRadius(touch) && !rightJoystick.isTrackingTouch(touch)) {
+      }
+      if (rightJoystick.isTouchInRadius(touch) && !rightJoystick.isTrackingTouch(touch)) {
         rightJoystick.touchStarted(touch);
       }
     } else if (eventType === 'move') {
-      // Only update the joystick that is tracking this specific touch
+      // Check BOTH joysticks independently
       if (leftJoystick.isTrackingTouch(touch)) {
         leftJoystick.touchMoved(touch);
-      } else if (rightJoystick.isTrackingTouch(touch)) {
+      }
+      if (rightJoystick.isTrackingTouch(touch)) {
         rightJoystick.touchMoved(touch);
       }
     } else if (eventType === 'end') {
-      // Only deactivate if the ending touch matches the tracked touch
+      // Check BOTH joysticks independently
       if (leftJoystick.isTrackingTouch(touch)) {
         leftJoystick.touchEnded(touch);
-      } else if (rightJoystick.isTrackingTouch(touch)) {
+      }
+      if (rightJoystick.isTrackingTouch(touch)) {
         rightJoystick.touchEnded(touch);
       }
     }
