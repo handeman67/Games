@@ -2798,12 +2798,12 @@ function handleJoystickTouches(touches, eventType) {
   for (let touch of touches) {
     if (eventType === 'start') {
       // Check if touch is within each joystick's radius
-      // Use else-if to prevent one touch from activating both joysticks
-      if (leftJoystick.isTouchInRadius(touch) && !leftJoystick.isActive) {
+      // Allow both joysticks to be active simultaneously for multi-touch
+      if (leftJoystick.isTouchInRadius(touch) && !leftJoystick.isTrackingTouch(touch)) {
         leftJoystick.touchStarted(touch);
         // Fire immediately on touch
         leftJoystick.fireLaser();
-      } else if (rightJoystick.isTouchInRadius(touch) && !rightJoystick.isActive) {
+      } else if (rightJoystick.isTouchInRadius(touch) && !rightJoystick.isTrackingTouch(touch)) {
         rightJoystick.touchStarted(touch);
       }
     } else if (eventType === 'move') {
