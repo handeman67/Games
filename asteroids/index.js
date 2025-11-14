@@ -3,7 +3,7 @@
  * Ships, asteroids, lasers, and particles inherit from this class
  */
 class GameObject {
-  constructor(x = 0, y = 0, radius = 10) {
+  constructor(x = 0, y = 0, radius = 20) {
     // Core physical properties
     this.pos = createVector(x, y);
     this.vel = createVector(0, 0);
@@ -2687,7 +2687,7 @@ isTouchInRadius(touch) {
     fill(255, 255, 255, 100);
     stroke(255, 255, 255, 150);
     strokeWeight(2);
-    ellipse(this.basePos.x, this.basePos.y, this.radius * 2);
+    ellipse(this.basePos.x, this.basePos.y, this.radius * 4);
 
     // For fire button, draw centered icon. For movement joystick, draw moveable stick
     if (this.isMovement) {
@@ -2704,7 +2704,7 @@ isTouchInRadius(touch) {
     } else {
       // Fire button - draw stationary icon at center with visual feedback when pressed
       let buttonAlpha = this.isActive ? 255 : 200;
-      let buttonSize = this.isActive ? this.radius * 0.9 : this.radius * 0.8;
+      let buttonSize = this.isActive ? this.radius * 1.5 : this.radius * 0.8;
       
       if (this.joystickImg) {
         imageMode(CENTER);
