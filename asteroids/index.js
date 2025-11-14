@@ -2368,7 +2368,9 @@ this.id = 'joystick_' + Math.random().toString(36).substr(2, 9); // Unique ID fo
    * Update stick position based on touch
    */
   updateStickPosition(touch) {
-    let dir = createVector(touch.x - this.basePos.x, touch.y - this.basePos.y);
+    if (!touch.x || !touch.y){touch.x=0;touch.y=0;}
+      let x=touch.x - this.basePos.x,y=touch.y - this.basePos.y; 
+    let dir = createVector(x,y);
     let mag = dir.mag();
 
     // For movement joystick, allow movement up to double radius
@@ -2402,9 +2404,9 @@ this.id = 'joystick_' + Math.random().toString(36).substr(2, 9); // Unique ID fo
       let dir = p5.Vector.sub(this.basePos, this.stickPos);
       let distance = dir.mag();
 
-      if (distance > 0.1) { // Only animate if not already at center
-        // Use lerp for smooth spring effect
-        this.stickPos.lerp(this.basePos, 0.25);
+      if (distance > 0.01) { // Always animate back to center for smooth spring effect
+        // Use lerp for smooth spring effect - faster for immediate response
+        this.stickPos.lerp(this.basePos, 0.35);
 
         // Update vector based on current position
         let currentDir = p5.Vector.sub(this.stickPos, this.basePos);
@@ -2439,13 +2441,13 @@ this.id = 'joystick_' + Math.random().toString(36).substr(2, 9); // Unique ID fo
     if (this.joystickImg) {
       // Use image for stick
       imageMode(CENTER);
-      image(this.joystickImg, this.stickPos.x, this.stickPos.y, this.radius * 0.8, this.radius * 0.8);
+      image(this.joystickImg, this.stickPos.x, this.stickPos.y, this.radius * 0.8, this.radius * 0.7);
     } else {
       // Fallback: draw circle for stick
       fill(255, 255, 255, 200);
       stroke(255);
       strokeWeight(1);
-      ellipse(this.stickPos.x, this.stickPos.y, this.radius * 0.6);
+      ellipse(this.stickPos.x, this.stickPos.y, this.radius * 0.7);
     }
 
     pop();
@@ -2486,7 +2488,7 @@ function initJoysticks() {
   let bottomMargin = 120; // Increased margin from bottom
 
   // Fire button (left side) - smaller radius since it's just a button
-  leftJoystick = new Joystick(width * 0.25, height - bottomMargin, joystickRadius/3, false);
+  leftJoystick = new Joystick(width * 0.25, height - bottomMargin, joystickRadius/2, false);
 
   // Right joystick (movement) - larger radius for movement control
   rightJoystick = new Joystick(width * 0.75, height - bottomMargin, joystickRadius, true);
@@ -2525,6 +2527,7 @@ function handleJoystickTouches(touches, eventType) {
       // Only deactivate if the ending touch matches the tracked touch
       if (rightJoystick.isTrackingTouch(touch)) {
         rightJoystick.touchEnded(touch);
+        console.log('Right joystick touch ended');
         rightJoystick.isActive = false;
       }
       if (leftJoystick.isTrackingTouch(touch)) {
