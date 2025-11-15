@@ -169,39 +169,74 @@ function draw() {
 
 
   keyPressed = (e) => {
-    if (e.keyCode == 96) {
-
-      lasers.push(new Laser(player[0].pos, player[0].heading, 2));
-
+    if (e.keyCode == 96 || e.keyCode == 32) { // numpad 0 or spacebar
+      if (player.length > 0) {
+        lasers.push(new Laser(player[0].pos, player[0].heading, 2));
+      }
     }
-
-
   }
   // words();
 
   function shootingAction() {
-    for (let l = lasers.length - 1; l > -1; l--) {
+    for (let l = lasers.length - 1; l >= 0; l--) {
       lasers[l].move();
       lasers[l].show();
-      lasers[l].offScreen();
       
+      // Remove if off screen
+      if (lasers[l].offScreen()) {
+        lasers.splice(l, 1);
+      }
     }
- }
-    function laserHit() {
-      for(let dt in dot.length) {
-      for (let d in field.length) {
-        for(let L in lasers.length) {
-        lasers[L].hits(field[d]);
-        lasers[L].hits(dot[dt]);
-        if (lasers[L].hit) {
-          lasers.splice(L, 1);
+  }
+  
+  function laserHit() {
+    // Check laser collisions with field tiles (mushrooms)
+    for (let l = lasers.length - 1; l >= 0; l--) {
+      if (!lasers[l]) continue;
+      
+      let laserHit = false;
+      
+      // Check collision with field tiles
+      for (let f = 0; f < field.length; f++) {
+        if (!field[f]) continue;
+        
+        // Only check mushroom tiles (types 1, 5, 6)
+        if (field[f].type === 1 || field[f].type === 5 || field[f].type === 6) {
+          if (field[f].hits(lasers[l])) {
+            // Mushroom hit!
+            field[f].takeDamage(25);
+            laserHit = true;
+            
+            // Remove mushroom tile if destroyed
+            if (field[f].mushroom && field[f].mushroom.isDestroyed) {
+              console.log("Mushroom destroyed!");
+            }
+            
+            break; // Laser can only hit one thing
+          }
         }
-     
-        if (lasers == 0) {
-          console.log("no lasers",d);
+      }
+      
+      // Check collision with dots (enemies)
+      if (!laserHit) {
+        for (let d = 0; d < dot.length; d++) {
+          if (!dot[d]) continue;
+          
+          if (lasers[l].hits(dot[d])) {
+            dot[d].hit = true;
+            laserHit = true;
+            console.log("Dot hit!");
+            break;
+          }
         }
-      } }}
+      }
+      
+      // Remove laser if it hit something
+      if (laserHit) {
+        lasers.splice(l, 1);
+      }
     }
+  }
  
 
   function PlayerAction() {
