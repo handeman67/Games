@@ -9,11 +9,12 @@ html{
 }
 body * {
 
-    margin: 0;
-    max-width: 100svw;
+    margin: 0 auto;
+    max-width: 900px;
     min-width: 250px;
     padding: 0;
     font-size: clamp(var(--min), var(--val), var(--max));
+     border-radius: 10px;
 }
 
     body {
@@ -26,7 +27,7 @@ body * {
 
 #wrap {
 margin: 0 auto;
-display: grid;
+display: flex;
 grid-template-rows: repeat(1fr,3);
 
 padding: 2em;
@@ -43,14 +44,34 @@ button{
 }
 #main,
 #header {
+    position: fixed;
+    inset: 0.25em;
  font-size: 2em;
+ border: 1px solid #336264;
+
  grid-row: auto;
 }
+#main{
+    top: 4.25em;
+    bottom: 0.em;
+    overflow: hidden;
+    border: #000 solid 1px;
+    box-shadow: inset 0 0 5px 0px #000;
+    overflow: hidden;
+  
+   
+}
 fieldset{
-    padding: auto;
+    padding: 1em;
+    margin: 5px;
     border-width: 8px;
     border-color:linear-gradient(purple, orange, blue);
-   
+   text-align: center;
+    height: max-content;
+    max-height:35svh;
+    overflow: hidden;
+    overflow-y: scroll;
+    border-radius: 13px;
 }
 input{
     display:none;
@@ -68,10 +89,7 @@ color: #f0e68c;
 #title{
     font-size: var(--max);
 }
-#main {
-  
-background-color: #87d5ddbe;
-}
+
 #score:after{
 content: attr(data-scr);
 /* padding: 1em; */
@@ -95,6 +113,8 @@ width: 10px;
 }
 ::-webkit-scrollbar-track {
 background-color: #5f9ea0;
+width:1px;
+display: none;
 }
 ::-webkit-scrollbar-thumb {
     
@@ -135,13 +155,16 @@ span:hover{
 
 @media screen and (max-width: 480px) {
     body{
-       
+       /* background: #0005; */
+       color: #000;
     }
    #wrap,
    span,
     #answers,
     #questions {
-      
+      padding:0;
+      margin:0;
+      font-size: clamp(10px, 4vw, 16px);
     }
     #questions{
        
