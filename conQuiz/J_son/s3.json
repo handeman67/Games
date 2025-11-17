@@ -1,0 +1,60 @@
+{
+    "questions": [
+      {
+        "question": "According to the IBC, what is the minimum width for a stairway in a commercial building?",
+        "answers": [
+          "30 inches",
+          "36 inches",
+          "42 inches",
+          "44 inches",
+          "54 inches"
+        ],
+        "correctAnswer": "44 inches"
+      },
+      {
+        "question": "In the IBC, what is the maximum riser height allowed for a stair in residential construction?",
+        "answers": [
+          "6 inches",
+          "7 inches",
+          "8 inches",
+          "9 inches",
+          "10 inches"
+        ],
+        "correctAnswer": "7 inches"
+      },
+      {
+        "question": "According to the IBC, what is the minimum tread depth for a stair in an assembly occupancy?",
+        "answers": [
+          "9 inches",
+          "10 inches",
+          "11 inches",
+          "12 inches",
+          "13 inches"
+        ],
+        "correctAnswer": "11 inches"
+      },
+      {
+        "question": "In the IBC, what is the required minimum headroom clearance above stairs?",
+        "answers": [
+          "6 feet 8 inches",
+          "7 feet",
+          "8 feet",
+          "9 feet",
+          "10 feet"
+        ],
+        "correctAnswer": "6 feet 8 inches"
+      },
+      {
+        "question": "According to the IBC, handrails on stairs must be mounted between what heights?",
+        "answers": [
+          "28 inches and 36 inches",
+          "30 inches and 38 inches",
+          "32 inches and 40 inches",
+          "34 inches and 42 inches",
+          "36 inches and 44 inches"
+        ],
+        "correctAnswer": "34 inches and 42 inches"
+      }
+    ]
+  }
+  

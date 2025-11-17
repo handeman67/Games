@@ -1,0 +1,113 @@
+{
+    "questions": [
+      {
+        "question": "What is the IBC's definition of a 'guard' as it pertains to building safety?",
+        "answers": [
+          "A protective barrier on elevated walking surfaces",
+          "A security personnel stationed at building entrances",
+          "An emergency evacuation plan",
+          "A type of fire extinguisher",
+          "A structural support element"
+        ],
+        "correctAnswer": "A protective barrier on elevated walking surfaces"
+      },
+      {
+        "question": "In Arizona, which building code regulates the design and construction of energy-efficient buildings?",
+        "answers": [
+          "Arizona Energy Conservation Code",
+          "Arizona Green Building Code",
+          "Arizona Sustainable Construction Code",
+          "Arizona Energy Efficiency Standard",
+          "Arizona Environmental Design Code"
+        ],
+        "correctAnswer": "Arizona Energy Conservation Code"
+      },
+      {
+        "question": "According to the IBC, what is the purpose of the fire protection systems in buildings?",
+        "answers": [
+          "To provide air conditioning",
+          "To detect gas leaks",
+          "To suppress and control fires",
+          "To prevent earthquakes",
+          "To regulate plumbing systems"
+        ],
+        "correctAnswer": "To suppress and control fires"
+      },
+      {
+        "question": "In Arizona, which type of building construction is most resistant to fire, as per the state building code?",
+        "answers": [
+          "Type I",
+          "Type II",
+          "Type III",
+          "Type IV",
+          "Type V"
+        ],
+        "correctAnswer": "Type I"
+      },
+      {
+        "question": "What is the maximum allowable span for a wood floor joist in a residential building, according to the Arizona Building Code?",
+        "answers": [
+          "8 feet",
+          "10 feet",
+          "12 feet",
+          "14 feet",
+          "16 feet"
+        ],
+        "correctAnswer": "12 feet"
+      },
+      {
+        "question": "In the IBC, what is the purpose of the structural design requirements?",
+        "answers": [
+          "To enhance aesthetics",
+          "To ensure energy efficiency",
+          "To provide guidance on plumbing systems",
+          "To establish criteria for resisting loads",
+          "To regulate interior finishes"
+        ],
+        "correctAnswer": "To establish criteria for resisting loads"
+      },
+      {
+        "question": "According to the Arizona Building Code, what is the minimum required insulation level for exterior walls in a residential building?",
+        "answers": [
+          "R-13",
+          "R-19",
+          "R-21",
+          "R-30",
+          "R-38"
+        ],
+        "correctAnswer": "R-19"
+      },
+      {
+        "question": "In the IBC, what is the purpose of occupancy separations?",
+        "answers": [
+          "To enhance security",
+          "To provide privacy",
+          "To prevent the spread of fire between different occupancies",
+          "To regulate air quality",
+          "To control noise levels"
+        ],
+        "correctAnswer": "To prevent the spread of fire between different occupancies"
+      },
+      {
+        "question": "According to the Arizona Building Code, what is the minimum required size of a habitable room in a residential building?",
+        "answers": [
+          "100 square feet",
+          "120 square feet",
+          "150 square feet",
+          "200 square feet",
+          "250 square feet"
+        ],
+        "correctAnswer": "120 square feet"
+      },
+      {
+        "question": "In Arizona, which agency is responsible for interpreting and enforcing the Arizona Building Code statewide?",
+        "answers": [
+          "Arizona Department of Public Safety",
+          "Arizona State Fire Marshal",
+          "Arizona Board of Technical Registration",
+          "Arizona State Legislature",
+          "Arizona Department of Building and Fire Safety"
+        ],
+        "correctAnswer": "Arizona Department of Building and Fire Safety"
+      }]
+     }

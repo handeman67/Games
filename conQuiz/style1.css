@@ -1,0 +1,150 @@
+
+html{
+    height: 100%;
+    box-sizing: border-box;
+    
+   --min: 11px;
+    --val: 16px;
+    --max: 22px;
+}
+body * {
+
+    margin: 0;
+    max-width: 100svw;
+    min-width: 250px;
+    padding: 0;
+    font-size: clamp(var(--min), var(--val), var(--max));
+}
+
+    body {
+    
+    background-color: hsla(200, 60%, 80%, 1);
+    /* height: 100vh; */
+    /* overflow: hidden; */
+    transition: all 3s ease-in-out;
+}
+
+#wrap {
+margin: 0 auto;
+display: grid;
+grid-template-rows: repeat(1fr,3);
+
+padding: 2em;
+text-align: center;
+max-width: fit-content;
+}
+#score{
+left: 0px;
+border: 1px solid #018401;
+}
+button{
+    width: 100%;
+    margin:0 auto;
+}
+#main,
+#header {
+ font-size: 2em;
+ grid-row: auto;
+}
+fieldset{
+    padding: auto;
+    border-width: 8px;
+    border-color:linear-gradient(purple, orange, blue);
+   
+}
+input{
+    display:none;
+}
+/* input[type="radio"]:checked +label{
+background: #0cc30c96;
+color: #f0e68c;
+
+} */
+#header {
+   padding:0.5em;
+   font-weight:900;
+  
+}
+#title{
+    font-size: var(--max);
+}
+#main {
+  
+background-color: #87d5ddbe;
+}
+#score:after{
+content: attr(data-scr);
+/* padding: 1em; */
+}
+#score {
+    border: 1px solid #336264;
+   
+}
+
+span:active {
+    box-shadow:inset 0 0 5px 0 #0005;
+}
+
+span {
+background-color:#33626455 ;
+
+} 
+
+::-webkit-scrollbar {
+width: 10px;
+}
+::-webkit-scrollbar-track {
+background-color: #5f9ea0;
+}
+::-webkit-scrollbar-thumb {
+    
+    background-color: #336264;
+}
+#questions ,
+#answers {
+
+    display: flex;
+    flex-direction: column;
+    padding: 1em;
+    gap: 5px;
+    overflow-y: auto;
+}
+
+span,
+label {
+    padding: 10px;
+    border: 1px solid #018401;
+   cursor: grab;
+   box-shadow: 0 0 5px 0 #0005;
+   flex-grow: 1;
+  
+}
+label:hover,
+span:hover{
+    padding: 0.8em;
+ border: 1px solid #5bb0b3;
+ box-shadow:inset 0 0 15px 0 #0009;
+   
+}
+
+.active {
+    text-shadow: 0 0 5px #000,1px -1px 5px #000;
+    color: #ceff1b;
+    box-shadow:inset 0 0 15px 0 rgba(228, 239, 75, 0.9);
+}
+
+@media screen and (max-width: 480px) {
+    body{
+       
+    }
+   #wrap,
+   span,
+    #answers,
+    #questions {
+      
+    }
+    #questions{
+       
+       
+    }
+}

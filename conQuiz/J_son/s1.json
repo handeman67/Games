@@ -1,0 +1,122 @@
+{
+  "questions": [
+    {
+      "question": "What is the recommended rise for a comfortable staircase?",
+      "answers": [
+        "Between 6 and 8 inches",
+        "Between 7 and 9 inches",
+        "Between 8 and 10 inches",
+        "Between 9 and 11 inches",
+        "It depends on the overall stair length"
+      ],
+      "correctAnswer": "Between 7 and 9 inches"
+    },
+    {
+      "question": "What is the minimum recommended tread depth for residential stairs?",
+      "answers": [
+        "8 inches",
+        "9 inches",
+        "10 inches",
+        "11 inches",
+        "It depends on the stair rise"
+      ],
+      "correctAnswer": "10 inches"
+    },
+    {
+      "question": "What is the formula for calculating the number of risers needed for a straight staircase?",
+      "answers":
+       [
+         "Number of risers = Total stair height / Rise",
+         "Number of risers = Total stair height + Rise",
+         "Number of risers = Tread width x Rise",
+         "Number of risers = Tread width + Rise",
+         "It depends on the stair material"
+       ],
+      "correctAnswer": "Number of risers = Total stair height / Rise"
+    },
+    {
+      "question": "What type of wood is commonly used for stair treads and risers?",
+      "answers":
+       [
+         "Oak",
+         "Maple",
+         "Pine",
+         "MDF",
+         "Cedar"
+       ],
+      "correctAnswer": "Oak or Maple"
+    },
+    {
+      "question": "What is the purpose of stringers in stair construction?",
+      "answers":
+       [
+         "To support the treads and risers",
+         "To connect the stairs to the wall",
+         "To provide a handrail mounting point",
+         "To create a decorative element",
+         "To conceal electrical wiring"
+       ],
+      "correctAnswer": "To support the treads and risers"
+    },
+    {
+      "question": "How should balusters be spaced on a staircase?",
+      "answers":
+       [
+         "No more than 4 inches apart",
+         "No more than 6 inches apart",
+         "No more than 8 inches apart",
+         "No more than 10 inches apart",
+         "It depends on the local building code"
+       ],
+      "correctAnswer": "No more than 4 inches apart"
+    },
+    {
+      "question": "What is the minimum headroom required above a staircase?",
+      "answers":
+       [
+         "6 feet 4 inches",
+         "6 feet 6 inches",
+         "6 feet 8 inches",
+         "7 feet 0 inches",
+         "It depends on the stair angle"
+       ],
+      "correctAnswer": "6 feet 8 inches"
+    },
+    {
+      "question": "What type of fastener is typically used to secure treads and risers to stringers?",
+      "answers":
+       [
+         "Construction screws",
+         "Carriage bolts",
+         "Liquid nails",
+         "Wood dowels",
+         "Staples"
+       ],
+      "correctAnswer": "Construction screws"
+    },
+    {
+      "question": "What is the importance of proper stair landing size?",
+      "answers":
+       [
+         "Provides safe entry and exit space",
+         "Creates a stopping point for changes in direction",
+         "Allows for furniture movement",
+         "Improves the overall aesthetics",
+         "All of the above"
+       ],
+      "correctAnswer": "All of the above"
+    },
+    {
+      "question": "What building code regulates stair construction in Phoenix, Arizona?",
+      "answers":
+       [
+         "International Building Code (IBC)",
+         "Residential Building Code (IRC)",
+         "Phoenix City Building Code",
+         "National Electrical Code (NEC)",
+         "It depends on the specific project"
+       ],
+      "correctAnswer": "Phoenix City Building Code"
+    }
+  ]
+}

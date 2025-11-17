@@ -1,0 +1,60 @@
+{
+    "questions": [
+      {
+        "question": "In the Arizona Building Code, what is the required minimum width for a stair in a residential building?",
+        "answers": [
+          "36 inches",
+          "42 inches",
+          "48 inches",
+          "54 inches",
+          "60 inches"
+        ],
+        "correctAnswer": "36 inches"
+      },
+      {
+        "question": "According to the Arizona Building Code, what is the maximum allowable slope for a residential stairway?",
+        "answers": [
+          "25 degrees",
+          "30 degrees",
+          "35 degrees",
+          "40 degrees",
+          "45 degrees"
+        ],
+        "correctAnswer": "30 degrees"
+      },
+      {
+        "question": "In Arizona, what is the minimum required handrail height for stairs in a commercial building?",
+        "answers": [
+          "30 inches",
+          "32 inches",
+          "34 inches",
+          "36 inches",
+          "38 inches"
+        ],
+        "correctAnswer": "34 inches"
+      },
+      {
+        "question": "According to the Arizona Building Code, what is the minimum tread depth for an outdoor stair in a residential building?",
+        "answers": [
+          "10 inches",
+          "11 inches",
+          "12 inches",
+          "13 inches",
+          "14 inches"
+        ],
+        "correctAnswer": "11 inches"
+      },
+      {
+        "question": "In Arizona, what is the required minimum landing depth at the top of a stairway?",
+        "answers": [
+          "18 inches",
+          "24 inches",
+          "30 inches",
+          "36 inches",
+          "42 inches"
+        ],
+        "correctAnswer": "36 inches"
+      }
+    ]
+  }
+  

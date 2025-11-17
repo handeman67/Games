@@ -1,0 +1,102 @@
+{
+    "questions": [
+      {
+        "question": "What is the purpose of the International Building Code (IBC)?",
+        "answers": [
+          "To regulate plumbing systems",
+          "To provide guidelines for electrical installations",
+          "To establish minimum requirements for building safety",
+          "To set standards for landscaping around buildings",
+          "To enforce zoning regulations"
+        ],
+        "correctAnswer": "To establish minimum requirements for building safety"
+      },
+      {
+        "question": "In Arizona, which agency is responsible for adopting and enforcing the state building code?",
+        "answers": [
+          "Arizona Department of Transportation",
+          "Arizona Department of Environmental Quality",
+          "Arizona Department of Housing",
+          "Arizona Registrar of Contractors",
+          "Arizona Department of Fire, Building, and Life Safety"
+        ],
+        "correctAnswer": "Arizona Department of Fire, Building, and Life Safety"
+      },
+      {
+        "question": "What is the primary purpose of fire-resistant-rated construction according to the IBC?",
+        "answers": [
+          "To provide aesthetic appeal",
+          "To increase energy efficiency",
+          "To prevent the spread of fire",
+          "To reduce construction costs",
+          "To improve indoor air quality"
+        ],
+        "correctAnswer": "To prevent the spread of fire"
+      },
+      {
+        "question": "Which occupancy group in the IBC includes buildings used for assembly purposes, such as theaters and auditoriums?",
+        "answers": [
+          "Group A",
+          "Group B",
+          "Group E",
+          "Group M",
+          "Group R"
+        ],
+        "correctAnswer": "Group A"
+      },
+      {
+        "question": "What is the minimum required number of exits for a high-rise building, as specified in the IBC?",
+        "answers": [
+          "One exit",
+          "Two exits",
+          "Three exits",
+          "Four exits",
+          "The number varies based on occupancy"
+        ],
+        "correctAnswer": "The number varies based on occupancy"
+      },
+      {
+        "question": "In Arizona, what is the minimum wind design speed for determining wind loads on buildings, as per the local building code?",
+        "answers": [
+          "80 mph",
+          "90 mph",
+          "100 mph",
+          "110 mph",
+          "120 mph"
+        ],
+        "correctAnswer": "100 mph"
+      },
+      {
+        "question": "Which IBC chapter specifically addresses accessibility requirements for people with disabilities?",
+        "answers": [
+          "Chapter 1",
+          "Chapter 4",
+          "Chapter 10",
+          "Chapter 11",
+          "Chapter 34"
+        ],
+        "correctAnswer": "Chapter 11"
+      },
+      {
+        "question": "In the Arizona Building Code, what is the required minimum ceiling height for habitable rooms in residential buildings?",
+        "answers": [
+          "6 feet 6 inches",
+          "7 feet",
+          "8 feet",
+          "9 feet",
+          "10 feet"
+        ],
+        "correctAnswer": "8 feet"
+      },
+      {
+        "question": "According to the IBC, what is the purpose of the means of egress system?",
+        "answers": [
+          "To provide ventilation",
+          "To facilitate emergency evacuations",
+          "To regulate lighting levels",
+          "To control temperature",
+          "To manage noise levels"
+        ],
+        "correctAnswer": "To facilitate emergency evacuations"
+      }
+    ]}

@@ -1,0 +1,114 @@
+{
+  "questions": [
+    {
+      "question": "What is the main structural component of a house's frame?",
+      "answers": [
+        "Sheathing",
+        "Roofing felt",
+        "Studs",
+        "Insulation",
+        "Drywall"
+      ],
+      "correctAnswer": "Studs"
+    },
+    {
+      "question": "Which tool is used to drive nails into wood?",
+      "answers": [
+        "Circular saw",
+        "Hammer",
+        "Level",
+        "Tape measure",
+        "Wrench"
+      ],
+      "correctAnswer": "Hammer"
+    },
+    {
+      "question": "What is the purpose of a header in framing?",
+      "answers": [
+        "To provide support over openings like doors and windows",
+        "To connect vertical studs",
+        "To create a decorative edge",
+        "To fasten drywall to the frame",
+        "To protect the frame from moisture"
+      ],
+      "correctAnswer": "To provide support over openings like doors and windows"
+    },
+    {
+      "question": "What type of lumber is typically used for floor joists?",
+      "answers": [
+        "Plywood",
+        "Dimensional lumber (2x10s, 2x12s)",
+        "Particle board",
+        "Oriented strand board (OSB)",
+        "Hardwood"
+      ],
+      "correctAnswer": "Dimensional lumber (2x10s, 2x12s)"
+    },
+    {
+      "question": "What is the primary purpose of sheathing in home construction?",
+      "answers": [
+        "To provide a waterproof barrier",
+        "To add insulation",
+        "To create a smooth surface for finishing",
+        "To strengthen the frame",
+        "To provide a base for shingles"
+      ],
+      "correctAnswer": "To strengthen the frame"
+    },
+    {
+      "question": "What is the correct way to install a door jamb?",
+      "answers": [
+        "Nail it directly to the studs",
+        "Attach it to the header and sill",
+        "Glue it to the framing",
+        "Screw it to the drywall",
+        "Use both nails and screws"
+      ],
+      "correctAnswer": "Attach it to the header and sill"
+    },
+    {
+      "question": "Which type of siding is known for its durability and low maintenance?",
+      "answers": [
+        "Wood siding",
+        "Vinyl siding",
+        "Fiber cement siding",
+        "Brick siding",
+        "Stucco siding"
+      ],
+      "correctAnswer": "Fiber cement siding"
+    },
+    {
+      "question": "How can you prevent a nail from splitting wood when hammering?",
+      "answers": [
+        "Use a larger hammer",
+        "Hit the nail harder",
+        "Pre-drill a hole for the nail",
+        "Use a blunt nail",
+        "Apply glue to the nail"
+      ],
+      "correctAnswer": "Pre-drill a hole for the nail"
+    },
+    {
+      "question": "What is the best way to ensure a level surface when installing a countertop?",
+      "answers": [
+        "Use a tape measure",
+        "Use a spirit level",
+        "Use a laser level",
+        "Trust your eyesight",
+        "Measure multiple times"
+      ],
+      "correctAnswer": "Use a spirit level"
+    },
+    {
+      "question": "What is the purpose of a 'bird's mouth' cut in carpentry?",
+      "answers": [
+        "To create a decorative notch",
+        "To make a stronger joint",
+        "To fit a rafter to a wall plate",
+        "To create a curved edge",
+        "To prevent water damage"
+      ],
+      "correctAnswer": "To fit a rafter to a wall plate"
+    }
+  ]
+}

@@ -1,0 +1,123 @@
+{
+    "questions": [
+      {
+        "question": "What is the minimum allowable rise for each step in a residential staircase?",
+        "answers": [
+          "6 inches",
+          "7 inches",
+          "8 inches",
+          "9 inches",
+          "10 inches"
+        ],
+        "correctAnswer": "7 inches"
+      },
+      {
+        "question": "Which part of a stair provides the horizontal tread for your foot?",
+        "answers":
+        [
+          "Riser",
+          "Tread",
+          "Stringer",
+          "Baluster",
+          "Newel post"
+        ],
+        "correctAnswer": "Tread"
+      },
+      {
+        "question": "What is the typical formula for calculating the number of risers in a staircase?",
+        "answers":
+        [
+          "Number of risers = Floor height / Tread depth",
+          "Number of risers = Floor height / Riser height",
+          "Number of risers = Step count - 1",
+          "Number of risers = Tread depth + Riser height",
+          "Number of risers = Staircase length / Step depth"
+        ],
+        "correctAnswer": "Number of risers = Floor height / Riser height"
+      },
+      {
+        "question": "What building code requirement regulates the maximum distance between balusters in a staircase?",
+        "answers":
+        [
+          "4 inches",
+          "6 inches",
+          "8 inches",
+          "10 inches",
+          "No set regulation, depends on local code"
+        ],
+        "correctAnswer": "4 inches"
+      },
+      {
+        "question": "Which type of wood is generally NOT recommended for use in stair construction?",
+        "answers":
+        [
+          "Oak",
+          "Pine",
+          "Fiberboard",
+          "Maple",
+          "Pressure-treated wood"
+        ],
+        "correctAnswer": "Fiberboard"
+      },
+      {
+        "question": "What is the purpose of a landing on a staircase?",
+        "answers":
+        [
+          "To support the weight of the stairs",
+          "To provide a rest area halfway up the stairs",
+          "To change the direction of the staircase",
+          "To improve ventilation",
+          "To add decorative elements"
+        ],
+        "correctAnswer": "To provide a rest area halfway up the stairs"
+      },
+      {
+        "question": "What safety feature is often required at the top and bottom of a staircase?",
+        "answers":
+        [
+          "Grab bars",
+          "Handrails",
+          "Knee walls",
+          "Floor mats",
+          "Kickplates"
+        ],
+        "correctAnswer": "Handrails"
+      },
+      {
+        "question": "Which building code regulates the minimum headroom clearance above stairs?",
+        "answers":
+        [
+          "International Residential Code (IRC)",
+          "International Building Code (IBC)",
+          "National Electrical Code (NEC)",
+          "Local building code",
+          "No specific code, just use common sense"
+        ],
+        "correctAnswer": "International Residential Code (IRC)"
+      },
+      {
+        "question": "What is the preferred method for attaching treads and risers to stringers?",
+        "answers":
+        [
+          "Nailed directly",
+          "Screwed and glued",
+          "Wedged with wooden wedges",
+          "Bolted through",
+          "Adhesive only"
+        ],
+        "correctAnswer": "Screwed and glued"
+      },
+      {
+        "question": "What is the term for the angled pieces supporting the underside of a staircase?",
+        "answers":
+        [
+          "Stringers",
+          "Treads",
+          "Risers",
+          "Balusters",
+          "Newel post"
+        ],
+        "correctAnswer": "Stringers"
+      }
+    ]
+  }

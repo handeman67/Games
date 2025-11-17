@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style1.css">
+</head>
+
+<body>
+
+    <template id="card">
+        <div id="wrap">
+            <div id="header">
+                <h1 id="title">
+                    Carpentry Quiz
+                </h1>
+               <button onclick="next()">next</button>
+            </div>
+             <div id="score" data-scr="0">
+                    
+                    
+                    <h5>Score:</h5>
+                </div>
+            <div id="main">
+                <fieldset>
+                    <legend id="que">Questions:</legend>
+                <p id="questions"></p>
+            </fieldset>
+                
+<fieldset>
+    <legend id="ans">Answers:</legend>
+    <div id="answers">
+                    <input type="radio" name="answer" id="answer0">
+                    <label id="label0" for="answer0" value="two">A</label>
+                    <input type="radio" name="answer" id="answer1">
+                    <label id="label1" for="answer1" value="three">B</label>
+                    <input type="radio" name="answer" id="answer2">
+                    <label id="label2" for="answer2" value="four">C</label>
+                    <input type="radio" name="answer" id="answer3">
+                    <label id="label3" for="answer3" value="five">D</label>
+                    <input type="radio" name="answer" id="answer4">
+                    <label id="label4" for="answer4" value="one">E</label>
+             </div>  </fieldset> 
+            </div>
+           
+        </div>
+        </div>
+        </div>
+    </template>
+
+
+</body>
+<script src="./index.js"></script>
+
+</html>

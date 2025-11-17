@@ -1,0 +1,155 @@
+{
+    "questions": [
+      {
+        "question": "What is the purpose of a header in a framed opening?",
+        "answers": ["Aesthetic enhancement", "Structural support", "Temperature control", "Soundproofing", "Electrical wiring support"],
+        "correctAnswer": 1
+      },
+      {
+        "question": "Which type of wood is commonly used for exterior decking due to its durability and resistance to decay?",
+        "answers": ["Pine", "Cedar", "Redwood", "Oak", "Maple"],
+        "correctAnswer": 2
+      },
+      {
+        "question": "What is the standard height for a residential interior door?",
+        "answers": ["72 inches", "78 inches", "80 inches", "84 inches", "88 inches"],
+        "correctAnswer": 2
+      },
+      {
+        "question": "In construction, what does the term 'studs' refer to?",
+        "answers": ["Nails used in framing", "Vertical framing members in a wall", "Insulation material", "Exterior siding", "Roof trusses"],
+        "correctAnswer": 1
+      },
+      {
+        "question": "Which of the following is a common method for finishing drywall seams?",
+        "answers": ["Welding", "Taping and mudding", "Stapling", "Gluing", "Sanding"],
+        "correctAnswer": 1
+      },
+      {
+        "question": "What is the primary purpose of a soffit in home construction?",
+        "answers": ["Structural support", "Insulation", "Ventilation", "Aesthetic enhancement", "Soundproofing"],
+        "correctAnswer": 3
+      },
+      {
+        "question": "What is the typical slope range for a standard residential roof?",
+        "answers": ["0-5 degrees", "10-15 degrees", "20-25 degrees", "30-35 degrees", "40-45 degrees"],
+        "correctAnswer": 2
+      },
+      {
+        "question": "Which type of joint is commonly used in woodworking to connect two pieces of wood at a right angle?",
+        "answers": ["Dovetail joint", "Mortise and tenon joint", "Butt joint", "Miter joint", "Lap joint"],
+        "correctAnswer": 2
+      },
+      {
+        "question": "What is the purpose of a vapor barrier in home construction?",
+        "answers": ["Fire protection", "Pest control", "Moisture control", "Structural support", "Insulation"],
+        "correctAnswer": 2
+      },
+      {
+        "question": "In framing, what is the purpose of a ledger board?",
+        "answers": ["Supporting roof trusses", "Attaching siding", "Anchoring a foundation", "Supporting floor joists", "Attaching a deck to a structure"],
+        "correctAnswer": 3
+      },
+      {
+        "question": "Which material is commonly used as a moisture-resistant underlayment for floors in wet areas like bathrooms?",
+        "answers": ["Plywood", "OSB (Oriented Strand Board)", "Particleboard", "Cement backer board", "Hardwood"],
+        "correctAnswer": 3
+      },
+      {
+        "question": "What is the function of a sill plate in home construction?",
+        "answers": ["Supporting roof trusses", "Anchoring a foundation", "Attaching siding", "Connecting floor joists", "Supporting windows"],
+        "correctAnswer": 2
+      },
+      {
+        "question": "What is the purpose of a kickout flashing in roofing?",
+        "answers": ["Aesthetic enhancement", "Diverting water away from a wall", "Adding insulation", "Supporting shingles", "Enhancing ventilation"],
+        "correctAnswer": 1
+      },
+      {
+        "question": "What is the primary purpose of a fascia board?",
+        "answers": ["Structural support", "Aesthetic enhancement", "Moisture control", "Insulation", "Soundproofing"],
+        "correctAnswer": 1
+      },
+      {
+        "question": "Which of the following is a common type of exterior finish for residential siding?",
+        "answers": ["Stucco", "Shiplap", "Beadboard", "Wainscoting", "Tongue and groove"],
+        "correctAnswer": 0
+      },
+      {
+        "question": "What is the purpose of a plumb bob in carpentry?",
+        "answers": ["Measuring angles", "Checking for level", "Transferring measurements", "Finding square", "Ensuring vertical alignment"],
+        "correctAnswer": 4
+      },
+      {
+        "question": "Which tool is commonly used for making precise and angled cuts in wood?",
+        "answers": ["Circular saw", "Jigsaw", "Miter saw", "Reciprocating saw", "Table saw"],
+        "correctAnswer": 2
+      },
+      {
+        "question": "What is the function of a weep hole in brick masonry?",
+        "answers": ["Providing ventilation", "Allowing water drainage", "Enhancing structural integrity", "Anchoring bricks", "Adding insulation"],
+        "correctAnswer": 1
+      },
+      {
+        "question": "In roofing, what is the purpose of flashing?",
+        "answers": ["Aesthetic enhancement", "Diverting water away from critical areas", "Adding insulation", "Supporting shingles", "Enhancing ventilation"],
+        "correctAnswer": 1
+      },
+      {
+        "question": "Which material is commonly used for interior trim, such as baseboards and crown molding?",
+        "answers": ["Pine", "Oak", "MDF (Medium-Density Fiberboard)", "Cedar", "Plywood"],
+        "correctAnswer": 2
+      },
+      {
+        "question": "What is the primary function of a joist in floor construction?",
+        "answers": ["Roof support", "Wall stabilization", "Insulation", "Floor support", "Soundproofing"],
+        "correctAnswer": 3
+      },
+      {
+        "question": "What is the typical on-center spacing for studs in a framed wall?",
+        "answers": ["8 inches", "12 inches", "16 inches", "20 inches", "24 inches"],
+        "correctAnswer": 2
+      },
+      {
+        "question": "Which type of roofing material is known for its durability, fire resistance, and longevity?",
+        "answers": ["Asphalt shingles", "Metal", "Wood shakes", "Slate", "Tile"],
+        "correctAnswer": 3
+      },
+      {
+        "question": "What is the purpose of a batten in siding installation?",
+        "answers": ["Structural support", "Insulation", "Moisture control", "Aesthetic enhancement", "Soundproofing"],
+        "correctAnswer": 0
+      },
+      {
+        "question": "Which type of joint is commonly used for connecting two pieces of wood end-to-end to create a longer board?",
+        "answers": ["Dovetail joint", "Mortise and tenon joint", "Butt joint", "Scarf joint", "Miter joint"],
+        "correctAnswer": 3
+      },
+      {
+        "question": "What is the purpose of a knee wall in construction?",
+        "answers": ["Supporting roof trusses", "Diverting water away from a wall", "Enhancing structural integrity", "Adding insulation", "Providing partial enclosure"],
+        "correctAnswer": 4
+      },
+      {
+        "question": "Which of the following is a common type of insulation material used in residential construction?",
+        "answers": ["Fiberglass", "Concrete", "Asphalt", "Vinyl", "Plywood"],
+        "correctAnswer": 0
+      },
+      {
+        "question": "What is the purpose of a vapor retarder in home construction?",
+        "answers": ["Fire protection", "Pest control", "Moisture control", "Structural support", "Insulation"],
+        "correctAnswer": 2
+      },
+      {
+        "question": "In woodworking, what is the purpose of a router?",
+        "answers": ["Making straight cuts", "Smoothing surfaces", "Cutting curves and patterns", "Measuring angles", "Sanding"],
+        "correctAnswer": 2
+      },
+      {
+        "question": "What is the primary function of a ledger board in deck construction?",
+        "answers": ["Supporting roof trusses", "Attaching siding", "Anchoring a foundation", "Supporting floor joists", "Attaching the deck to a structure"],
+        "correctAnswer": 4
+      }
+    ]
+  }
+  
