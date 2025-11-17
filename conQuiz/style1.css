@@ -52,6 +52,8 @@ button{
  grid-row: auto;
 }
 #main{
+    display: flex;
+    flex-direction: column;
     top: 4.25em;
     bottom: 0.em;
     overflow: hidden;
@@ -72,7 +74,7 @@ fieldset{
     overflow: hidden;
     overflow-y: scroll;
     border-radius: 13px;
-}
+    flex-grow: 1;}
 input{
     display:none;
 }
