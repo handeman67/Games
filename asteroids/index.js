@@ -2805,8 +2805,7 @@ function handleJoystickTouches(touches, eventType) {
       if (rightJoystick.isTouchInRadius(touch) && !rightJoystick.isTrackingTouch(touch)) {
         rightJoystick.touchStarted(touch);
       }
-    } 
-    if (eventType === 'move') {
+    } if (eventType === 'move') {
       // Check BOTH joysticks independently
       if (leftJoystick.isTrackingTouch(touch)) {
         leftJoystick.touchMoved(touch);
@@ -2814,8 +2813,7 @@ function handleJoystickTouches(touches, eventType) {
       if (rightJoystick.isTrackingTouch(touch)) {
         rightJoystick.touchMoved(touch);
       }
-    }
-     if (eventType === 'end') {
+    } else if (eventType === 'end') {
       // Check BOTH joysticks independently
       if (leftJoystick.isTrackingTouch(touch)) {
         leftJoystick.touchEnded(touch);
