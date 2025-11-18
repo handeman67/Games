@@ -2796,7 +2796,7 @@ function handleJoystickTouches(touches, eventType) {
   if (!Joystick.isMobile() || !leftJoystick || !rightJoystick) return;
 
   for (let touch of touches) {
-    // if (eventType === 'start') {
+    if (eventType === 'start') {
       // Check BOTH joysticks independently - remove else-if to allow both to activate
       if (leftJoystick.isTouchInRadius(touch) && !leftJoystick.isTrackingTouch(touch)) {
         leftJoystick.touchStarted(touch);
@@ -2805,7 +2805,8 @@ function handleJoystickTouches(touches, eventType) {
       if (rightJoystick.isTouchInRadius(touch) && !rightJoystick.isTrackingTouch(touch)) {
         rightJoystick.touchStarted(touch);
       }
-    // } else if (eventType === 'move') {
+    } 
+    if (eventType === 'move') {
       // Check BOTH joysticks independently
       if (leftJoystick.isTrackingTouch(touch)) {
         leftJoystick.touchMoved(touch);
@@ -2813,7 +2814,8 @@ function handleJoystickTouches(touches, eventType) {
       if (rightJoystick.isTrackingTouch(touch)) {
         rightJoystick.touchMoved(touch);
       }
-    // } else if (eventType === 'end') {
+    }
+     if (eventType === 'end') {
       // Check BOTH joysticks independently
       if (leftJoystick.isTrackingTouch(touch)) {
         leftJoystick.touchEnded(touch);
@@ -2821,7 +2823,7 @@ function handleJoystickTouches(touches, eventType) {
       if (rightJoystick.isTrackingTouch(touch)) {
         rightJoystick.touchEnded(touch);
       }
-    // }
+    }
   }
 }
 
