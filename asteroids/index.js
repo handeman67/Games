@@ -2805,11 +2805,11 @@ function handleJoystickTouches(touches, eventType) {
       if (rightJoystick.isTouchInRadius(touch) && !rightJoystick.isTrackingTouch(touch)) {
         rightJoystick.touchStarted(touch);
       }
-    // } if (eventType === 'move') {
+    } else if (eventType === 'move') {
       // Check BOTH joysticks independently
-      if (leftJoystick.isTrackingTouch(touch)) {
-        leftJoystick.touchMoved(touch);
-      }
+      // if (leftJoystick.isTrackingTouch(touch)) {
+      //   leftJoystick.touchMoved(touch);
+      // }
       if (rightJoystick.isTrackingTouch(touch)) {
         rightJoystick.touchMoved(touch);
       }
