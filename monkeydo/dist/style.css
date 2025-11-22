@@ -1,0 +1,175 @@
+body {
+  display: grid;
+  place-content: center;
+  background: #c1c1c1;
+  overflow: hidden;
+  max-height: 100vh;
+  --fontsize: 3rem;
+  --sz: 3rem;
+  --bkclr: #cfc;
+}
+
+.outwrap {
+  max-width: 800px;
+}
+
+.wrap {
+  font-size: 16px;
+  position: absolute;
+  max-width: 800px;
+  margin: 0 auto;
+  top: 12vh;
+  left: 1rem;
+  right: 1rem;
+  bottom: 4rem;
+  background: var(--bkclr);
+  box-shadow: 2px 2px 12px 0px #000;
+
+}
+
+.result {
+  max-width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  bottom: 90vh;
+  display: flex;
+  flex-direction: row;
+  text-align: center;
+  background: var(--bkclr);
+  font-size: var(--fontsize);
+  box-shadow: 2px 2px 12px 0px #000;
+}
+.posInfo:hover {
+  font-size: 2rem;
+}
+.posInfo {
+  text-align: center;
+  width: 50%;
+  font-size: 1rem;
+  padding:1rem;
+}
+
+.score {
+  text-align: center;
+  width: 50%;
+}
+
+.ball {
+  text-align: center;
+  display: grid;
+  background: #cc05;
+  border-radius: 50%;
+  box-shadow: 2px 2px 2px 2px #000;
+  z-index: 10;
+  /* border: 12px solid #f00; */
+}
+
+:before,
+:after {
+  background: #ccc5;
+  border-radius: 50%;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  text-align: center;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: var(--fontsize);
+  /* background: #00cc3a; */
+}
+.ball:hover:active:before{
+  content:"🙉";
+}
+.ball:hover:visited:before{
+  content:"🙊";
+}
+.ball:hover:before{
+  content:"🙈";
+}
+.ball:before {
+  content: "🙊";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.ballend {
+  display: grid;
+  position: absolute;
+  background: transparent;
+  border: 1px solid #0f0;
+  transition: opacity 3s;
+}
+
+.ballend:after {
+  font-size: calc(var(--fontsize)*.75);
+  color: rgb(125, 134, 32);
+  text-shadow: 2px 2px 5px rgb(0, 0, 0);
+  content: attr(data-moji);
+
+}
+
+.ball:hover:active {
+  
+  background: #00cc3a;
+  box-shadow: inset -1px -1px 8px 8px #0729;
+}
+
+.ball:hover {
+  z-index: 100;
+  transform: scale(1.15);
+  background: #00cc3a;
+  box-shadow: inset -1px -1px 5px 0px #0729;
+}
+
+.try {
+  position: absolute;
+  text-align: center;
+  left: 50%;
+  top: 11vh;
+  opacity: 0;
+  transform: translate(-50%, 0);
+}
+
+.tryagain {
+  animation: fade 2s linear forwards;
+}
+
+@keyframes fade {
+  0% {
+    opacity: 1
+  }
+
+  100% {
+    transform: scale(2);
+    opacity: 0
+  }
+}
+
+.reset:hover:active {
+  background: #5a33e655;
+  color: #99ff00;
+  
+}
+
+.reset:hover {
+  background: #1fff1f55;
+}
+
+.reset {
+  width: 100%;
+  max-width: 100%;
+  position: absolute;
+  bottom: 1rem;
+  left: 0;
+  background: #0c05;
+  color: rgb(255, 68, 68);
+  font-weight: 900;
+  text-shadow: 1px -1px 5px #000;
+  font-size: 1.5rem;
+  z-index: 100;
+}
