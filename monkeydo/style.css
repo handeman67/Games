@@ -7,16 +7,18 @@ body {
   --fontsize: 3rem;
   --sz: 3rem;
   --bkclr: #cfc;
+  max-width:900px;
 }
 
 .outwrap {
-  max-width: 800px;
+  width: 100vw;
+  max-width: 100%;
 }
 
 .wrap {
   font-size: 16px;
   position: absolute;
-  max-width: 800px;
+  max-width:900px;
   margin: 0 auto;
   top: 12vh;
   left: 1rem;
@@ -139,6 +141,17 @@ body {
   animation: fade 2s linear forwards;
 }
 
+button{
+  border: none;
+  outline: none;
+  border-radius: 10px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1.5rem;
+  color:#fff;
+  background: #00cc3a;
+  box-shadow: 2px 2px 5px #000;
+  transition: all 0.3s ease-in-out;
+}
 @keyframes fade {
   0% {
     opacity: 1
@@ -167,9 +180,29 @@ body {
   bottom: 1rem;
   left: 0;
   background: #0c05;
-  color: rgb(255, 68, 68);
+
   font-weight: 900;
   text-shadow: 1px -1px 5px #000;
-  font-size: 1.5rem;
+  font-size: 4rem;
   z-index: 100;
+}
+@media screen and (max-width: 600px) {
+  .wrap {
+    left: 0;
+    right: 0;
+    top: 10vh;
+    bottom: 4rem;
+    max-width: 100% !important;
+   background-color: lightblue;
+  }
+  .try {
+    font-size: 12px;
+    top: 10vh;
+    bottom: 6rem;
+  }
+  .result {
+    font-size: 2rem;
+    bottom: 85vh;
+  }
+  
 }

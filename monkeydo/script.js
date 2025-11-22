@@ -29,13 +29,14 @@ function loadvars() {
   this.posInfo.innerHTML="LastSpot:0";
   this.wth = this.board.clientWidth;
   this.hgt = this.board.clientHeight;
-  this.buffer = 10;
-  this.count = this.buffer % this.wth;
+  this.buffer = wth/50;
+  this.count = this.buffer % this.wth*.5;
   this.sz = (this.wth / this.count);
   this.lt = this.buffer;
   this.rt = this.wth - this.buffer;
   this.tp = this.buffer;
   this.bt = this.hgt - this.sz;
+  console.log(count);
   return this;
 }
 
