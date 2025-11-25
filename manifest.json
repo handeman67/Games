@@ -1,0 +1,24 @@
+{
+  "name": "My App",
+  "short_name": "My App",
+  "description": "My App - Installable Web App",
+  "start_url": "https://handeman67.github.io/Games/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "https://handeman67.github.io/favicon.ico",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://handeman67.github.io/favicon.ico",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
