@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>HTML /Breakout</title>
+    <link rel="stylesheet" href="./style.css">
+
+  </head>
+    <!-- ?test -->
+  <body>
+  <div class="game-container" id="gameContainer">
+  <div class="score">Score: <span id="score">0</span></div>
+  <div class="lives">Lives: <span id="lives">3</span></div>
+
+  <div class="ball" id="ball"></div>
+  <div class="paddle" id="paddle"></div>
+
+  <div class="game-over" id="gameOver">
+    <div>Game Over!</div>
+    <button class="restart-btn" onclick="restartGame()">Play Again</button>
+  </div>
+
+  <div class="game-won" id="gameWon">
+    <div>You Won!</div>
+    <button class="restart-btn" onclick="restartGame()">Play Again</button>
+  </div>
+
+  <div class="instructions">
+    Use LEFT and RIGHT arrow keys or A and D to move the paddle
+    Mobile coming soon
+  </div>
+</div>
+    <script  src="./script.js"></script>
+
+  </body>
+  
+</html>
