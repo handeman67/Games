@@ -1,36 +1,37 @@
 <!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
-<link rel="manifest" href="/manifest.json">
-<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js');}</script>
+<html lang="en">
 
-<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>HTML /Breakout</title>
+    <link rel="stylesheet" href="./style.css">
 
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title></title>
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-</head>
+  </head>
+    <!-- ?test -->
+  <body>
+  <div class="game-container" id="gameContainer">
+  <div class="score">Score: <span id="score">0</span></div>
+  <div class="lives">Lives: <span id="lives">3</span></div>
 
-<body>
-    <div class="wrap">
-        <ul>
-            <li> <a href=".\CORNHOLE\cornhole3.html">Cornhole</a></li>
-            <li> <a href=".\asteroids\index.html">asteroids</a></li>
-            <li> <a href=".\Breakout\index.html">Breakout</a></li>
-            <li> <a href=".\Centapeed\index.html">Centapeed</a></li>
-            <li> <a href=".\monkeydo\index.html">Monkeydoi</a></li>
-            <li> <a href=".\conQuiz\index.html"><i class="fas fa-hammer"></i> Quiz </a></li>
-        </ul>
-    </div>
-</body>
+  <div class="ball" id="ball"></div>
+  <div class="paddle" id="paddle"></div>
 
+  <div class="game-over" id="gameOver">
+    <div>Game Over!</div>
+    <button class="restart-btn" onclick="restartGame()">Play Again</button>
+  </div>
+
+  <div class="game-won" id="gameWon">
+    <div>You Won!</div>
+    <button class="restart-btn" onclick="restartGame()">Play Again</button>
+  </div>
+
+  <div class="instructions">
+    Use LEFT and RIGHT arrow keys or A and D to move the paddle
+  </div>
+</div>
+    <script  src="./script.js"></script>
+
+  </body>
+  
 </html>
