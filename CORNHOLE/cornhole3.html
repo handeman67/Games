@@ -13,101 +13,93 @@
         .ui-overlay { position: absolute; pointer-events: none; }
         .ui-overlay > * { pointer-events: auto; }
         #gameCanvas.dragging { cursor: grabbing; }
-        .slide-menu { 
-            transition: transform 0.3s ease-in-out; 
-            transform: translateX(-100%);
-        }
-        .slide-menu.open { 
-            transform: translateX(0); 
-        }
-        #menuToggle {
-            transition: all 0.3s ease;
-        }
-    </style>
+        /* Dropdown menu styles already covered by Tailwind */    </style>
 </head>
 <body class="bg-gray-900">
     <canvas id="gameCanvas"></canvas>
     
-    <!-- UI Overlay -->
-    <div class="ui-overlay top-0 left-0 right-0 p-4 flex justify-between items-start">
+    <!-- Streamlined Header -->
+    <div class="fixed top-0 left-0 right-0 p-6 bg-gray-800/95 backdrop-blur-xl border-b-2 border-white/10 shadow-2xl h-28 flex items-center justify-between z-50 px-8">
         <!-- Player 1 Score -->
-        <div class="bg-blue-600/90 backdrop-blur rounded-xl p-4 text-white shadow-lg min-w-32">
-            <div class="text-sm opacity-80">Player</div>
-            <div class="text-4xl font-bold" id="player1Score">0</div>
-            <div class="text-xs mt-1" id="player1Bags">Bags: 4</div>
+        <div class="text-left min-w-28">
+            <div class="text-sm opacity-80 mb-1">Player</div>
+            <div class="text-3xl font-bold text-blue-400 drop-shadow-lg" id="player1Score">0</div>
+            <div class="text-xs mt-1 opacity-75" id="player1Bags">Bags: 4</div>
         </div>
         
-        <!-- Game Info -->
-        <div class="bg-gray-800/90 backdrop-blur rounded-xl p-4 text-white text-center shadow-lg">
-            <div class="text-lg font-semibold" id="roundInfo">Round 1</div>
-            <div class="text-2xl font-bold mt-1" id="turnInfo">Your Turn</div>
-            <div class="text-sm opacity-70 mt-1">First to 21 wins!</div>
+        <!-- Game Info Center -->
+        <div class="text-center flex flex-col items-center">
+            <div class="text-xl font-semibold text-white drop-shadow-md" id="roundInfo">Round 1</div>
+            <div class="text-2xl font-bold mt-1 text-green-400 drop-shadow-lg" id="turnInfo">Your Turn</div>
+            <div class="text-xs opacity-70 mt-1 tracking-wide">First to 21 wins!</div>
         </div>
         
-        <!-- Player 2 / AI Score -->
-        <div class="bg-red-600/90 backdrop-blur rounded-xl p-4 text-white shadow-lg min-w-32 text-right">
-            <div class="text-sm opacity-80" id="player2Label">AI</div>
-            <div class="text-4xl font-bold" id="player2Score">0</div>
-            <div class="text-xs mt-1" id="player2Bags">Bags: 4</div>
+        <!-- Player 2 Score -->
+        <div class="text-right min-w-28">
+            <div class="text-sm opacity-80 mb-1" id="player2Label">AI</div>
+            <div class="text-3xl font-bold text-red-400 drop-shadow-lg" id="player2Score">0</div>
+            <div class="text-xs mt-1 opacity-75" id="player2Bags">Bags: 4</div>
+        </div>
+        
+        <!-- Header Menu Dropdown -->
+        <div class="relative ml-4">
+            <button id="menuBtnHeader" class="bg-gray-700/80 hover:bg-gray-600 text-white px-4 py-2 rounded-xl font-semibold shadow-lg transition-all hover:scale-105 flex items-center gap-2 backdrop-blur-sm border border-gray-600">
+                <span>☰</span> Menu
+            </button>
+            <div id="dropdownMenu" class="absolute right-0 top-full mt-2 bg-gray-800/95 backdrop-blur-xl rounded-xl p-2 shadow-2xl w-52 hidden border border-gray-700 z-[100] flex flex-col gap-1">
+                <button id="restartBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-xl font-semibold shadow-md transition-all hover:scale-[1.02] flex items-center gap-2 justify-center text-sm">
+                    <span>🔄</span> New Game
+                </button>
+                <button id="modeBtn" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-xl font-semibold shadow-md transition-all hover:scale-[1.02] flex items-center gap-2 justify-center text-sm">
+                    <span>🤖</span> <span id="modeBtnText">vs AI</span>
+                </button>
+            </div>
         </div>
     </div>
     
-    <!-- Throw Power Indicator -->
-    <div class="ui-overlay top-32 left-4">
+    <!-- Throw Power Indicator (under Player 1 score) -->
+    <div class="ui-overlay top-44 left-4">
         <div class="bg-gray-800/90 backdrop-blur rounded-xl p-4 text-white shadow-lg min-w-32" id="throwIndicator" style="display: none;">
-            <div class="text-sm mb-2 font-semibold">Throw Power</div>
-            <div class="text-3xl font-bold text-center mb-2" id="powerValue">0%</div>
-            <div class="w-full h-4 bg-gray-700 rounded-full overflow-hidden">
+            <div class="text-sm mb-2 text-center">Throw Power</div>
+            <div class="w-full h-4 bg-gray-700 rounded-full overflow-hidden mb-2">
                 <div class="h-full bg-gradient-to-r from-green-500 via-yellow-500 to-red-500 transition-all" id="powerBar" style="width: 0%"></div>
             </div>
-            <div class="text-xs mt-2 opacity-70 text-center">Drag & Release!</div>
+            <div class="text-2xl font-bold text-center" id="powerValue">0</div>
+            <div class="text-xs mt-1 opacity-70 text-center">Drag back to throw</div>
         </div>
     </div>
     
-    <!-- Slide Menu Toggle Button -->
-    <div class="ui-overlay top-1/2 left-0 transform -translate-y-1/2">
-        <button id="menuToggle" class="bg-gray-800/90 backdrop-blur text-white px-3 py-6 rounded-r-xl shadow-lg hover:bg-gray-700 transition-all">
-            ☰
-        </button>
-    </div>
-    
-    <!-- Slide Menu -->
-    <div class="ui-overlay top-0 left-0 h-full slide-menu" id="slideMenu">
-        <div class="bg-gray-800/95 backdrop-blur h-full w-64 shadow-2xl p-6">
-            <div class="flex justify-between items-center mb-8">
-                <h2 class="text-white text-2xl font-bold">Menu</h2>
-                <button id="menuClose" class="text-white text-2xl hover:text-red-500 transition-colors">×</button>
-            </div>
-            
-            <div class="space-y-4">
-                <button id="restartBtn" class="w-full bg-green-600 hover:bg-green-700 text-white px-6 py-4 rounded-xl font-semibold shadow-lg transition-all transform hover:scale-105">
-                    🔄 New Game
-                </button>
-                <button id="modeBtn" class="w-full bg-purple-600 hover:bg-purple-700 text-white px-6 py-4 rounded-xl font-semibold shadow-lg transition-all transform hover:scale-105">
-                    🤖 vs AI
-                </button>
-            </div>
-            
-            <div class="mt-8 text-white/70 text-sm">
-                <div class="mb-2 font-semibold">Game Rules:</div>
-                <ul class="list-disc list-inside space-y-1 text-xs">
-                    <li>Hole: 3 points</li>
-                    <li>Board: 1 point</li>
-                    <li>First to 21 wins</li>
-                    <li>4 bags per round</li>
-                </ul>
+    <!-- Bag Position Control -->
+    <div class="ui-overlay bottom-4 right-4" id="positionControl">
+        <div class="bg-gray-800/90 backdrop-blur rounded-xl p-4 text-white shadow-lg">
+            <div class="text-sm mb-2 text-center">Bag Position</div>
+            <input type="range" id="bagPositionSlider" min="-15" max="15" value="0" 
+                   class="w-32 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-500">
+            <div class="flex justify-between text-xs mt-1 opacity-70">
+                <span>Left</span>
+                <span>Right</span>
             </div>
         </div>
     </div>
-    
-    <!-- Instructions -->
-    <div class="ui-overlay bottom-4 left-4" id="instructionsBox">
-        <div class="bg-gray-800/80 backdrop-blur rounded-xl p-3 text-white text-sm max-w-xs relative">
-            <button id="closeInstructions" class="absolute top-2 right-2 text-white/70 hover:text-white text-lg leading-none">×</button>
-            <div class="font-semibold mb-1 pr-6">How to Play:</div>
-            <div class="opacity-80 text-xs">
-                Click and drag backward to aim, release to throw. 
-                Hole = 3 pts, Board = 1 pt
+        
+    <!-- Instructions Modal (Centered Overlay) -->
+    <div class="fixed inset-0 z-[999] bg-black/80 flex items-center justify-center p-8" id="instructionsBox">
+        <div class="bg-gray-900/95 backdrop-blur-xl rounded-2xl p-8 text-white shadow-2xl max-w-lg w-full mx-4 relative text-lg border border-gray-700">
+            <button id="closeInstructions" class="absolute top-4 right-4 w-10 h-10 flex items-center justify-center text-gray-300 hover:text-white hover:bg-gray-800/50 rounded-xl transition-all text-2xl font-bold shadow-lg backdrop-blur">
+                ×
+            </button>
+            <div class="font-bold text-2xl mb-4 pr-12 text-center drop-shadow-lg">🎮 How to Play Corn Hole</div>
+            <div class="opacity-90 text-base leading-relaxed mb-6 text-center max-w-md mx-auto">
+                📱 Use the <strong>bottom-right slider</strong> to position your bag left/right.<br><br>
+                🖱️ <strong>Click & drag backward</strong> on screen to aim & throw power (watch the meter!).<br><br>
+                🎯 <strong>Scoring:</strong><br>
+                • Hole = <strong>5 pts</strong><br>
+                • Inner Ring (orange) = <strong>3 pts</strong><br>
+                • Outer Ring (cyan) = <strong>2 pts</strong><br>
+                • Board = <strong>1 pt</strong>
+            </div>
+            <div class="text-center">
+                <p class="text-sm opacity-75 mb-4">First to 21 points wins! Close this to start playing.</p>
             </div>
         </div>
     </div>
@@ -141,6 +133,27 @@
             throwInProgress: false,
             bagsInPlay: []
         };
+
+        // Header dropdown menu
+        const menuBtnHeader = document.getElementById('menuBtnHeader');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        menuBtnHeader?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdownMenu?.classList.toggle('hidden');
+        });
+        document.addEventListener('click', (e) => {
+            if (menuBtnHeader && !menuBtnHeader.contains(e.target) && dropdownMenu && !dropdownMenu.contains(e.target)) {
+                dropdownMenu.classList.add('hidden');
+            }
+        });
+
+        // Instructions close button
+        const instructionsBox = document.getElementById('instructionsBox');
+        const closeInstructions = document.getElementById('closeInstructions');
+        closeInstructions.style.zIndex = '1000';
+        closeInstructions.addEventListener('click', () => {
+            instructionsBox.style.display = 'none';
+        });
 
         // Three.js Setup
         const canvas = document.getElementById('gameCanvas');
@@ -264,12 +277,42 @@
             frame.position.y = boardThickness / 2;
             frame.castShadow = true;
             boardGroup.add(frame);
+            
+            // Scoring rings around the hole
+            const innerRingRadius = 0.5;
+            const outerRingRadius = 0.75;
+            
+            // Outer ring (2 points) - Cyan
+            const outerRingGeometry = new THREE.RingGeometry(innerRingRadius, outerRingRadius, 32);
+            const outerRingMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x00FFFF, 
+                side: THREE.DoubleSide,
+                emissive: 0x004444,
+                emissiveIntensity: 0.3,
+                roughness: 0.6
+            });
+            const outerRing = new THREE.Mesh(outerRingGeometry, outerRingMaterial);
+            outerRing.rotation.x = -Math.PI / 2;
+            outerRing.position.set(0, boardThickness + 0.01, -holePositionZ);
+            boardGroup.add(outerRing);
+            
+            // Inner ring (3 points) - Orange
+            const innerRingGeometry = new THREE.RingGeometry(holeRadius, innerRingRadius, 32);
+            const innerRingMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0xFF8C00, 
+                side: THREE.DoubleSide,
+                roughness: 0.8
+            });
+            const innerRing = new THREE.Mesh(innerRingGeometry, innerRingMaterial);
+            innerRing.rotation.x = -Math.PI / 2;
+            innerRing.position.set(0, boardThickness + 0.02, -holePositionZ);
+            boardGroup.add(innerRing);
 
             // Position and rotate board - tilted with raised end toward player
             boardGroup.position.set(0, 0.4, -8);
             boardGroup.rotation.x = boardAngle; // Positive angle to tilt toward player
 
-            return { group: boardGroup, holeRadius, holePositionZ, boardWidth, boardLength, boardThickness, boardAngle };
+            return { group: boardGroup, holeRadius, holePositionZ, boardWidth, boardLength, boardThickness, boardAngle, innerRingRadius, outerRingRadius };
         }
 
         const board = createCornHoleBoard();
@@ -389,7 +432,7 @@
             ) * 100, 100);
             
             document.getElementById('powerBar').style.width = power + '%';
-            document.getElementById('powerValue').textContent = Math.round(power) + '%';
+            document.getElementById('powerValue').textContent = Math.round(power);
         }
 
         function onDragEnd(e) {
@@ -438,7 +481,7 @@
             const holeWorldZ = -8 + holeLocalZ * Math.cos(Math.PI / 12);
             const holeWorldY = 0.4 + holeLocalZ * Math.sin(Math.PI / 12);
             
-            // Check if in hole
+            // Check distance to hole center
             const distToHole = Math.sqrt(
                 Math.pow(bagPos.x, 2) + 
                 Math.pow(bagPos.z - holeWorldZ, 2)
@@ -451,16 +494,29 @@
             
             let points = 0;
             
-            if (distToHole < 0.4 && bagPos.y < 1.5) {
-                // In the hole! 3 points
-                points = 3;
+            // Ring radii (must match board creation)
+            const holeRadius = 0.3;
+            const innerRingRadius = 0.5;
+            const outerRingRadius = 0.75;
+            
+            if (distToHole < holeRadius && bagPos.y < 1.5) {
+                // In the hole! 5 points
+                points = 5;
                 currentBag.userData.inHole = true;
                 
                 // Make bag fall through
                 currentBagBody.position.y = -1;
                 currentBag.visible = false;
+            } else if (distToHole < innerRingRadius && onBoard) {
+                // Inner ring (orange) - 3 points
+                points = 3;
+                currentBag.userData.onBoard = true;
+            } else if (distToHole < outerRingRadius && onBoard) {
+                // Outer ring (yellow) - 2 points
+                points = 2;
+                currentBag.userData.onBoard = true;
             } else if (onBoard) {
-                // On the board, 1 point
+                // On the board but outside rings - 1 point
                 points = 1;
                 currentBag.userData.onBoard = true;
             }
@@ -518,16 +574,19 @@
         function aiThrow() {
             if (gameState.gameOver || gameState.currentPlayer !== 2) return;
             
-            // AI calculates throw with better accuracy
-            const accuracy = 0.82 + Math.random() * 0.15; // 82-97% accuracy (more challenging)
-            const baseVX = (Math.random() - 0.5) * 2; // More centered aim
-            const baseVY = 12 + Math.random() * 2;
-            const baseVZ = 21 + Math.random() * 4;
+            // Improved AI - more accurate throws (85-95% accuracy)
+            const accuracy = 0.85 + Math.random() * 0.1;
             
-            // Add less inaccuracy for better AI
-            const vx = baseVX + (Math.random() - 0.5) * (1 - accuracy) * 6;
-            const vy = baseVY + (Math.random() - 0.5) * (1 - accuracy) * 3;
-            const vz = baseVZ + (Math.random() - 0.5) * (1 - accuracy) * 5;
+            // Optimal throw values to hit the hole
+            const optimalVX = 0;
+            const optimalVY = 13;
+            const optimalVZ = 22;
+            
+            // Add small variations based on accuracy
+            const inaccuracyFactor = (1 - accuracy) * 5;
+            const vx = optimalVX + (Math.random() - 0.5) * inaccuracyFactor;
+            const vy = optimalVY + (Math.random() - 0.5) * inaccuracyFactor * 0.5;
+            const vz = optimalVZ + (Math.random() - 0.5) * inaccuracyFactor;
             
             throwBag(vx, vy, vz);
         }
@@ -584,8 +643,8 @@
 
         function toggleMode() {
             gameState.isAIMode = !gameState.isAIMode;
-            document.getElementById('modeBtn').textContent = 
-                gameState.isAIMode ? '🤖 vs AI' : '👥 2 Players';
+            document.getElementById('modeBtnText').textContent = 
+                gameState.isAIMode ? 'vs AI' : '2 Players';
             document.getElementById('player2Label').textContent = 
                 gameState.isAIMode ? 'AI' : 'Player 2';
             resetGame();
@@ -601,6 +660,20 @@
             const turnText = gameState.currentPlayer === 1 ? 'Your Turn' : 
                             (gameState.isAIMode ? 'AI Turn' : 'Player 2 Turn');
             document.getElementById('turnInfo').textContent = turnText;
+            
+            // Update position control visibility
+            const positionControl = document.getElementById('positionControl');
+            const bagPositionSlider = document.getElementById('bagPositionSlider');
+            if (gameState.currentPlayer === 2 && gameState.isAIMode) {
+                positionControl.style.opacity = '0.5';
+                bagPositionSlider.disabled = true;
+            } else {
+                positionControl.style.opacity = '1';
+                bagPositionSlider.disabled = false;
+            }
+            
+            // Reset slider to center
+            bagPositionSlider.value = 0;
         }
 
         // Event Listeners - Mouse
@@ -617,23 +690,30 @@
         document.getElementById('modeBtn').addEventListener('click', toggleMode);
         document.getElementById('playAgainBtn').addEventListener('click', resetGame);
         
-        // Menu toggle
-        const slideMenu = document.getElementById('slideMenu');
-        const menuToggle = document.getElementById('menuToggle');
-        const menuClose = document.getElementById('menuClose');
+        // Bag position slider
+        const bagPositionSlider = document.getElementById('bagPositionSlider');
+        const positionControl = document.getElementById('positionControl');
         
-        menuToggle.addEventListener('click', () => {
-            slideMenu.classList.add('open');
+        bagPositionSlider.addEventListener('input', (e) => {
+            if (gameState.throwInProgress || gameState.gameOver) return;
+            if (gameState.currentPlayer === 2 && gameState.isAIMode) return;
+            if (!currentBag || !currentBagBody) return;
+            
+            const xPos = parseFloat(e.target.value) / 10; // Range -1.5 to 1.5
+            currentBag.position.x = xPos;
+            currentBagBody.position.x = xPos;
         });
         
-        menuClose.addEventListener('click', () => {
-            slideMenu.classList.remove('open');
-        });
-        
-        // Close instructions
-        document.getElementById('closeInstructions').addEventListener('click', () => {
-            document.getElementById('instructionsBox').style.display = 'none';
-        });
+        // Show/hide position control based on turn
+        function updatePositionControl() {
+            if (gameState.currentPlayer === 2 && gameState.isAIMode) {
+                positionControl.style.opacity = '0.5';
+                bagPositionSlider.disabled = true;
+            } else {
+                positionControl.style.opacity = '1';
+                bagPositionSlider.disabled = false;
+            }
+        }
 
         // Handle resize
         window.addEventListener('resize', () => {
