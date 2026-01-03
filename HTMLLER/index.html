@@ -1,0 +1,2446 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Dev Studio</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/dialog/dialog.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closetag.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/search/search.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/search/searchcursor.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/dialog/dialog.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/foldcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/foldgutter.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/xml-fold.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/html-hint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/css-hint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/javascript-hint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/lint/lint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/selection/active-line.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchtags.min.js"></script>
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/foldgutter.min.css">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/lint/lint.min.css">
+    <!-- Beautifier for code formatting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.11/beautify.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.11/beautify-html.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.11/beautify-css.min.js"></script>
+    <!-- Emmet for abbreviation expansion -->
+    <script src="https://cdn.jsdelivr.net/npm/emmet-elem@0.1.4/umd/emmet-elem.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .CodeMirror {
+            height: 100% !important;
+            font-size: 14px;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+
+        /* Dropdown Menu */
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: 1000;
+            min-width: 220px;
+        }
+
+        .dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        /* Panels */
+        .edit-toolbar {
+            display: none;
+        }
+
+        .edit-toolbar.active {
+            display: flex;
+        }
+
+        .plugin-panel {
+            display: none;
+        }
+
+        .plugin-panel.active {
+            display: block;
+        }
+
+        .file-tree {
+            display: none;
+        }
+
+        .file-tree.active {
+            display: block;
+        }
+
+        /* Preview iframe */
+        #preview-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: white;
+        }
+
+        /* File tree items */
+        .tree-item {
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tree-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .tree-item.selected {
+            background: rgba(59, 130, 246, 0.3);
+        }
+
+        .tree-folder>.tree-children {
+            margin-left: 16px;
+            border-left: 1px solid #4b5563;
+            padding-left: 8px;
+        }
+
+        .tree-folder.collapsed>.tree-children {
+            display: none;
+        }
+
+        .folder-toggle {
+            width: 16px;
+            text-align: center;
+            font-size: 10px;
+        }
+
+        /* Welcome screen */
+        .welcome-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            padding: 40px;
+            position: relative;
+        }
+
+        .welcome-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(239, 68, 68, 0.8);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .welcome-close:hover {
+            background: rgba(239, 68, 68, 1);
+            transform: scale(1.1);
+        }
+
+        /* Editor layout */
+        #editorContainer {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-width: 0;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        #editorWrapper {
+            display: none;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        #editorWrapper.active {
+            display: flex;
+        }
+
+        #editorWrapper .CodeMirror {
+            flex: 1;
+            min-height: 0;
+        }
+
+        /* Resize handles */
+        .resize-handle {
+            position: absolute;
+            background: transparent;
+            z-index: 100;
+        }
+
+        .resize-handle:hover {
+            background: rgba(59, 130, 246, 0.5);
+        }
+
+        .resize-handle.dragging {
+            background: rgba(59, 130, 246, 0.7);
+        }
+
+        .resize-handle-right {
+            right: 0;
+            top: 0;
+            width: 5px;
+            height: 100%;
+            cursor: ew-resize;
+        }
+
+        .resize-handle-left {
+            left: 0;
+            top: 0;
+            width: 5px;
+            height: 100%;
+            cursor: ew-resize;
+        }
+
+        /* Loading overlay */
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #333;
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Modals */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-900 text-white h-screen flex flex-col">
+
+    <!-- Hidden file inputs for fallback folder/file access -->
+    <input type="file" id="folderInput" webkitdirectory multiple style="display: none;">
+    <input type="file" id="zipInput" accept=".zip" style="display: none;">
+
+    <!-- Top Navigation Bar -->
+    <nav class="bg-gray-800 border-b border-gray-700 px-4 py-2 flex items-center justify-between flex-shrink-0">
+        <div class="flex items-center gap-4">
+            <h1 class="text-xl font-bold text-blue-400">🛠️ HTML Dev Studio</h1>
+
+            <!-- Menu Dropdown -->
+            <div class="dropdown relative">
+                <button class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded flex items-center gap-2">
+                    <span>Menu</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div class="dropdown-menu bg-gray-800 border border-gray-600 rounded shadow-lg">
+                    <button onclick="openProjectFolder()"
+                        class="w-full text-left px-4 py-2 hover:bg-gray-700 flex items-center gap-2">
+                        <span>📁</span> Open Project Folder
+                    </button>
+                    <hr class="border-gray-600">
+                    <button onclick="toggleEditToolbar()"
+                        class="w-full text-left px-4 py-2 hover:bg-gray-700 flex items-center gap-2">
+                        <span>✏️</span> Edit Code
+                    </button>
+                    <button onclick="togglePluginPanel()"
+                        class="w-full text-left px-4 py-2 hover:bg-gray-700 flex items-center gap-2">
+                        <span>🔌</span> Add Plugin
+                    </button>
+                    <hr class="border-gray-600">
+                    <button onclick="showNewFileModal()"
+                        class="w-full text-left px-4 py-2 hover:bg-gray-700 flex items-center gap-2">
+                        <span>📄</span> New File
+                    </button>
+                    <button onclick="openSingleFile()"
+                        class="w-full text-left px-4 py-2 hover:bg-gray-700 flex items-center gap-2">
+                        <span>📂</span> Open Single File
+                    </button>
+                    <button onclick="togglePreview()"
+                        class="w-full text-left px-4 py-2 hover:bg-gray-700 flex items-center gap-2">
+                        <span>👁️</span> Toggle Preview
+                    </button>
+                    <button id="showResourcesButton" onclick="showResourcesModal('<%= currentFile %>')"
+                        class="w-full text-left px-4 py-2 hover:bg-gray-700 flex items-center gap-2">
+                        <span>🔗</span> View Resources
+                    </button>
+                    <button onclick="openInBrowser()"
+                        class="w-full text-left px-4 py-2 hover:bg-gray-700 flex items-center gap-2">
+                        <span>🌐</span> Open in Browser
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- File name display -->
+        <div class="text-gray-400 flex items-center gap-2">
+            <span id="projectName" class="text-blue-400 hidden"></span>
+            <span id="projectSeparator" class="hidden">/</span>
+            <span id="currentFileName">No file open</span>
+            <span id="unsavedIndicator" class="text-yellow-400 hidden">●</span>
+        </div>
+    </nav>
+
+    <!-- Edit Toolbar -->
+    <div id="editToolbar"
+        class="edit-toolbar bg-gray-800 border-b border-gray-700 px-4 py-2 gap-2 items-center flex-wrap flex-shrink-0">
+        <button onclick="saveFile()"
+            class="bg-green-600 hover:bg-green-500 px-3 py-1.5 rounded flex items-center gap-1 text-sm">
+            <span>💾</span> Save
+        </button>
+        <button onclick="saveFileAs()"
+            class="bg-blue-600 hover:bg-blue-500 px-3 py-1.5 rounded flex items-center gap-1 text-sm">
+            <span>📥</span> Save As
+        </button>
+        <div class="h-6 w-px bg-gray-600 mx-2"></div>
+        <button onclick="editor.undo()" class="bg-gray-700 hover:bg-gray-600 px-3 py-1.5 rounded text-sm">↩️
+            Undo</button>
+        <button onclick="editor.redo()" class="bg-gray-700 hover:bg-gray-600 px-3 py-1.5 rounded text-sm">↪️
+            Redo</button>
+        <div class="h-6 w-px bg-gray-600 mx-2"></div>
+        <button onclick="formatCode()" class="bg-gray-700 hover:bg-gray-600 px-3 py-1.5 rounded text-sm">🎨
+            Format</button>
+        <button onclick="showFindReplace()" class="bg-gray-700 hover:bg-gray-600 px-3 py-1.5 rounded text-sm">🔍
+            Find</button>
+        <button onclick="showWrapTagModal()" class="bg-gray-700 hover:bg-gray-600 px-3 py-1.5 rounded text-sm">🏷️ Wrap
+            Tag</button>
+        <button onclick="toggleComment()" class="bg-gray-700 hover:bg-gray-600 px-3 py-1.5 rounded text-sm">💬
+            Comment</button>
+        <div class="flex-1"></div>
+        <button onclick="toggleEditToolbar()" class="bg-red-600 hover:bg-red-500 px-3 py-1.5 rounded text-sm">✕
+            Close</button>
+    </div>
+
+    <!-- URL Search Bar -->
+    <div class="bg-gray-800 border-b border-gray-700 px-4 py-2 flex items-center gap-2 flex-shrink-0">
+        <label class="text-gray-400 text-sm">Load URL:</label>
+        <input type="text" id="urlInput" placeholder="https://example.com - Fetch website HTML to edit"
+            class="flex-1 bg-gray-700 border border-gray-600 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-blue-500"
+            onkeypress="if(event.key==='Enter')fetchUrl()">
+        <button onclick="fetchUrl()" class="bg-purple-600 hover:bg-purple-500 px-4 py-1.5 rounded text-sm">
+            🔗 Fetch
+        </button>
+        <button onclick="document.getElementById('urlInput').value=''"
+            class="bg-gray-600 hover:bg-gray-500 px-3 py-1.5 rounded text-sm">
+            ✕
+        </button>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 flex overflow-hidden min-h-0">
+
+        <!-- File Tree Panel -->
+        <div id="fileTreePanel" class="file-tree bg-gray-800 border-r border-gray-700 flex flex-col relative"
+            style="width: 250px; min-width: 150px; max-width: 400px;">
+            <div class="p-3 border-b border-gray-700 flex items-center justify-between flex-shrink-0">
+                <h3 class="font-bold text-sm flex items-center gap-2">
+                    <span>📁</span>
+                    <span id="folderName">Project Files</span>
+                </h3>
+                <div class="flex gap-1">
+                    <button onclick="refreshFileTree()" class="text-gray-400 hover:text-white p-1"
+                        title="Refresh">🔄</button>
+                    <button onclick="closeFileTree()" class="text-gray-400 hover:text-white p-1"
+                        title="Close">✕</button>
+                </div>
+            </div>
+            <div id="fileTree" class="flex-1 p-2 overflow-y-auto text-sm"></div>
+            <div class="p-2 border-t border-gray-700 text-xs text-gray-500 flex-shrink-0">
+                <span id="fileCount">0 files</span>
+            </div>
+            <div class="resize-handle resize-handle-right" data-panel="fileTreePanel" data-direction="right"></div>
+        </div>
+
+        <!-- Plugin Panel -->
+        <div id="pluginPanel"
+            class="plugin-panel w-72 bg-gray-800 border-r border-gray-700 overflow-y-auto flex-shrink-0">
+            <div class="p-4">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-bold text-lg">🔌 Plugins</h3>
+                    <button onclick="togglePluginPanel()" class="text-gray-400 hover:text-white">✕</button>
+                </div>
+
+                <p class="text-xs text-gray-500 mb-3">Plugins loaded from CDN (cdnjs, unpkg)</p>
+
+                <div class="space-y-2" id="pluginList">
+                    <!-- Code Folding -->
+                    <div class="bg-gray-700 rounded p-3">
+                        <div class="flex items-center justify-between">
+                            <span class="font-medium">📁 Code Folding</span>
+                            <button onclick="togglePlugin('folding')" id="btn-folding"
+                                class="bg-green-600 text-xs px-2 py-1 rounded">Active</button>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1">Collapse/expand code blocks</p>
+                        <p class="text-xs text-blue-400">codemirror/addon/fold</p>
+                    </div>
+
+                    <!-- Auto Complete -->
+                    <div class="bg-gray-700 rounded p-3">
+                        <div class="flex items-center justify-between">
+                            <span class="font-medium">💡 Auto Complete</span>
+                            <button onclick="togglePlugin('hint')" id="btn-hint"
+                                class="bg-green-600 text-xs px-2 py-1 rounded">Active</button>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1">HTML/CSS/JS hints (Ctrl+Space)</p>
+                        <p class="text-xs text-blue-400">codemirror/addon/hint</p>
+                    </div>
+
+                    <!-- Beautifier -->
+                    <div class="bg-gray-700 rounded p-3">
+                        <div class="flex items-center justify-between">
+                            <span class="font-medium">🎨 JS Beautify</span>
+                            <button onclick="togglePlugin('beautify')" id="btn-beautify"
+                                class="bg-green-600 text-xs px-2 py-1 rounded">Active</button>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1">Professional code formatting</p>
+                        <p class="text-xs text-blue-400">js-beautify/1.14.11</p>
+                    </div>
+
+                    <!-- Active Line -->
+                    <div class="bg-gray-700 rounded p-3">
+                        <div class="flex items-center justify-between">
+                            <span class="font-medium">📍 Active Line</span>
+                            <button onclick="togglePlugin('activeLine')" id="btn-activeLine"
+                                class="bg-green-600 text-xs px-2 py-1 rounded">Active</button>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1">Highlight current line</p>
+                        <p class="text-xs text-blue-400">codemirror/addon/selection</p>
+                    </div>
+
+                    <!-- Match Tags -->
+                    <div class="bg-gray-700 rounded p-3">
+                        <div class="flex items-center justify-between">
+                            <span class="font-medium">🏷️ Match Tags</span>
+                            <button onclick="togglePlugin('matchTags')" id="btn-matchTags"
+                                class="bg-green-600 text-xs px-2 py-1 rounded">Active</button>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1">Highlight matching HTML tags</p>
+                        <p class="text-xs text-blue-400">codemirror/addon/edit</p>
+                    </div>
+
+                    <!-- Emmet -->
+                    <div class="bg-gray-700 rounded p-3">
+                        <div class="flex items-center justify-between">
+                            <span class="font-medium">⚡ Emmet</span>
+                            <button onclick="togglePlugin('emmet')" id="btn-emmet"
+                                class="bg-yellow-600 text-xs px-2 py-1 rounded">Tab to Expand</button>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1">Type div.class>ul>li*3 then Tab</p>
+                        <p class="text-xs text-blue-400">emmet.io (if available)</p>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-4 border-t border-gray-600">
+                    <h4 class="text-sm font-medium mb-2">🌐 Plugin Sources</h4>
+                    <div class="text-xs text-gray-400 space-y-1">
+                        <p>• <a href="https://cdnjs.com" target="_blank"
+                                class="text-blue-400 hover:underline">cdnjs.com</a> - JS libraries</p>
+                        <p>• <a href="https://unpkg.com" target="_blank"
+                                class="text-blue-400 hover:underline">unpkg.com</a> - npm packages</p>
+                        <p>• <a href="https://codemirror.net/5/doc/manual.html#addons" target="_blank"
+                                class="text-blue-400 hover:underline">CodeMirror Addons</a></p>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-4 border-t border-gray-600">
+                    <label class="text-sm text-gray-400 block mb-2">Add Custom Script</label>
+                    <input type="text" id="customPluginUrl" placeholder="https://cdn.example.com/plugin.js"
+                        class="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm mb-2"
+                        onkeypress="if(event.key==='Enter')loadCustomPlugin()">
+                    <input type="text" id="customPluginName" placeholder="Plugin name (optional)"
+                        class="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm mb-2">
+                    <button onclick="loadCustomPlugin()"
+                        class="w-full bg-blue-600 hover:bg-blue-500 px-3 py-1.5 rounded text-sm">
+                        ➕ Load Script
+                    </button>
+                </div>
+
+                <!-- Custom Plugins Container -->
+                <div id="customPluginsContainer" class="mt-4 pt-4 border-t border-gray-600 hidden">
+                    <h4 class="text-sm font-medium mb-2">📦 Loaded Custom Plugins</h4>
+                    <div id="customPluginsList" class="space-y-2"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Editor Section -->
+        <div id="editorContainer" class="flex-1 flex flex-col min-w-0 min-h-0 overflow-hidden">
+
+            <!-- Welcome Screen -->
+            <div id="welcomeScreen" class="welcome-screen flex-1">
+                <button onclick="openBlankEditor()" class="welcome-close" title="Close and open editor">✕</button>
+                <div class="text-6xl mb-6">🛠️</div>
+                <h2 class="text-3xl font-bold mb-4">Welcome to HTML Dev Studio</h2>
+                <p class="text-gray-400 mb-8 max-w-md">
+                    A local web development studio. Open a project folder to scan all HTML files,
+                    or create a new file to get started.
+                </p>
+                <div class="flex gap-4 flex-wrap justify-center">
+                    <button onclick="openProjectFolder()"
+                        class="bg-blue-600 hover:bg-blue-500 px-6 py-3 rounded-lg flex items-center gap-2 text-lg">
+                        <span>📁</span> Open Project Folder
+                    </button>
+                    <button onclick="showNewFileModal()"
+                        class="bg-green-600 hover:bg-green-500 px-6 py-3 rounded-lg flex items-center gap-2 text-lg">
+                        <span>📄</span> New File
+                    </button>
+                    <button onclick="openSingleFile()"
+                        class="bg-gray-600 hover:bg-gray-500 px-6 py-3 rounded-lg flex items-center gap-2 text-lg">
+                        <span>📂</span> Open Single File
+                    </button>
+                </div>
+                <div class="mt-8 text-sm text-gray-500">
+                    <p>💡 Tip: Works best in Chrome or Edge (File System Access API required)</p>
+                </div>
+            </div>
+
+            <!-- Code Editor -->
+            <div id="editorWrapper" class="flex-1 min-h-0 overflow-hidden">
+                <textarea id="codeEditor"></textarea>
+            </div>
+        </div>
+
+        <!-- Preview Section -->
+        <div id="previewContainer" class="border-l border-gray-700 flex-col hidden relative"
+            style="width: 500px; min-width: 200px; max-width: 900px; flex-shrink: 0;">
+            <div class="resize-handle resize-handle-left" data-panel="previewContainer" data-direction="left"></div>
+            <div class="bg-gray-800 px-4 py-2 flex items-center justify-between border-b border-gray-700 flex-shrink-0">
+                <span class="text-sm text-gray-400">Live Preview</span>
+                <div class="flex gap-2">
+                    <button onclick="updatePreview()" class="text-xs bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded">🔄
+                        Refresh</button>
+                    <button onclick="popoutPreview()" class="text-xs bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded">↗️
+                        Pop Out</button>
+                </div>
+            </div>
+            <div class="flex-1 bg-white min-h-0">
+                <iframe id="preview-frame"
+                    sandbox="allow-scripts allow-same-origin allow-modals allow-forms allow-popups"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div
+        class="bg-gray-800 border-t border-gray-700 px-4 py-1 flex items-center justify-between text-xs text-gray-400 flex-shrink-0">
+        <div class="flex items-center gap-4">
+            <span id="cursorPosition">Ln 1, Col 1</span>
+            <span id="fileSize">0 bytes</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <span id="fileType">HTML</span>
+            <span>UTF-8</span>
+            <span id="apiStatus" class="text-green-400">● Ready</span>
+        </div>
+    </div>
+
+    <!-- Find/Replace Modal -->
+    <div id="findReplaceModal" class="modal">
+        <div class="bg-gray-800 rounded-lg shadow-xl p-6 w-96">
+            <h3 class="text-lg font-bold mb-4">Find & Replace</h3>
+            <div class="space-y-3">
+                <div>
+                    <label class="text-sm text-gray-400 block mb-1">Find</label>
+                    <input type="text" id="findInput"
+                        class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2">
+                </div>
+                <div>
+                    <label class="text-sm text-gray-400 block mb-1">Replace with</label>
+                    <input type="text" id="replaceInput"
+                        class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2">
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="findNext()" class="flex-1 bg-blue-600 hover:bg-blue-500 px-3 py-2 rounded">Find
+                        Next</button>
+                    <button onclick="replaceOne()"
+                        class="flex-1 bg-green-600 hover:bg-green-500 px-3 py-2 rounded">Replace</button>
+                    <button onclick="replaceAll()"
+                        class="flex-1 bg-purple-600 hover:bg-purple-500 px-3 py-2 rounded">Replace All</button>
+                </div>
+                <button onclick="closeFindReplace()"
+                    class="w-full bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded mt-2">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wrap Tag Modal -->
+    <div id="wrapTagModal" class="modal">
+        <div class="bg-gray-800 rounded-lg shadow-xl p-6 w-80">
+            <h3 class="text-lg font-bold mb-4">Wrap with Tag</h3>
+            <input type="text" id="wrapTagInput" placeholder="div, span, section, etc."
+                class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 mb-4">
+            <div class="flex gap-2">
+                <button onclick="confirmWrapTag()"
+                    class="flex-1 bg-blue-600 hover:bg-blue-500 px-3 py-2 rounded">Wrap</button>
+                <button onclick="closeWrapTagModal()"
+                    class="flex-1 bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- New File Modal -->
+    <div id="newFileModal" class="modal">
+        <div class="bg-gray-800 rounded-lg shadow-xl p-6 w-96">
+            <h3 class="text-lg font-bold mb-4">Create New File</h3>
+            <input type="text" id="newFileNameInput" placeholder="filename.html"
+                class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 mb-4">
+            <div class="mb-4">
+                <label class="text-sm text-gray-400 block mb-2">Template:</label>
+                <select id="templateSelect" class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2">
+                    <option value="blank">Blank HTML5</option>
+                    <option value="basic">Basic with CSS</option>
+                    <option value="tailwind">Tailwind CSS</option>
+                    <option value="bootstrap">Bootstrap 5</option>
+                </select>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="createNewFile()"
+                    class="flex-1 bg-green-600 hover:bg-green-500 px-3 py-2 rounded">Create</button>
+                <button onclick="closeNewFileModal()"
+                    class="flex-1 bg-gray-600 hover:bg-gray-500 px-3 py-2 rounded">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== TEMPLATES ====================
+        const templates = {
+            blank: `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+</html>`,
+            basic: `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Page</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #2563eb; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Hello World!</h1>
+        <p>Start editing to see your changes.</p>
+    </div>
+</body>
+</html>`,
+            tailwind: `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tailwind Page</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"><\/script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h1 class="text-3xl font-bold text-blue-600 mb-4">Hello Tailwind!</h1>
+            <p class="text-gray-600">Start building with Tailwind CSS.</p>
+            <button class="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
+                Click Me
+            </button>
+        </div>
+    </div>
+</body>
+</html>`,
+            bootstrap: `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bootstrap Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container py-5">
+        <div class="card">
+            <div class="card-body">
+                <h1 class="card-title text-primary">Hello Bootstrap!</h1>
+                <p class="card-text">Start building with Bootstrap 5.</p>
+                <button class="btn btn-primary">Click Me</button>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"><\/script>
+</body>
+</html>`
+        };
+
+        // ==================== STATE ====================
+        let editor = null;
+        let currentFileName = null;
+        let currentFileHandle = null;
+        let currentDirHandle = null;
+        let unsavedChanges = false;
+        let projectFiles = new Map();
+        let searchCursor = null;
+        let blobUrls = [];
+
+        // ==================== INITIALIZATION ====================
+        document.addEventListener('DOMContentLoaded', function () {
+            // Check File System API
+            if ('showDirectoryPicker' in window) {
+                document.getElementById('apiStatus').textContent = '● File System API Available';
+                document.getElementById('apiStatus').classList.add('text-green-400');
+            } else {
+                document.getElementById('apiStatus').textContent = '⚠ Limited Mode';
+                document.getElementById('apiStatus').classList.add('text-yellow-400');
+            }
+
+            // Initialize CodeMirror with plugins
+            editor = CodeMirror.fromTextArea(document.getElementById('codeEditor'), {
+                mode: 'htmlmixed',
+                theme: 'dracula',
+                lineNumbers: true,
+                autoCloseTags: true,
+                autoCloseBrackets: true,
+                matchBrackets: true,
+                matchTags: { bothTags: true },
+                indentUnit: 2,
+                tabSize: 2,
+                lineWrapping: true,
+                foldGutter: true,
+                gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+                styleActiveLine: true,
+                extraKeys: {
+                    "Ctrl-S": function () { saveFile(); return false; },
+                    "Cmd-S": function () { saveFile(); return false; },
+                    "Ctrl-F": showFindReplace,
+                    "Cmd-F": showFindReplace,
+                    "Ctrl-Space": "autocomplete",
+                    "Tab": function (cm) {
+                        // Try Emmet expansion first
+                        if (tryEmmetExpand(cm)) return;
+                        // Otherwise indent
+                        if (cm.somethingSelected()) {
+                            cm.indentSelection("add");
+                        } else {
+                            cm.replaceSelection("  ", "end");
+                        }
+                    }
+                }
+            });
+
+            editor.on('change', function () {
+                markUnsaved();
+                updateFileSize();
+                debouncePreview();
+            });
+
+            editor.on('cursorActivity', function () {
+                const pos = editor.getCursor();
+                document.getElementById('cursorPosition').textContent = `Ln ${pos.line + 1}, Col ${pos.ch + 1}`;
+            });
+
+            // Set up resize handles
+            setupResizeHandles();
+
+            // Warn before leaving
+            window.onbeforeunload = function () {
+                if (unsavedChanges) return 'You have unsaved changes!';
+            };
+        });
+
+        // ==================== DEBOUNCE PREVIEW ====================
+        let previewTimeout = null;
+        function debouncePreview() {
+            clearTimeout(previewTimeout);
+            previewTimeout = setTimeout(updatePreview, 300);
+        }
+
+        // ==================== RESIZE HANDLES ====================
+        function setupResizeHandles() {
+            let isResizing = false;
+            let currentPanel = null;
+            let startX = 0;
+            let startWidth = 0;
+            let direction = null;
+
+            document.addEventListener('mousedown', function (e) {
+                if (!e.target.classList.contains('resize-handle')) return;
+
+                isResizing = true;
+                currentPanel = document.getElementById(e.target.dataset.panel);
+                direction = e.target.dataset.direction;
+                startX = e.clientX;
+                startWidth = currentPanel.getBoundingClientRect().width;
+
+                e.target.classList.add('dragging');
+                document.body.style.cursor = 'ew-resize';
+                document.body.style.userSelect = 'none';
+
+                e.preventDefault();
+            });
+
+            document.addEventListener('mousemove', function (e) {
+                if (!isResizing || !currentPanel) return;
+
+                const deltaX = e.clientX - startX;
+                let newWidth;
+
+                if (direction === 'right') {
+                    newWidth = startWidth + deltaX;
+                } else {
+                    newWidth = startWidth - deltaX;
+                }
+
+                const minWidth = parseInt(getComputedStyle(currentPanel).minWidth) || 100;
+                const maxWidth = parseInt(getComputedStyle(currentPanel).maxWidth) || 800;
+
+                newWidth = Math.max(minWidth, Math.min(maxWidth, newWidth));
+                currentPanel.style.width = newWidth + 'px';
+
+                if (editor) editor.refresh();
+            });
+
+            document.addEventListener('mouseup', function () {
+                if (isResizing) {
+                    document.querySelectorAll('.resize-handle').forEach(h => h.classList.remove('dragging'));
+                    document.body.style.cursor = '';
+                    document.body.style.userSelect = '';
+                    isResizing = false;
+                    currentPanel = null;
+                }
+            });
+        }
+
+        // ==================== UI TOGGLES ====================
+        function toggleEditToolbar() {
+            document.getElementById('editToolbar').classList.toggle('active');
+        }
+
+        function togglePluginPanel() {
+            document.getElementById('pluginPanel').classList.toggle('active');
+        }
+
+        function togglePreview() {
+            const container = document.getElementById('previewContainer');
+            if (container.classList.contains('hidden')) {
+                container.classList.remove('hidden');
+                container.style.display = 'flex';
+                updatePreview();
+            } else {
+                container.classList.add('hidden');
+                container.style.display = 'none';
+            }
+            if (editor) editor.refresh();
+        }
+
+        function closeFileTree() {
+            document.getElementById('fileTreePanel').classList.remove('active');
+        }
+
+        // ==================== SHOW EDITOR ====================
+        function showEditor() {
+            document.getElementById('welcomeScreen').style.display = 'none';
+            document.getElementById('editorWrapper').classList.add('active');
+            document.getElementById('previewContainer').classList.remove('hidden');
+            document.getElementById('previewContainer').style.display = 'flex';
+
+            setTimeout(function () {
+                if (editor) editor.refresh();
+            }, 50);
+        }
+
+        function openBlankEditor() {
+            currentFileName = 'untitled.html';
+            currentFileHandle = null;
+
+            showEditor();
+            editor.setValue(templates.blank);
+            document.getElementById('currentFileName').textContent = currentFileName;
+            markSaved();
+            updatePreview();
+        }
+
+        // ==================== FILE OPERATIONS ====================
+        async function openProjectFolder() {
+            if (window.showDirectoryPicker) {
+                try {
+                    currentDirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
+
+                    document.getElementById('folderName').textContent = currentDirHandle.name;
+                    document.getElementById('projectName').textContent = currentDirHandle.name;
+                    document.getElementById('projectName').classList.remove('hidden');
+                    document.getElementById('projectSeparator').classList.remove('hidden');
+
+                    await scanDirectory(currentDirHandle);
+                    document.getElementById('fileTreePanel').classList.add('active');
+
+                    showNotification('Opened: ' + currentDirHandle.name, 'success');
+                } catch (err) {
+                    if (err.name !== 'AbortError') {
+                        showNotification('Failed to open folder', 'error');
+                        console.error(err);
+                    }
+                }
+            } else {
+                showFolderPickerFallback();
+            }
+        }
+
+        function showFolderPickerFallback() {
+            showNotification('Choose how to load your project folder', 'info');
+
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 2000;';
+            modal.innerHTML = `
+                <div style="background: #1f2937; border: 1px solid #4b5563; border-radius: 8px; padding: 24px; max-width: 400px; text-align: center;">
+                    <h2 style="margin: 0 0 16px 0; font-size: 18px;">Open Project Folder</h2>
+                    <p style="color: #9ca3af; margin: 0 0 24px 0; font-size: 14px;">Your browser doesn't support direct folder selection. Choose an option:</p>
+                    <div style="display: flex; gap: 12px; flex-direction: column;">
+                        <button onclick="triggerFolderInput()" style="background: #3b82f6; hover: #2563eb; padding: 10px 16px; border: none; border-radius: 6px; color: white; cursor: pointer; font-size: 14px;">
+                            📂 Select Folder (Files)
+                        </button>
+                        <button onclick="triggerZipInput()" style="background: #8b5cf6; hover: #7c3aed; padding: 10px 16px; border: none; border-radius: 6px; color: white; cursor: pointer; font-size: 14px;">
+                            📦 Upload ZIP File
+                        </button>
+                        <button onclick="this.parentElement.parentElement.parentElement.remove()" style="background: #6b7280; hover: #4b5563; padding: 10px 16px; border: none; border-radius: 6px; color: white; cursor: pointer; font-size: 14px;">
+                            ✕ Cancel
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.onclick = (e) => {
+                if (e.target === modal) modal.remove();
+            };
+        }
+
+        function triggerFolderInput() {
+            document.getElementById('folderInput').onchange = handleFolderInput;
+            document.getElementById('folderInput').click();
+        }
+
+        function triggerZipInput() {
+            document.getElementById('zipInput').onchange = handleZipInput;
+            document.getElementById('zipInput').click();
+        }
+
+        async function handleFolderInput(event) {
+            const files = Array.from(event.target.files);
+            if (files.length === 0) return;
+
+            projectFiles.clear();
+            const tree = document.getElementById('fileTree');
+            tree.innerHTML = '';
+
+            const folderName = files[0].webkitRelativePath.split('/')[0] || 'Project';
+            document.getElementById('folderName').textContent = folderName;
+            document.getElementById('projectName').textContent = folderName;
+            document.getElementById('projectName').classList.remove('hidden');
+            document.getElementById('projectSeparator').classList.remove('hidden');
+
+            const fileTree = {};
+            let fileCount = 0;
+
+            for (const file of files) {
+                const path = file.webkitRelativePath;
+                const ext = path.split('.').pop().toLowerCase();
+
+                if (!['html', 'htm', 'css', 'js'].includes(ext)) continue;
+
+                const relativePath = path.substring(folderName.length + 1);
+                projectFiles.set(relativePath, { file: file, type: ext });
+
+                const parts = relativePath.split('/');
+                let current = fileTree;
+                for (let i = 0; i < parts.length - 1; i++) {
+                    if (!current[parts[i]]) current[parts[i]] = {};
+                    current = current[parts[i]];
+                }
+                current[parts[parts.length - 1]] = file;
+                fileCount++;
+            }
+
+            buildFileTreeFromObject(fileTree, tree);
+            document.getElementById('fileCount').textContent = fileCount + ' files';
+            document.getElementById('fileTreePanel').classList.add('active');
+
+            closeModal();
+            showNotification('Loaded: ' + folderName + ' (' + fileCount + ' files)', 'success');
+        }
+
+        function buildFileTreeFromObject(obj, parentElement, basePath = '') {
+            for (const [name, value] of Object.entries(obj)) {
+                if (value instanceof File) {
+                    const ext = name.split('.').pop().toLowerCase();
+                    const icon = ext === 'css' ? '🎨' : ext === 'js' ? '⚡' : '📄';
+                    const path = basePath ? basePath + '/' + name : name;
+
+                    const fileDiv = document.createElement('div');
+                    fileDiv.className = 'tree-item';
+                    fileDiv.dataset.path = path;
+                    fileDiv.innerHTML = `<span>${icon}</span><span>${name}</span>`;
+
+                    fileDiv.addEventListener('click', function () {
+                        openFileFromTreeFallback(path, value);
+                    });
+
+                    parentElement.appendChild(fileDiv);
+                } else {
+                    const folderDiv = document.createElement('div');
+                    folderDiv.className = 'tree-folder';
+                    const path = basePath ? basePath + '/' + name : name;
+                    folderDiv.innerHTML = `
+                        <div class="tree-item" data-path="${path}" data-type="folder">
+                            <span class="folder-toggle">▼</span>
+                            <span>📁</span>
+                            <span>${name}</span>
+                        </div>
+                        <div class="tree-children"></div>
+                    `;
+
+                    folderDiv.querySelector('.tree-item').addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        folderDiv.classList.toggle('collapsed');
+                        const toggle = folderDiv.querySelector('.folder-toggle');
+                        toggle.textContent = folderDiv.classList.contains('collapsed') ? '▶' : '▼';
+                    });
+
+                    parentElement.appendChild(folderDiv);
+                    buildFileTreeFromObject(value, folderDiv.querySelector('.tree-children'), path);
+                }
+            }
+        }
+
+        async function openFileFromTreeFallback(path, file) {
+            try {
+                const content = await file.text();
+                currentFile = file;
+                currentFileName = file.name;
+                editor.setValue(content);
+                markSaved();
+
+                document.querySelectorAll('.tree-item').forEach(el => el.classList.remove('selected'));
+                document.querySelector(`[data-path="${path}"]`)?.classList.add('selected');
+
+                document.getElementById('currentFileName').textContent = currentFileName;
+                updatePreview();
+            } catch (err) {
+                showNotification('Failed to read file: ' + err.message, 'error');
+            }
+        }
+
+        async function handleZipInput(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            try {
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+                script.onload = async () => {
+                    const zip = new JSZip();
+                    const contents = await zip.loadAsync(file);
+
+                    projectFiles.clear();
+                    const tree = document.getElementById('fileTree');
+                    tree.innerHTML = '';
+
+                    const folderName = file.name.replace('.zip', '');
+                    document.getElementById('folderName').textContent = folderName;
+                    document.getElementById('projectName').textContent = folderName;
+                    document.getElementById('projectName').classList.remove('hidden');
+                    document.getElementById('projectSeparator').classList.remove('hidden');
+
+                    const fileTree = {};
+                    let fileCount = 0;
+
+                    for (const [path, zipEntry] of Object.entries(contents.files)) {
+                        if (zipEntry.dir) continue;
+
+                        const ext = path.split('.').pop().toLowerCase();
+                        if (!['html', 'htm', 'css', 'js'].includes(ext)) continue;
+
+                        const content = await zipEntry.async('text');
+                        const fileObj = new File([content], path.split('/').pop(), { type: 'text/plain' });
+                        fileObj._zipContent = content;
+                        fileObj._zipPath = path;
+
+                        projectFiles.set(path, { file: fileObj, type: ext });
+
+                        const parts = path.split('/');
+                        let current = fileTree;
+                        for (let i = 0; i < parts.length - 1; i++) {
+                            if (!current[parts[i]]) current[parts[i]] = {};
+                            current = current[parts[i]];
+                        }
+                        current[parts[parts.length - 1]] = fileObj;
+                        fileCount++;
+                    }
+
+                    buildFileTreeFromObject(fileTree, tree);
+                    document.getElementById('fileCount').textContent = fileCount + ' files';
+                    document.getElementById('fileTreePanel').classList.add('active');
+
+                    closeModal();
+                    showNotification('Loaded: ' + folderName + ' (' + fileCount + ' files)', 'success');
+                };
+                document.head.appendChild(script);
+            } catch (err) {
+                showNotification('Failed to load ZIP file: ' + err.message, 'error');
+            }
+        }
+
+        function closeModal() {
+            const modals = document.querySelectorAll('.modal.active');
+            modals.forEach(m => m.remove());
+        }
+
+        async function scanDirectory(dirHandle, path = '') {
+            projectFiles.clear();
+            const tree = document.getElementById('fileTree');
+            tree.innerHTML = '';
+
+            let fileCount = 0;
+
+            async function processDir(handle, parentPath, parentElement) {
+                const entries = [];
+                for await (const entry of handle.values()) {
+                    entries.push(entry);
+                }
+
+                entries.sort((a, b) => {
+                    if (a.kind !== b.kind) return a.kind === 'directory' ? -1 : 1;
+                    return a.name.localeCompare(b.name);
+                });
+
+                for (const entry of entries) {
+                    const entryPath = parentPath ? parentPath + '/' + entry.name : entry.name;
+
+                    if (entry.kind === 'directory') {
+                        if (entry.name.startsWith('.') || entry.name === 'node_modules') continue;
+
+                        const folderDiv = document.createElement('div');
+                        folderDiv.className = 'tree-folder';
+                        folderDiv.innerHTML = `
+                            <div class="tree-item" data-path="${entryPath}" data-type="folder">
+                                <span class="folder-toggle">▼</span>
+                                <span>📁</span>
+                                <span>${entry.name}</span>
+                            </div>
+                            <div class="tree-children"></div>
+                        `;
+
+                        folderDiv.querySelector('.tree-item').addEventListener('click', function (e) {
+                            e.stopPropagation();
+                            folderDiv.classList.toggle('collapsed');
+                            const toggle = folderDiv.querySelector('.folder-toggle');
+                            toggle.textContent = folderDiv.classList.contains('collapsed') ? '▶' : '▼';
+                        });
+
+                        parentElement.appendChild(folderDiv);
+
+                        const childHandle = await handle.getDirectoryHandle(entry.name);
+                        await processDir(childHandle, entryPath, folderDiv.querySelector('.tree-children'));
+                    } else {
+                        const ext = entry.name.split('.').pop().toLowerCase();
+                        if (!['html', 'htm', 'css', 'js'].includes(ext)) continue;
+
+                        const icon = ext === 'css' ? '🎨' : ext === 'js' ? '⚡' : '📄';
+
+                        const fileDiv = document.createElement('div');
+                        fileDiv.className = 'tree-item';
+                        fileDiv.dataset.path = entryPath;
+                        fileDiv.innerHTML = `<span>${icon}</span><span>${entry.name}</span>`;
+
+                        fileDiv.addEventListener('click', function () {
+                            openFileFromTree(entryPath, entry);
+                        });
+
+                        parentElement.appendChild(fileDiv);
+                        projectFiles.set(entryPath, { handle: entry, type: ext });
+                        fileCount++;
+                    }
+                }
+            }
+
+            await processDir(dirHandle, '', tree);
+            document.getElementById('fileCount').textContent = fileCount + ' files';
+        }
+
+        async function refreshFileTree() {
+            if (currentDirHandle) {
+                await scanDirectory(currentDirHandle);
+                showNotification('Refreshed', 'success');
+            }
+        }
+
+        async function openFileFromTree(path, fileEntry) {
+            if (unsavedChanges && !confirm('Unsaved changes. Continue?')) return;
+
+            try {
+                const file = await fileEntry.getFile();
+                const content = await file.text();
+
+                currentFileName = fileEntry.name;
+                currentFileHandle = fileEntry;
+
+                showEditor();
+                editor.setValue(content);
+
+                const ext = fileEntry.name.split('.').pop().toLowerCase();
+                editor.setOption('mode', ext === 'css' ? 'css' : ext === 'js' ? 'javascript' : 'htmlmixed');
+                document.getElementById('fileType').textContent = ext.toUpperCase();
+
+                document.getElementById('currentFileName').textContent = currentFileName;
+                markSaved();
+
+                document.querySelectorAll('.tree-item').forEach(i => i.classList.remove('selected'));
+                document.querySelector(`.tree-item[data-path="${path}"]`)?.classList.add('selected');
+
+                updatePreview();
+            } catch (err) {
+                showNotification('Failed to open file', 'error');
+                console.error(err);
+            }
+        }
+
+        async function openSingleFile() {
+            try {
+                const [handle] = await window.showOpenFilePicker({
+                    types: [{
+                        description: 'Web Files',
+                        accept: { 'text/html': ['.html', '.htm'], 'text/css': ['.css'], 'text/javascript': ['.js'] }
+                    }]
+                });
+
+                const file = await handle.getFile();
+                const content = await file.text();
+
+                currentFileName = file.name;
+                currentFileHandle = handle;
+
+                showEditor();
+                editor.setValue(content);
+                document.getElementById('currentFileName').textContent = currentFileName;
+                markSaved();
+                updatePreview();
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    // Fallback for unsupported browsers
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = '.html,.htm,.css,.js';
+                    input.onchange = async function (e) {
+                        const file = e.target.files[0];
+                        if (file) {
+                            const content = await file.text();
+                            currentFileName = file.name;
+                            currentFileHandle = null;
+                            showEditor();
+                            editor.setValue(content);
+                            document.getElementById('currentFileName').textContent = currentFileName;
+                            markSaved();
+                            updatePreview();
+                        }
+                    };
+                    input.click();
+                }
+            }
+        }
+
+        async function saveFile() {
+            if (!currentFileName) {
+                showNewFileModal();
+                return;
+            }
+
+            const content = editor.getValue();
+
+            if (currentFileHandle && currentFileHandle.createWritable) {
+                try {
+                    const writable = await currentFileHandle.createWritable();
+                    await writable.write(content);
+                    await writable.close();
+                    markSaved();
+                    showNotification('Saved!', 'success');
+                } catch (err) {
+                    showNotification('Save failed', 'error');
+                    console.error(err);
+                }
+            } else {
+                downloadFile(content, currentFileName);
+            }
+        }
+
+        async function saveFileAs() {
+            const content = editor.getValue();
+
+            try {
+                const handle = await window.showSaveFilePicker({
+                    suggestedName: currentFileName || 'untitled.html',
+                    types: [{ description: 'HTML Files', accept: { 'text/html': ['.html'] } }]
+                });
+
+                const writable = await handle.createWritable();
+                await writable.write(content);
+                await writable.close();
+
+                currentFileName = handle.name;
+                currentFileHandle = handle;
+                document.getElementById('currentFileName').textContent = currentFileName;
+                markSaved();
+                showNotification('Saved!', 'success');
+
+                if (currentDirHandle) await refreshFileTree();
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    downloadFile(content, currentFileName || 'untitled.html');
+                }
+            }
+        }
+
+        function downloadFile(content, filename) {
+            const blob = new Blob([content], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+            markSaved();
+            showNotification('Downloaded!', 'success');
+        }
+
+        // ==================== NEW FILE ====================
+        function showNewFileModal() {
+            document.getElementById('newFileModal').classList.add('active');
+            document.getElementById('newFileNameInput').value = 'untitled.html';
+            document.getElementById('newFileNameInput').focus();
+            document.getElementById('newFileNameInput').select();
+        }
+
+        function closeNewFileModal() {
+            document.getElementById('newFileModal').classList.remove('active');
+        }
+
+        async function createNewFile() {
+            let filename = document.getElementById('newFileNameInput').value.trim() || 'untitled.html';
+            if (!filename.includes('.')) filename += '.html';
+
+            const template = document.getElementById('templateSelect').value;
+            const content = templates[template] || templates.blank;
+
+            currentFileName = filename;
+            currentFileHandle = null;
+
+            showEditor();
+            editor.setValue(content);
+            document.getElementById('currentFileName').textContent = currentFileName;
+            markSaved();
+            updatePreview();
+            closeNewFileModal();
+
+            if (currentDirHandle) {
+                try {
+                    currentFileHandle = await currentDirHandle.getFileHandle(filename, { create: true });
+                    await saveFile();
+                    await refreshFileTree();
+                } catch (err) {
+                    console.error('Could not save to project:', err);
+                }
+            }
+        }
+
+        // ==================== PREVIEW ====================
+        function getCurrentFileDir() {
+            const selected = document.querySelector('.tree-item.selected');
+            if (selected && selected.dataset.path) {
+                const path = selected.dataset.path;
+                const lastSlash = path.lastIndexOf('/');
+                return lastSlash > -1 ? path.substring(0, lastSlash) : '';
+            }
+            return '';
+        }
+
+        async function updatePreview() {
+            if (!editor) return;
+
+            const previewFrame = document.getElementById('preview-frame');
+            let content = editor.getValue();
+
+            // Clean up old blob URLs
+            blobUrls.forEach(url => URL.revokeObjectURL(url));
+            blobUrls = [];
+
+            // Process resources if we have a project folder
+            if (currentDirHandle) {
+                const baseDir = getCurrentFileDir();
+                content = await processResources(content, baseDir);
+            }
+
+            const blob = new Blob([content], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            blobUrls.push(url);
+
+            previewFrame.src = url;
+        }
+
+        async function processResources(html, baseDir) {
+            // Find and inline CSS
+            const cssRegex = /<link[^>]*href=["']([^"']+\.css)["'][^>]*>/gi;
+            let match;
+
+            while ((match = cssRegex.exec(html)) !== null) {
+                const href = match[1];
+                if (href.startsWith('http')) continue;
+
+                const cssPath = resolvePath(href, baseDir);
+                const cssContent = await readProjectFile(cssPath);
+
+                if (cssContent !== null) {
+                    html = html.replace(match[0], `<style>/* ${href} */\n${cssContent}</style>`);
+                }
+            }
+
+            // Find and inline JS
+            const jsRegex = /<script[^>]*src=["']([^"']+\.js)["'][^>]*><\/script>/gi;
+
+            while ((match = jsRegex.exec(html)) !== null) {
+                const src = match[1];
+                if (src.startsWith('http')) continue;
+
+                const jsPath = resolvePath(src, baseDir);
+                const jsContent = await readProjectFile(jsPath);
+
+                if (jsContent !== null) {
+                    html = html.replace(match[0], `<script>/* ${src} */\n${jsContent}<\/script>`);
+                }
+            }
+
+            return html;
+        }
+
+        function resolvePath(relativePath, baseDir) {
+            if (!relativePath || relativePath.startsWith('http') || relativePath.startsWith('data:')) {
+                return null;
+            }
+
+            if (relativePath.startsWith('./')) {
+                relativePath = relativePath.substring(2);
+            }
+
+            let parts = baseDir ? baseDir.split('/') : [];
+            const relParts = relativePath.split('/');
+
+            for (const part of relParts) {
+                if (part === '..') {
+                    parts.pop();
+                } else if (part !== '.') {
+                    parts.push(part);
+                }
+            }
+
+            return parts.join('/');
+        }
+
+        async function readProjectFile(filePath) {
+            if (!currentDirHandle || !filePath) return null;
+
+            try {
+                const parts = filePath.split('/');
+                let handle = currentDirHandle;
+
+                for (let i = 0; i < parts.length - 1; i++) {
+                    handle = await handle.getDirectoryHandle(parts[i]);
+                }
+
+                const fileHandle = await handle.getFileHandle(parts[parts.length - 1]);
+                const file = await fileHandle.getFile();
+                return await file.text();
+            } catch (err) {
+                console.warn('Could not read:', filePath);
+                return null;
+            }
+        }
+
+        async function popoutPreview() {
+            let content = editor.getValue();
+            if (currentDirHandle) {
+                content = await processResources(content, getCurrentFileDir());
+            }
+            const blob = new Blob([content], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            window.open(url, 'preview', 'width=800,height=600');
+        }
+
+        async function openInBrowser() {
+            let content = editor.getValue();
+            if (currentDirHandle) {
+                content = await processResources(content, getCurrentFileDir());
+            }
+            const blob = new Blob([content], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
+        }
+
+        // ==================== RESOURCES ====================
+        function extractResources(html) {
+            const resources = {
+                scripts: [],
+                styles: [],
+                images: [],
+                links: [],
+                other: []
+            };
+
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+
+            doc.querySelectorAll('script[src]').forEach(el => {
+                resources.scripts.push({ type: 'script', src: el.src || el.getAttribute('src'), tag: 'script' });
+            });
+
+            doc.querySelectorAll('link[href]').forEach(el => {
+                const rel = el.getAttribute('rel') || '';
+                const href = el.href || el.getAttribute('href');
+                if (rel.includes('stylesheet')) {
+                    resources.styles.push({ type: 'stylesheet', src: href, tag: 'link' });
+                } else if (rel.includes('icon')) {
+                    resources.images.push({ type: 'icon', src: href, tag: 'link' });
+                } else {
+                    resources.links.push({ type: rel || 'link', src: href, tag: 'link' });
+                }
+            });
+
+            doc.querySelectorAll('img[src]').forEach(el => {
+                resources.images.push({ type: 'image', src: el.src || el.getAttribute('src'), tag: 'img' });
+            });
+
+            doc.querySelectorAll('source[src]').forEach(el => {
+                resources.other.push({ type: 'source', src: el.src || el.getAttribute('src'), tag: 'source' });
+            });
+
+            doc.querySelectorAll('[style*="background"]').forEach(el => {
+                const match = el.getAttribute('style').match(/url\(['"]?([^'")\s]+)['"]?\)/);
+                if (match) {
+                    resources.other.push({ type: 'background', src: match[1], tag: 'inline' });
+                }
+            });
+
+            return resources;
+        }
+
+      
+        function showResourcesModal(currentFile) {
+            if (!currentFile) {
+                showNotification('No file open', 'warning');
+                return;
+            }
+            if (!editor) {
+                showNotification('No file open', 'warning');
+                return;
+            }
+
+            const html = editor.getValue();
+            const resources = extractResources(html);
+            const hasResources = Object.values(resources).some(arr => arr.length > 0);
+
+            if (!hasResources) {
+                showNotification('No resources found in this HTML file', 'info');
+                return;
+            }
+
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 2000; overflow: auto;';
+
+            let resourcesHtml = `
+        <div style="background: #1f2937; border: 1px solid #4b5563; border-radius: 8px; padding: 24px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin: 0; font-size: 18px;">📦 Resources</h2>
+                <button onclick="this.closest('.modal').remove()" style="background: #6b7280; border: none; color: white; padding: 6px 12px; border-radius: 4px; cursor: pointer;">✕</button>
+            </div>
+    `;
+
+            for (const [type, items] of Object.entries(resources)) {
+                resourcesHtml += `
+            <div style="margin-bottom: 16px;">
+                <h3 style="margin: 0 0 8px 0; color: #60a5fa; font-size: 14px;">${type}</h3>
+                <div style="background: #111827; border-left: 3px solid #60a5fa; padding: 8px; border-radius: 4px;">
+                    ${items.map((r, i) => `
+                        <div style="padding: 6px 0; border-bottom: 1px solid #374151; cursor: pointer;" onmouseover="this.style.background='rgba(96,165,250,0.1)'" onmouseout="this.style.background=''">
+                            <span style="color: #9ca3af; font-size: 12px;">${r.src}</span>
+                            <div style="display: flex; gap: 4px; margin-top: 4px;">
+                                <button onclick="openResourceInEditor('${currentFile}/${r.src}', '${type}')" style="background: #3b82f6; border: none; color: white; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 12px;">Edit</button>
+                                <button onclick="window.open('${currentFile}/${r.src}', '_blank')" style="background: #6b7280; border: none; color: white; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 12px;">Open</button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+
+                resourcesHtml += `
+        </div>
+    `;
+
+                modal.insertAdjacentHTML('afterbegin', resourcesHtml);
+
+                document.body.appendChild(modal);
+            }
+            if (resources.scripts.length > 0) {
+                resourcesHtml += `
+                    <div style="margin-bottom: 16px;">
+                        <h3 style="margin: 0 0 8px 0; color: #60a5fa; font-size: 14px;">⚡ Scripts</h3>
+                        <div style="background: #111827; border-left: 3px solid #60a5fa; padding: 8px; border-radius: 4px;">
+                            ${resources.scripts.map((r, i) => `
+                                <div style="padding: 6px 0; border-bottom: 1px solid #374151; cursor: pointer;" onmouseover="this.style.background='rgba(96,165,250,0.1)'" onmouseout="this.style.background=''">
+                                    <span style="color: #9ca3af; font-size: 12px;">${r.src}</span>
+                                    <div style="display: flex; gap: 4px; margin-top: 4px;">
+                                        <button onclick="openResourceInEditor('${r.src}', 'script')" style="background: #3b82f6; border: none; color: white; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 12px;">Edit</button>
+                                        <button onclick="window.open('${r.src}', '_blank')" style="background: #6b7280; border: none; color: white; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 12px;">View</button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (resources.styles.length > 0) {
+                resourcesHtml += `
+                    <div style="margin-bottom: 16px;">
+                        <h3 style="margin: 0 0 8px 0; color: #34d399; font-size: 14px;">🎨 Stylesheets</h3>
+                        <div style="background: #111827; border-left: 3px solid #34d399; padding: 8px; border-radius: 4px;">
+                            ${resources.styles.map((r, i) => `
+                                <div style="padding: 6px 0; border-bottom: 1px solid #374151; cursor: pointer;" onmouseover="this.style.background='rgba(52,211,153,0.1)'" onmouseout="this.style.background=''">
+                                    <span style="color: #9ca3af; font-size: 12px;">${r.src}</span>
+                                    <div style="display: flex; gap: 4px; margin-top: 4px;">
+                                        <button onclick="openResourceInEditor('${r.src}', 'css')" style="background: #10b981; border: none; color: white; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 12px;">Edit</button>
+                                        <button onclick="window.open('${r.src}', '_blank')" style="background: #6b7280; border: none; color: white; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 12px;">View</button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (resources.images.length > 0) {
+                resourcesHtml += `
+                    <div style="margin-bottom: 16px;">
+                        <h3 style="margin: 0 0 8px 0; color: #f59e0b; font-size: 14px;">🖼️ Images & Icons</h3>
+                        <div style="background: #111827; border-left: 3px solid #f59e0b; padding: 8px; border-radius: 4px;">
+                            ${resources.images.map((r, i) => `
+                                <div style="padding: 6px 0; border-bottom: 1px solid #374151; cursor: pointer;" onmouseover="this.style.background='rgba(245,158,11,0.1)'" onmouseout="this.style.background=''">
+                                    <span style="color: #9ca3af; font-size: 12px;">${r.src}</span>
+                                    <div style="display: flex; gap: 4px; margin-top: 4px;">
+                                        <button onclick="window.open('${r.src}', '_blank')" style="background: #f59e0b; border: none; color: white; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 12px;">View</button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (resources.links.length > 0 || resources.other.length > 0) {
+                const allOther = [...resources.links, ...resources.other];
+                resourcesHtml += `
+                    <div style="margin-bottom: 16px;">
+                        <h3 style="margin: 0 0 8px 0; color: #a78bfa; font-size: 14px;">🔗 Other Resources</h3>
+                        <div style="background: #111827; border-left: 3px solid #a78bfa; padding: 8px; border-radius: 4px;">
+                            ${allOther.map((r, i) => `
+                                <div style="padding: 6px 0; border-bottom: 1px solid #374151; cursor: pointer;" onmouseover="this.style.background='rgba(167,139,250,0.1)'" onmouseout="this.style.background=''">
+                                    <span style="color: #9ca3af; font-size: 12px;">${r.type}: ${r.src}</span>
+                                    <div style="display: flex; gap: 4px; margin-top: 4px;">
+                                        <button onclick="window.open('${r.src}', '_blank')" style="background: #8b5cf6; border: none; color: white; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 12px;">View</button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            resourcesHtml += `
+                </div>
+            `;
+
+            modal.innerHTML = resourcesHtml;
+            document.body.appendChild(modal);
+            modal.onclick = (e) => {
+                if (e.target === modal) modal.remove();
+            };
+        }
+
+        async function openResourceInEditor(src, type) {
+            if (!src) {
+                showNotification('Invalid resource', 'error');
+                return;
+            }
+
+            try {
+                let content = '';
+
+                if (src.startsWith('http') || src.startsWith('//')) {
+                    const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(src.startsWith('//') ? 'https:' + src : src);
+                    const response = await fetch(proxyUrl);
+                    content = await response.text();
+                } else if (currentDirHandle || projectFiles.size > 0) {
+                    const filePath = src.startsWith('/') ? src.substring(1) : src;
+                    if (projectFiles.has(filePath)) {
+                        const fileData = projectFiles.get(filePath);
+                        content = await fileData.file.text();
+                    } else {
+                        showNotification('File not found in project: ' + src, 'warning');
+                        return;
+                    }
+                } else {
+                    showNotification('Cannot load external resources. Open a project folder first.', 'info');
+                    return;
+                }
+
+                const editorWindow = window.open('', 'resource_editor', 'width=1000,height=700');
+                editorWindow.document.write(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>Editing: ${src}</title>
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"><\/script>
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"><\/script>
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"><\/script>
+                        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+                        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
+                        <style>
+                            body { margin: 0; background: #1f2937; color: white; font-family: monospace; }
+                            .header { background: #111827; padding: 12px; border-bottom: 1px solid #4b5563; display: flex; justify-content: space-between; align-items: center; }
+                            .editor { height: calc(100% - 50px); }
+                            button { background: #3b82f6; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-left: 8px; }
+                            button:hover { background: #2563eb; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <span>📝 ${src}</span>
+                            <button onclick="copyToClipboard()">Copy</button>
+                        </div>
+                        <div id="editor" class="editor"></div>
+                        <script>
+                            const editor = CodeMirror(document.getElementById('editor'), {
+                                value: ${JSON.stringify(content)},
+                                mode: '${type === 'css' ? 'css' : type === 'script' ? 'javascript' : 'null'}',
+                                theme: 'dracula',
+                                readOnly: true,
+                                lineNumbers: true
+                            });
+                            function copyToClipboard() {
+                                const text = editor.getValue();
+                                navigator.clipboard.writeText(text).then(() => alert('Copied to clipboard!')).catch(() => alert('Failed to copy'));
+                            }
+                        <\/script>
+                    </body>
+                    </html>
+                `);
+                editorWindow.document.close();
+
+                document.querySelector('.modal.active')?.remove();
+                showNotification('Resource opened in new window', 'success');
+            } catch (err) {
+                showNotification('Failed to load resource: ' + err.message, 'error');
+                console.error(err);
+            }
+        }
+
+        // ==================== URL FETCH ====================
+        const corsProxies = [
+            url => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
+            url => 'https://corsproxy.io/?' + encodeURIComponent(url),
+            url => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(url)
+        ];
+
+        async function fetchWithProxy(url, proxyIndex = 0) {
+            if (proxyIndex >= corsProxies.length) {
+                throw new Error('All proxies failed');
+            }
+
+            try {
+                const proxyUrl = corsProxies[proxyIndex](url);
+                const response = await fetch(proxyUrl);
+                if (!response.ok) throw new Error('Failed');
+                return await response.text();
+            } catch (err) {
+                return fetchWithProxy(url, proxyIndex + 1);
+            }
+        }
+
+        async function fetchUrl() {
+            let url = document.getElementById('urlInput').value.trim();
+            if (!url) {
+                showNotification('Enter a URL', 'warning');
+                return;
+            }
+
+            if (!url.startsWith('http')) url = 'https://' + url;
+
+            showLoading('Fetching website...');
+
+            try {
+                const urlObj = new URL(url);
+                const baseUrl = urlObj.origin;
+
+                updateLoading('Downloading HTML...');
+                let html = await fetchWithProxy(url);
+
+                // Remove security restrictions
+                html = html.replace(/<meta[^>]*http-equiv=["']Content-Security-Policy["'][^>]*>/gi, '');
+                html = html.replace(/<meta[^>]*http-equiv=["']X-Frame-Options["'][^>]*>/gi, '');
+
+                // Resolve URL helper
+                const resolveUrl = (src) => {
+                    if (!src || src.startsWith('data:') || src.startsWith('blob:')) return null;
+                    if (src.startsWith('//')) return 'https:' + src;
+                    if (src.startsWith('/')) return baseUrl + src;
+                    if (src.startsWith('http')) return src.replace(/^http:/, 'https:');
+                    try { return new URL(src, url).href; } catch { return null; }
+                };
+
+                // Fetch CSS
+                updateLoading('Fetching stylesheets...');
+                const cssRegex = /<link[^>]*href=["']([^"']+)["'][^>]*rel=["']stylesheet["']|<link[^>]*rel=["']stylesheet["'][^>]*href=["']([^"']+)["']/gi;
+                let match;
+                const cssMatches = [];
+
+                while ((match = cssRegex.exec(html)) !== null) {
+                    const href = match[1] || match[2];
+                    const resolved = resolveUrl(href);
+                    if (resolved) cssMatches.push({ original: match[0], url: resolved, href });
+                }
+
+                const cssResults = await Promise.all(
+                    cssMatches.map(m => fetchWithProxy(m.url).then(c => ({ success: true, content: c })).catch(() => ({ success: false })))
+                );
+
+                // Fetch JS
+                updateLoading('Fetching scripts...');
+                const jsRegex = /<script[^>]*src=["']([^"']+)["'][^>]*><\/script>/gi;
+                const jsMatches = [];
+
+                while ((match = jsRegex.exec(html)) !== null) {
+                    const src = match[1];
+                    const resolved = resolveUrl(src);
+                    if (resolved) jsMatches.push({ original: match[0], url: resolved, src });
+                }
+
+                const jsResults = await Promise.all(
+                    jsMatches.map(m => fetchWithProxy(m.url).then(c => ({ success: true, content: c })).catch(() => ({ success: false })))
+                );
+
+                // Apply CSS
+                let inlined = 0;
+                cssMatches.forEach((m, i) => {
+                    if (cssResults[i].success) {
+                        let css = cssResults[i].content;
+                        const cssBase = m.url.substring(0, m.url.lastIndexOf('/') + 1);
+                        css = css.replace(/url\(["']?(?!data:|https?:)([^"')]+)["']?\)/gi, (_, p) => {
+                            try { return `url("${new URL(p, cssBase).href}")`; } catch { return _; }
+                        });
+                        html = html.replace(m.original, `<style>/* ${m.href} */\n${css}</style>`);
+                        inlined++;
+                    }
+                });
+
+                // Apply JS
+                jsMatches.forEach((m, i) => {
+                    if (jsResults[i].success) {
+                        const js = jsResults[i].content.replace(/<\/script>/gi, '<\\/script>');
+                        html = html.replace(m.original, `<script>/* ${m.src} */\n${js}<\/script>`);
+                        inlined++;
+                    }
+                });
+
+                // Fix relative URLs
+                html = html.replace(/(src|href|poster)=["'](?!data:|blob:|https?:|\/\/|#|javascript:)([^"']+)["']/gi, (m, attr, path) => {
+                    try { return `${attr}="${new URL(path, url).href}"`; } catch { return m; }
+                });
+
+                // Add base tag
+                if (!html.includes('<base ')) {
+                    html = html.replace(/<head[^>]*>/i, `$&\n    <base href="${baseUrl}/">`);
+                }
+
+                // Add header comment
+                html = `<!--
+  Fetched from: ${url}
+  Date: ${new Date().toISOString()}
+  Inlined: ${inlined} resources
+-->\n` + html;
+
+                hideLoading();
+                showEditor();
+                editor.setValue(html);
+
+                currentFileName = urlObj.hostname.replace(/\./g, '_') + '.html';
+                currentFileHandle = null;
+                document.getElementById('currentFileName').textContent = currentFileName;
+
+                markSaved();
+                updatePreview();
+                showNotification(`Loaded! Inlined ${inlined} resources.`, 'success');
+
+            } catch (err) {
+                hideLoading();
+                showNotification('Failed to fetch', 'error');
+                console.error(err);
+            }
+        }
+
+        // ==================== PLUGIN FUNCTIONS ====================
+        const pluginState = {
+            folding: true,
+            hint: true,
+            beautify: true,
+            activeLine: true,
+            matchTags: true,
+            emmet: true
+        };
+
+        function togglePlugin(name) {
+            pluginState[name] = !pluginState[name];
+            const btn = document.getElementById('btn-' + name);
+
+            if (pluginState[name]) {
+                btn.textContent = name === 'emmet' ? 'Tab to Expand' : 'Active';
+                btn.className = name === 'emmet' ? 'bg-yellow-600 text-xs px-2 py-1 rounded' : 'bg-green-600 text-xs px-2 py-1 rounded';
+            } else {
+                btn.textContent = 'Disabled';
+                btn.className = 'bg-gray-600 text-xs px-2 py-1 rounded';
+            }
+
+            // Apply plugin changes to editor
+            if (editor) {
+                switch (name) {
+                    case 'folding':
+                        editor.setOption('foldGutter', pluginState[name]);
+                        break;
+                    case 'activeLine':
+                        editor.setOption('styleActiveLine', pluginState[name]);
+                        break;
+                    case 'matchTags':
+                        editor.setOption('matchTags', pluginState[name] ? { bothTags: true } : false);
+                        break;
+                }
+                editor.refresh();
+            }
+
+            showNotification(name + ' ' + (pluginState[name] ? 'enabled' : 'disabled'), 'info');
+        }
+
+        // Track loaded custom plugins
+        const loadedCustomPlugins = [];
+        let customPluginCounter = 0;
+
+        function loadCustomPlugin() {
+            const url = document.getElementById('customPluginUrl').value.trim();
+            if (!url) {
+                showNotification('Enter a script URL', 'warning');
+                return;
+            }
+
+            // Check if already loaded
+            if (loadedCustomPlugins.find(p => p.url === url)) {
+                showNotification('Plugin already loaded', 'warning');
+                return;
+            }
+
+            // Get custom name or extract from URL
+            let name = document.getElementById('customPluginName').value.trim();
+            if (!name) {
+                // Extract filename from URL
+                try {
+                    const urlObj = new URL(url);
+                    name = urlObj.pathname.split('/').pop() || 'Custom Plugin';
+                    // Remove .js extension for cleaner name
+                    name = name.replace(/\.js$/, '').replace(/\.min$/, '');
+                } catch {
+                    name = 'Custom Plugin ' + (customPluginCounter + 1);
+                }
+            }
+
+            const pluginId = 'custom-plugin-' + (++customPluginCounter);
+
+            // Show loading state
+            showNotification('Loading: ' + name + '...', 'info');
+
+            const script = document.createElement('script');
+            script.src = url;
+            script.id = pluginId;
+
+            script.onload = () => {
+                // Add to loaded plugins list
+                const plugin = {
+                    id: pluginId,
+                    name: name,
+                    url: url,
+                    loaded: true,
+                    enabled: true
+                };
+                loadedCustomPlugins.push(plugin);
+
+                // Add to UI
+                addCustomPluginToList(plugin);
+
+                // Clear inputs
+                document.getElementById('customPluginUrl').value = '';
+                document.getElementById('customPluginName').value = '';
+
+                showNotification('✓ Loaded: ' + name, 'success');
+            };
+
+            script.onerror = () => {
+                showNotification('✗ Failed to load: ' + name, 'error');
+            };
+
+            document.head.appendChild(script);
+        }
+
+        function addCustomPluginToList(plugin) {
+            const container = document.getElementById('customPluginsContainer');
+            const list = document.getElementById('customPluginsList');
+
+            // Show the container
+            container.classList.remove('hidden');
+
+            // Create plugin card
+            const div = document.createElement('div');
+            div.id = 'plugin-card-' + plugin.id;
+            div.className = 'bg-gray-700 rounded p-3';
+            div.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <span class="font-medium text-sm">📦 ${plugin.name}</span>
+                    <div class="flex gap-1">
+                        <button onclick="toggleCustomPlugin('${plugin.id}')" id="btn-${plugin.id}" 
+                                class="bg-green-600 text-xs px-2 py-1 rounded" title="Toggle plugin">
+                            ✓ Loaded
+                        </button>
+                        <button onclick="removeCustomPlugin('${plugin.id}')" 
+                                class="bg-red-600 hover:bg-red-500 text-xs px-2 py-1 rounded" title="Remove plugin">
+                            ✕
+                        </button>
+                    </div>
+                </div>
+                <p class="text-xs text-gray-400 mt-1 truncate" title="${plugin.url}">${plugin.url}</p>
+            `;
+
+            list.appendChild(div);
+        }
+
+        function toggleCustomPlugin(pluginId) {
+            const plugin = loadedCustomPlugins.find(p => p.id === pluginId);
+            if (!plugin) return;
+
+            plugin.enabled = !plugin.enabled;
+            const btn = document.getElementById('btn-' + pluginId);
+
+            if (plugin.enabled) {
+                btn.textContent = '✓ Loaded';
+                btn.className = 'bg-green-600 text-xs px-2 py-1 rounded';
+                showNotification(plugin.name + ' enabled', 'success');
+            } else {
+                btn.textContent = '✗ Disabled';
+                btn.className = 'bg-gray-600 text-xs px-2 py-1 rounded';
+                showNotification(plugin.name + ' disabled (reload page to fully remove)', 'warning');
+            }
+        }
+
+        function removeCustomPlugin(pluginId) {
+            const pluginIndex = loadedCustomPlugins.findIndex(p => p.id === pluginId);
+            if (pluginIndex === -1) return;
+
+            const plugin = loadedCustomPlugins[pluginIndex];
+
+            // Remove from DOM
+            const script = document.getElementById(pluginId);
+            if (script) script.remove();
+
+            // Remove card
+            const card = document.getElementById('plugin-card-' + pluginId);
+            if (card) card.remove();
+
+            // Remove from array
+            loadedCustomPlugins.splice(pluginIndex, 1);
+
+            // Hide container if empty
+            if (loadedCustomPlugins.length === 0) {
+                document.getElementById('customPluginsContainer').classList.add('hidden');
+            }
+
+            showNotification('Removed: ' + plugin.name + ' (reload page for full effect)', 'info');
+        }
+
+        // Simple Emmet-like expansion
+        function tryEmmetExpand(cm) {
+            if (!pluginState.emmet) return false;
+
+            const cursor = cm.getCursor();
+            const line = cm.getLine(cursor.line);
+            const beforeCursor = line.substring(0, cursor.ch);
+
+            // Match Emmet-like abbreviations: tag.class#id, tag*n, tag>child
+            const match = beforeCursor.match(/([a-z][a-z0-9]*(?:[.#][a-z0-9_-]+)*(?:\*\d+)?(?:>[a-z][a-z0-9]*(?:[.#][a-z0-9_-]+)*(?:\*\d+)?)*)$/i);
+
+            if (!match) return false;
+
+            const abbr = match[1];
+            if (abbr.length < 2) return false;
+
+            try {
+                const expanded = expandEmmet(abbr);
+                if (expanded && expanded !== abbr) {
+                    const from = { line: cursor.line, ch: cursor.ch - abbr.length };
+                    cm.replaceRange(expanded, from, cursor);
+                    return true;
+                }
+            } catch (e) {
+                console.log('Emmet expansion failed:', e);
+            }
+
+            return false;
+        }
+
+        function expandEmmet(abbr) {
+            // Simple Emmet expansion for common patterns
+            let result = '';
+
+            // Handle multiplication (li*3)
+            const multMatch = abbr.match(/^([^*]+)\*(\d+)$/);
+            if (multMatch) {
+                const [, tag, count] = multMatch;
+                for (let i = 0; i < parseInt(count); i++) {
+                    result += expandEmmet(tag) + '\n';
+                }
+                return result.trim();
+            }
+
+            // Handle child combinator (ul>li)
+            if (abbr.includes('>')) {
+                const parts = abbr.split('>');
+                let html = '';
+                let indent = '';
+                parts.forEach((part, i) => {
+                    const expanded = expandEmmet(part);
+                    if (i === 0) {
+                        html = expanded;
+                    } else {
+                        indent += '  ';
+                        // Insert child before closing tag
+                        const closeTag = html.match(/<\/[^>]+>$/);
+                        if (closeTag) {
+                            html = html.slice(0, -closeTag[0].length) + '\n' + indent + expanded + '\n' + indent.slice(2) + closeTag[0];
+                        }
+                    }
+                });
+                return html;
+            }
+
+            // Parse tag.class#id
+            let tag = 'div';
+            let classes = [];
+            let id = '';
+
+            const tagMatch = abbr.match(/^([a-z][a-z0-9]*)/i);
+            if (tagMatch) tag = tagMatch[1];
+
+            const classMatches = abbr.match(/\.([a-z0-9_-]+)/gi);
+            if (classMatches) classes = classMatches.map(c => c.slice(1));
+
+            const idMatch = abbr.match(/#([a-z0-9_-]+)/i);
+            if (idMatch) id = idMatch[1];
+
+            // Build HTML
+            let attrs = '';
+            if (id) attrs += ` id="${id}"`;
+            if (classes.length) attrs += ` class="${classes.join(' ')}"`;
+
+            // Self-closing tags
+            const selfClosing = ['img', 'br', 'hr', 'input', 'meta', 'link'];
+            if (selfClosing.includes(tag)) {
+                return `<${tag}${attrs}>`;
+            }
+
+            return `<${tag}${attrs}></${tag}>`;
+        }
+
+        // ==================== EDITOR TOOLS ====================
+        function formatCode() {
+            const mode = editor.getOption('mode');
+            let content = editor.getValue();
+            let formatted;
+
+            // Use js-beautify if available
+            if (typeof html_beautify !== 'undefined' && (mode === 'htmlmixed' || mode === 'xml')) {
+                formatted = html_beautify(content, {
+                    indent_size: 2,
+                    wrap_line_length: 120,
+                    preserve_newlines: true,
+                    max_preserve_newlines: 2,
+                    indent_inner_html: true
+                });
+            } else if (typeof css_beautify !== 'undefined' && mode === 'css') {
+                formatted = css_beautify(content, {
+                    indent_size: 2
+                });
+            } else if (typeof js_beautify !== 'undefined' && mode === 'javascript') {
+                formatted = js_beautify(content, {
+                    indent_size: 2
+                });
+            } else {
+                // Fallback simple formatter
+                let html = content;
+                formatted = '';
+                let indent = 0;
+                const tab = '  ';
+
+                html = html.replace(/>\s*</g, '>\n<');
+                const lines = html.split('\n');
+
+                lines.forEach(line => {
+                    line = line.trim();
+                    if (!line) return;
+
+                    if (line.match(/^<\/\w/)) indent = Math.max(0, indent - 1);
+                    formatted += tab.repeat(indent) + line + '\n';
+                    if (line.match(/^<\w[^>]*[^\/]>/) && !line.match(/^<(br|hr|img|input|meta|link|!)/i)) indent++;
+                });
+
+                formatted = formatted.trim();
+            }
+
+            editor.setValue(formatted);
+            showNotification('Formatted with ' + (typeof html_beautify !== 'undefined' ? 'js-beautify' : 'basic formatter'), 'success');
+        }
+
+        function toggleComment() {
+            const sel = editor.getSelection();
+            if (sel) {
+                if (sel.startsWith('<!--') && sel.endsWith('-->')) {
+                    editor.replaceSelection(sel.slice(4, -3));
+                } else {
+                    editor.replaceSelection('<!--' + sel + '-->');
+                }
+            } else {
+                const cursor = editor.getCursor();
+                const line = editor.getLine(cursor.line);
+                if (line.trim().startsWith('<!--')) {
+                    editor.setLine(cursor.line, line.replace('<!--', '').replace('-->', ''));
+                } else {
+                    editor.setLine(cursor.line, '<!--' + line + '-->');
+                }
+            }
+        }
+
+        // ==================== FIND/REPLACE ====================
+        function showFindReplace() {
+            document.getElementById('findReplaceModal').classList.add('active');
+            document.getElementById('findInput').focus();
+        }
+
+        function closeFindReplace() {
+            document.getElementById('findReplaceModal').classList.remove('active');
+        }
+
+        function findNext() {
+            const text = document.getElementById('findInput').value;
+            if (!text) return;
+
+            if (!searchCursor || !searchCursor.findNext()) {
+                searchCursor = editor.getSearchCursor(text, { line: 0, ch: 0 });
+                if (!searchCursor.findNext()) {
+                    showNotification('No matches', 'warning');
+                    return;
+                }
+            }
+
+            editor.setSelection(searchCursor.from(), searchCursor.to());
+            editor.scrollIntoView({ from: searchCursor.from(), to: searchCursor.to() });
+        }
+
+        function replaceOne() {
+            const find = document.getElementById('findInput').value;
+            const replace = document.getElementById('replaceInput').value;
+
+            if (editor.getSelection() === find) {
+                editor.replaceSelection(replace);
+            }
+            findNext();
+        }
+
+        function replaceAll() {
+            const find = document.getElementById('findInput').value;
+            const replace = document.getElementById('replaceInput').value;
+            if (!find) return;
+
+            const content = editor.getValue();
+            const regex = new RegExp(find.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+            const count = (content.match(regex) || []).length;
+            editor.setValue(content.replace(regex, replace));
+
+            showNotification(`Replaced ${count}`, 'success');
+        }
+
+        // ==================== WRAP TAG ====================
+        function showWrapTagModal() {
+            if (!editor.somethingSelected()) {
+                showNotification('Select text first', 'warning');
+                return;
+            }
+            document.getElementById('wrapTagModal').classList.add('active');
+            document.getElementById('wrapTagInput').focus();
+        }
+
+        function closeWrapTagModal() {
+            document.getElementById('wrapTagModal').classList.remove('active');
+        }
+
+        function confirmWrapTag() {
+            const tag = document.getElementById('wrapTagInput').value.trim();
+            if (!tag) return;
+
+            const sel = editor.getSelection();
+            editor.replaceSelection(`<${tag}>${sel}</${tag}>`);
+            closeWrapTagModal();
+            document.getElementById('wrapTagInput').value = '';
+        }
+
+        // ==================== UTILITIES ====================
+        function markUnsaved() {
+            unsavedChanges = true;
+            document.getElementById('unsavedIndicator').classList.remove('hidden');
+        }
+
+        function markSaved() {
+            unsavedChanges = false;
+            document.getElementById('unsavedIndicator').classList.add('hidden');
+        }
+
+        function updateFileSize() {
+            const size = new Blob([editor.getValue()]).size;
+            let text;
+            if (size < 1024) text = size + ' bytes';
+            else if (size < 1024 * 1024) text = (size / 1024).toFixed(1) + ' KB';
+            else text = (size / (1024 * 1024)).toFixed(1) + ' MB';
+            document.getElementById('fileSize').textContent = text;
+        }
+
+        function showNotification(message, type) {
+            const colors = { success: 'bg-green-600', error: 'bg-red-600', warning: 'bg-yellow-600', info: 'bg-blue-600' };
+            const div = document.createElement('div');
+            div.className = `fixed top-4 right-4 ${colors[type] || colors.info} text-white px-4 py-2 rounded shadow-lg z-50`;
+            div.textContent = message;
+            document.body.appendChild(div);
+            setTimeout(() => { div.style.opacity = '0'; div.style.transition = 'opacity 0.3s'; }, 2500);
+            setTimeout(() => div.remove(), 3000);
+        }
+
+        function showLoading(message) {
+            const div = document.createElement('div');
+            div.id = 'loadingOverlay';
+            div.className = 'loading-overlay';
+            div.innerHTML = `<div class="loading-spinner"></div><p class="text-white text-lg">${message}</p><p class="text-gray-400 text-sm" id="loadingStatus"></p>`;
+            document.body.appendChild(div);
+        }
+
+        function updateLoading(message) {
+            const status = document.getElementById('loadingStatus');
+            if (status) status.textContent = message;
+        }
+
+        function hideLoading() {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) overlay.remove();
+        }
+    </script>
+</body>
+
+</html>

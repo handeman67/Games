@@ -1,0 +1,13 @@
+{
+  "name": "multiplayer-poker-app",
+  "version": "1.0.0",
+  "description": "Multiplayer Texas Hold'em Poker App with Socket.io",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.22.1",
+    "socket.io": "^4.7.2"
+  }
+}

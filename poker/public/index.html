@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Multiplayer Texas Hold'em Poker Game. Play with friends online.">
+    <title>Texas Hold'em Poker - Multiplayer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="login-screen" class="screen active">
+        <div class="login-container">
+            <div class="logo">
+                <span class="suit red">♥</span>
+                <span class="suit black">♠</span>
+                <h1>Texas Hold'em</h1>
+                <span class="suit red">♦</span>
+                <span class="suit black">♣</span>
+            </div>
+            <div class="login-box">
+                <h2>Private Table</h2>
+                <p class="info">Buy-in: 1,500 chips | Blinds: 1/2</p>
+                <input type="text" id="username-input" placeholder="Enter nickname" maxlength="12" autocomplete="off">
+                <button id="join-btn" class="btn-primary">Join Table</button>
+                <p class="error-msg" id="login-error"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game-screen" class="screen">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="game-info">
+                <span class="blinds">Blinds: 1/2</span>
+                <span class="separator">|</span>
+                <span class="phase" id="game-phase">Waiting...</span>
+            </div>
+            <div class="controls">
+                <label class="toggle">
+                    <input type="checkbox" id="chat-toggle" checked>
+                    <span class="toggle-label">💬 Chat</span>
+                </label>
+                <label class="toggle">
+                    <input type="checkbox" id="sound-toggle" checked>
+                    <span class="toggle-label" id="sound-label">🔊 Sound</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Poker Table -->
+        <div class="table-container">
+            <div class="poker-table">
+                <div class="pot-area">
+                    <div class="pot-display">
+                        <span class="pot-label">POT</span>
+                        <span class="pot-amount" id="pot-amount">0</span>
+                    </div>
+                </div>
+
+                <div class="community-cards" id="community-cards"></div>
+                <div class="seats-container" id="seats-container"></div>
+                <div class="dealer-button" id="dealer-button" style="display: none;">
+                    <div class="dealer-inner">D</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Cards -->
+        <div class="my-cards-area">
+            <div class="my-cards" id="my-cards"></div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-area" id="action-area">
+            <div class="action-buttons" id="action-buttons">
+                <button class="action-btn fold" data-action="fold" disabled>Fold</button>
+                <button class="action-btn check" data-action="check" disabled>Check</button>
+                <button class="action-btn call" data-action="call" disabled>Call <span class="call-amount"></span></button>
+                <button class="action-btn bet" data-action="bet" disabled>Bet</button>
+                <button class="action-btn raise" data-action="raise" disabled>Raise</button>
+                <button class="action-btn allin" data-action="allin" disabled>All In</button>
+            </div>
+            
+            <div class="bet-controls" id="bet-controls" style="display: none;">
+                <input type="range" id="bet-slider" min="2" max="1500" value="2">
+                <div class="bet-presets">
+                    <button class="preset-btn" data-preset="min">Min</button>
+                    <button class="preset-btn" data-preset="half">½ Pot</button>
+                    <button class="preset-btn" data-preset="pot">Pot</button>
+                    <button class="preset-btn" data-preset="allin">All In</button>
+                </div>
+                <div class="bet-input-row">
+                    <input type="number" id="bet-input" min="2" value="2">
+                    <button class="confirm-btn" id="confirm-bet">Confirm</button>
+                    <button class="cancel-btn" id="cancel-bet">Cancel</button>
+                </div>
+            </div>
+
+            <button class="rebuy-btn" id="rebuy-btn" style="display: none;">
+                💰 Buy 1,500 chips ($1.00)
+            </button>
+        </div>
+
+        <!-- Chat -->
+        <div class="chat-area">
+            <div id="chat-messages" class="chat-messages"></div>
+            <div class="chat-input-container">
+                <input type="text" id="chat-input" placeholder="Type a message..." maxlength="100">
+                <button class="emoji-btn" id="emoji-btn">😀</button>
+                <button class="send-btn" id="send-btn">Send</button>
+            </div>
+            <div class="emoji-picker" id="emoji-picker">
+                <span data-emoji="😀">😀</span>
+                <span data-emoji="😂">😂</span>
+                <span data-emoji="😎">😎</span>
+                <span data-emoji="🤔">🤔</span>
+                <span data-emoji="😤">😤</span>
+                <span data-emoji="😭">😭</span>
+                <span data-emoji="🎉">🎉</span>
+                <span data-emoji="👍">👍</span>
+                <span data-emoji="👎">👎</span>
+                <span data-emoji="🔥">🔥</span>
+                <span data-emoji="💰">💰</span>
+                <span data-emoji="🃏">🃏</span>
+            </div>
+        </div>
+
+        <!-- Notifications -->
+        <div class="notifications" id="notifications"></div>
+    </div>
+
+    <!-- Winner Modal -->
+    <div class="modal" id="winner-modal">
+        <div class="modal-content">
+            <h2 id="winner-title">🏆 Winner!</h2>
+            <div id="winner-info"></div>
+            <button class="btn-primary" id="close-modal">Continue</button>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="./game/SoundManager.js"></script>
+    <script src="./game/AnimationManager.js"></script>
+    <script src="./client.js"></script>
+</body>
+
+<script></script>
+<script></script>
+<script></script>
+<script></script>
+</html>

@@ -1,0 +1,11 @@
+poker-game/
+├── server.js
+├── package.json
+├── public/
+│   ├── index.html
+│   ├── style.css
+│   └── client.js
+└── game/
+    ├── Deck.js
+    ├── HandEvaluator.js
+    └── PokerGame.js

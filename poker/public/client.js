@@ -1,0 +1,515 @@
+// poker-multiplayer/public/client.js
+const socket = io();
+const soundManager = new SoundManager();
+const animationManager = new AnimationManager();
+
+let myName = '';
+let mySeat = -1;
+let gameState = null;
+let privateState = null;
+let chatEnabled = true;
+let soundEnabled = true;
+let pendingBetAction = null;
+
+const loginScreen = document.getElementById('login-screen');
+const gameScreen = document.getElementById('game-screen');
+const usernameInput = document.getElementById('username-input');
+const joinBtn = document.getElementById('join-btn');
+const loginError = document.getElementById('login-error');
+
+const gamePhaseEl = document.getElementById('game-phase');
+const potAmountEl = document.getElementById('pot-amount');
+const communityCardsEl = document.getElementById('community-cards');
+const seatsContainer = document.getElementById('seats-container');
+const dealerButton = document.getElementById('dealer-button');
+
+const myCardsEl = document.getElementById('my-cards');
+const actionButtons = document.getElementById('action-buttons');
+const betControls = document.getElementById('bet-controls');
+const betSlider = document.getElementById('bet-slider');
+const betInput = document.getElementById('bet-input');
+const rebuyBtn = document.getElementById('rebuy-btn');
+
+const chatToggle = document.getElementById('chat-toggle');
+const chatInput = document.getElementById('chat-input');
+const sendBtn = document.getElementById('send-btn');
+const emojiBtn = document.getElementById('emoji-btn');
+const emojiPicker = document.getElementById('emoji-picker');
+const chatMessages = document.getElementById('chat-messages');
+const notifications = document.getElementById('notifications');
+const winnerModal = document.getElementById('winner-modal');
+const closeModalBtn = document.getElementById('close-modal');
+
+// ============ AUTO-START ============
+window.addEventListener('load', () => {
+    // Check for name in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlName = urlParams.get('name');
+    
+    if (urlName) {
+        usernameInput.value = urlName;
+        joinGame();
+    } else {
+        // Just pre-fill a random name but don't auto-join
+        const randomId = Math.floor(Math.random() * 9000) + 1000;
+        usernameInput.value = `Player${randomId}`;
+        usernameInput.focus();
+        usernameInput.select();
+    }
+});
+
+// ============ SOCKET HANDLERS ============
+
+socket.on('join_success', (data) => {
+    mySeat = data.player.seat;
+    myName = data.player.name;
+    loginScreen.classList.remove('active');
+    gameScreen.classList.add('active');
+    updateUI(data.gameState);
+    addChatMessage('Dealer', `Welcome to the table, ${myName}!`, 'dealer');
+});
+
+socket.on('join_error', (error) => {
+    loginError.textContent = error;
+    loginScreen.classList.add('active');
+    gameScreen.classList.remove('active');
+});
+
+socket.on('game_state', (state) => {
+    const oldPhase = gameState ? gameState.phase : 'waiting';
+    const newPhase = state.phase;
+    
+    // Animate chip movements if pot increased
+    if (gameState && state.pot > gameState.pot) {
+        const diff = state.pot - gameState.pot;
+        // Animate from active players to pot
+        state.players.forEach(p => {
+            if (p.currentBet > 0) {
+                const seatEl = document.querySelector(`.seat[data-seat="${p.seat}"]`);
+                if (seatEl) {
+                    animationManager.animatePotGain(seatEl, potAmountEl, diff);
+                }
+            }
+        });
+    }
+
+    updateUI(state);
+
+    // Deal animations
+    if (oldPhase === 'waiting' && newPhase === 'preflop') {
+        const playerSeats = state.players.filter(p => p.isActive).map(p => p.seat);
+        const playerEls = playerSeats.map(s => document.querySelector(`.seat[data-seat="${s}"]`)).filter(el => el);
+        animationManager.dealCards(dealerButton, playerEls, soundManager);
+    }
+});
+
+socket.on('private_state', (state) => {
+    updatePrivateState(state);
+});
+
+socket.on('player_action', (data) => {
+    soundManager.playSound(data.action);
+    const seatEl = document.querySelector(`.seat[data-seat="${data.seat}"]`);
+    if (seatEl) {
+        if (data.action === 'fold') {
+            animationManager.animateFold(seatEl);
+        } else {
+            animationManager.animatePlayerAction(seatEl, data.action);
+        }
+        
+        // Chip animation for bets/raises
+        if (data.amount > 0) {
+            animationManager.animatePotGain(seatEl, potAmountEl, data.amount);
+        }
+    }
+});
+
+socket.on('chat_message', (data) => {
+    const player = gameState?.players.find(p => p.seat === data.seat);
+    const senderName = player ? player.name : `Seat ${data.seat}`;
+    addChatMessage(senderName, data.message);
+    if (chatEnabled) {
+        showChatBubble(data.seat, data.message);
+    }
+});
+
+socket.on('emoji_reaction', (data) => {
+    if (chatEnabled) {
+        showChatBubble(data.seat, data.emoji);
+    }
+});
+
+socket.on('system_msg', (msg) => {
+    addChatMessage('Dealer', msg, 'dealer');
+});
+
+socket.on('showdown', (data) => {
+    showWinner(data);
+});
+
+socket.on('win_by_default', (data) => {
+    showWinByDefault(data);
+});
+
+socket.on('action_error', (error) => {
+    showNotification(error, 'error');
+});
+
+// ============ UI FUNCTIONS ============
+
+function addChatMessage(name, message, type = '') {
+    if (!chatMessages) return;
+    const msgEl = document.createElement('div');
+    msgEl.className = `chat-msg ${type}`;
+    msgEl.innerHTML = `<span class="name">${name}:</span> <span class="text">${message}</span>`;
+    chatMessages.appendChild(msgEl);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function joinGame() {
+    const name = usernameInput.value.trim();
+    if (name.length < 2) {
+        loginError.textContent = 'Name must be at least 2 characters';
+        return;
+    }
+    socket.emit('join_game', name);
+}
+
+joinBtn.addEventListener('click', joinGame);
+usernameInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') joinGame();
+});
+
+function updateUI(state) {
+    gameState = state;
+    gamePhaseEl.textContent = state.phase.toUpperCase();
+    potAmountEl.textContent = state.pot;
+    renderCommunityCards(state.communityCards);
+    renderSeats(state.players, state.currentPlayerSeat, state.dealerSeat);
+}
+
+function updatePrivateState(state) {
+    privateState = state;
+    renderMyCards(state.myCards);
+    updateActionButtons(state.availableActions, state.toCall);
+    
+    // Show rebuy button if out of chips
+    if (state.myStack === 0 && gameState && gameState.phase === 'waiting') {
+        rebuyBtn.style.display = 'block';
+    } else {
+        rebuyBtn.style.display = 'none';
+    }
+}
+
+function renderSeats(players, currentPlayerSeat, dealerSeat) {
+    seatsContainer.innerHTML = '';
+
+    // Max 7 players as per server.js
+    for (let i = 0; i < 7; i++) {
+        const player = players.find(p => p.seat === i);
+        const seatEl = document.createElement('div');
+        seatEl.className = 'seat';
+        seatEl.setAttribute('data-seat', i);
+
+        if (!player) {
+            seatEl.classList.add('empty');
+            seatEl.innerHTML = `
+                <div class="avatar">👤</div>
+                <div class="player-info">
+                    <div class="player-name">Empty</div>
+                </div>
+            `;
+        } else {
+            if (player.folded) seatEl.classList.add('folded');
+            if (player.seat === currentPlayerSeat) seatEl.classList.add('current-turn');
+            if (player.allIn) seatEl.classList.add('all-in');
+
+            let cardsHTML = '';
+            if (player.hasCards) {
+                if (player.seat === mySeat) {
+                    cardsHTML = `
+                        <div class="player-cards">
+                            <div class="card mini"></div>
+                            <div class="card mini"></div>
+                        </div>
+                    `;
+                } else {
+                    cardsHTML = `
+                        <div class="player-cards">
+                            <div class="card back mini"></div>
+                            <div class="card back mini"></div>
+                        </div>
+                    `;
+                }
+            }
+
+            let betHTML = '';
+            if (player.currentBet > 0) {
+                betHTML = `<div class="player-bet">${player.currentBet}</div>`;
+            }
+
+            let actionHTML = '';
+            if (player.lastAction) {
+                actionHTML = `<div class="player-action-label">${player.lastAction}</div>`;
+            }
+
+            seatEl.innerHTML = `
+                <div class="chat-bubble" id="bubble-${player.seat}"></div>
+                ${cardsHTML}
+                <div class="avatar">
+                    ${player.allIn ? '🔥' : (player.seat === mySeat ? '⭐' : '👤')}
+                    ${actionHTML}
+                </div>
+                ${betHTML}
+                <div class="player-info">
+                    <div class="player-name">${player.name}${player.seat === mySeat ? ' (You)' : ''}</div>
+                    <div class="player-stack">${player.stack}</div>
+                </div>
+            `;
+        }
+
+        seatsContainer.appendChild(seatEl);
+    }
+
+    if (dealerSeat !== undefined) {
+        positionDealerButton(dealerSeat);
+        dealerButton.style.display = 'flex';
+    } else {
+        dealerButton.style.display = 'none';
+    }
+}
+
+function positionDealerButton(seat) {
+    const seatEl = document.querySelector(`.seat[data-seat="${seat}"]`);
+    if (seatEl) {
+        const rect = seatEl.getBoundingClientRect();
+        const containerRect = seatsContainer.getBoundingClientRect();
+        
+        dealerButton.style.top = `${rect.top - containerRect.top + 10}px`;
+        dealerButton.style.left = `${rect.left - containerRect.left + 10}px`;
+        animationManager.animateDealerButton(dealerButton);
+    }
+}
+
+function renderCommunityCards(cards) {
+    communityCardsEl.innerHTML = '';
+    for (let i = 0; i < 5; i++) {
+        const cardEl = document.createElement('div');
+        if (cards && cards[i]) {
+            const c = cards[i];
+            cardEl.className = `card ${c.color}`;
+            cardEl.innerHTML = `
+                <span class="value">${c.value}</span>
+                <span class="suit-symbol">${getSuitSymbol(c.suit)}</span>
+            `;
+        } else {
+            cardEl.className = 'card placeholder';
+        }
+        communityCardsEl.appendChild(cardEl);
+    }
+}
+
+function renderMyCards(cards) {
+    myCardsEl.innerHTML = '';
+    if (!cards || cards.length === 0) return;
+
+    cards.forEach(c => {
+        const cardEl = document.createElement('div');
+        cardEl.className = `card ${c.color}`;
+        cardEl.innerHTML = `
+            <span class="value">${c.value}</span>
+            <span class="suit-symbol">${getSuitSymbol(c.suit)}</span>
+        `;
+        myCardsEl.appendChild(cardEl);
+    });
+}
+
+function getSuitSymbol(suit) {
+    const symbols = { hearts: '♥', diamonds: '♦', clubs: '♣', spades: '♠' };
+    return symbols[suit] || suit;
+}
+
+function updateActionButtons(actions, toCall) {
+    const btns = actionButtons.querySelectorAll('.action-btn');
+    btns.forEach(btn => {
+        const action = btn.dataset.action;
+        const available = actions && actions.includes(action);
+        btn.disabled = !available;
+
+        if (action === 'call') {
+            btn.querySelector('.call-amount').textContent = toCall > 0 ? toCall : '';
+        }
+    });
+
+    if (!actions || (!actions.includes('bet') && !actions.includes('raise'))) {
+        betControls.style.display = 'none';
+    }
+}
+
+actionButtons.addEventListener('click', (e) => {
+    const btn = e.target.closest('.action-btn');
+    if (!btn || btn.disabled) return;
+
+    const action = btn.dataset.action;
+    if (action === 'bet' || action === 'raise') {
+        pendingBetAction = action;
+        showBetControls(action);
+    } else {
+        socket.emit('player_action', { action: action });
+    }
+});
+
+function showBetControls(action) {
+    betControls.style.display = 'block';
+    
+    const myPlayer = gameState.players.find(p => p.seat === mySeat);
+    const minRaise = gameState.minRaise;
+    const currentBet = gameState.currentBet;
+    
+    let min, max;
+    if (action === 'bet') {
+        min = minRaise;
+        max = myPlayer.stack;
+    } else {
+        min = currentBet + minRaise;
+        max = myPlayer.stack + myPlayer.currentBet;
+    }
+
+    betSlider.min = min;
+    betSlider.max = max;
+    betSlider.value = min;
+    betInput.value = min;
+    betInput.min = min;
+    betInput.max = max;
+}
+
+betSlider.addEventListener('input', () => {
+    betInput.value = betSlider.value;
+});
+
+betInput.addEventListener('input', () => {
+    const val = parseInt(betInput.value) || 0;
+    betSlider.value = val;
+});
+
+document.querySelectorAll('.preset-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        let val;
+        const myPlayer = gameState.players.find(p => p.seat === mySeat);
+        const max = myPlayer.stack + myPlayer.currentBet;
+        
+        switch (btn.dataset.preset) {
+            case 'min': val = parseInt(betSlider.min); break;
+            case 'half': val = Math.floor(gameState.pot / 2); break;
+            case 'pot': val = gameState.pot; break;
+            case 'allin': val = max; break;
+        }
+        val = Math.max(parseInt(betSlider.min), Math.min(val, max));
+        betSlider.value = val;
+        betInput.value = val;
+    });
+});
+
+document.getElementById('confirm-bet').addEventListener('click', () => {
+    const amount = parseInt(betInput.value);
+    socket.emit('player_action', { action: pendingBetAction, amount: amount });
+    betControls.style.display = 'none';
+});
+
+document.getElementById('cancel-bet').addEventListener('click', () => {
+    betControls.style.display = 'none';
+});
+
+rebuyBtn.addEventListener('click', () => {
+    socket.emit('request_rebuy');
+});
+
+// ============ CHAT & EMOJI ============
+
+sendBtn.addEventListener('click', sendChat);
+chatInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') sendChat();
+});
+
+function sendChat() {
+    const msg = chatInput.value.trim();
+    if (msg) {
+        socket.emit('send_chat', msg);
+        chatInput.value = '';
+    }
+}
+
+emojiBtn.addEventListener('click', () => {
+    emojiPicker.classList.toggle('show');
+});
+
+emojiPicker.querySelectorAll('span').forEach(el => {
+    el.addEventListener('click', () => {
+        const emoji = el.dataset.emoji;
+        socket.emit('send_emoji', emoji);
+        emojiPicker.classList.remove('show');
+    });
+});
+
+function showChatBubble(seat, message) {
+    const bubbleContainer = document.getElementById(`bubble-${seat}`);
+    if (!bubbleContainer) return;
+
+    const bubbleEl = document.createElement('div');
+    bubbleEl.className = 'bubble-text';
+    bubbleEl.textContent = message;
+    bubbleContainer.appendChild(bubbleEl);
+
+    setTimeout(() => {
+        bubbleEl.remove();
+    }, 3000);
+}
+
+// ============ MODALS & NOTIFICATIONS ============
+
+function showWinner(data) {
+    // Instead of modal, show in chat
+    data.winners.forEach(w => {
+        addChatMessage('Dealer', `🏆 ${w.name} wins ${w.winAmount} chips with ${w.handName}!`, 'dealer');
+    });
+    
+    // Also show notification
+    const winnerNames = data.winners.map(w => w.name).join(', ');
+    showNotification(`Hand over! Winners: ${winnerNames}`, 'success');
+}
+
+function showWinByDefault(data) {
+    // Instead of modal, show in chat
+    addChatMessage('Dealer', `🏆 ${data.winner.name} wins ${data.winner.amount} chips because everyone else folded.`, 'dealer');
+    showNotification(`${data.winner.name} wins the pot!`, 'success');
+}
+
+closeModalBtn.addEventListener('click', () => {
+    winnerModal.style.display = 'none';
+});
+
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+    notifications.appendChild(notification);
+
+    setTimeout(() => {
+        notification.classList.add('fade-out');
+        setTimeout(() => notification.remove(), 500);
+    }, 4000);
+}
+
+// Settings
+chatToggle.addEventListener('change', () => {
+    chatEnabled = chatToggle.checked;
+});
+
+const soundToggle = document.getElementById('sound-toggle');
+const soundLabel = document.getElementById('sound-label');
+
+soundToggle.addEventListener('change', () => {
+    soundEnabled = soundToggle.checked;
+    soundManager.enabled = soundEnabled;
+    soundLabel.textContent = soundEnabled ? '🔊 Sound' : '🔇 Muted';
+});
