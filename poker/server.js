@@ -5,8 +5,30 @@ const { Server } = require('socket.io');
 const path = require('path');
 
 const app = express();
+
+// Trust reverse proxy headers in production hosts (Render/Railway/Heroku/etc)
+app.set('trust proxy', 1);
+
 const server = http.createServer(app);
-const io = new Server(server);
+
+const allowedOrigin = process.env.CLIENT_URL || '*';
+const io = new Server(server, {
+    cors: {
+        origin: allowedOrigin,
+        methods: ['GET', 'POST']
+    },
+    transports: ['websocket', 'polling']
+});
+
+// Health endpoint for uptime/monitoring checks
+app.get('/health', (req, res) => {
+    res.status(200).json({
+        ok: true,
+        service: 'poker-server',
+        players: players.length,
+        phase: gamePhase
+    });
+});
 
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
@@ -1035,13 +1057,30 @@ io.on('connection', (socket) => {
 
 // ============ START SERVER ============
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
+const HOST = process.env.HOST || '0.0.0.0';
+
+server.listen(PORT, HOST, () => {
     console.log(`\n🃏 Texas Hold'em Poker Server`);
-    console.log(`   Running on http://localhost:${PORT}`);
+    console.log(`   Running on http://${HOST}:${PORT}`);
     console.log(`   Blinds: ${SMALL_BLIND}/${BIG_BLIND}`);
-    console.log(`   Buy-in: ${STARTING_STACK} chips\n`);
+    console.log(`   Buy-in: ${STARTING_STACK} chips`);
+    console.log(`   Allowed origin: ${allowedOrigin}\n`);
 });
- console.log(`\n🃏 Texas Hold'em Poker Server`);
-    console.log(`   Running on http://localhost:${PORT}`);
-    console.log(`   Blinds: ${SMALL_BLIND}/${BIG_BLIND}`);
-    console.log(`   Buy-in: ${STARTING_STACK} chips\n`);
+
+// Graceful shutdown for managed hosting platforms
+function shutdown(signal) {
+    console.log(`\n${signal} received. Shutting down gracefully...`);
+    clearActionTimer();
+    io.close(() => {
+        server.close(() => {
+            console.log('Server closed.');
+            process.exit(0);
+        });
+    });
+
+    // Force exit if not closed in time
+    setTimeout(() => process.exit(1), 10000).unref();
+}
+
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));
