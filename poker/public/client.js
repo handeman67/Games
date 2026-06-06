@@ -1,5 +1,10 @@
 // poker-multiplayer/public/client.js
-const socket = io();
+const configuredServerUrl = (window.POKER_SERVER_URL || '').trim();
+const socket = configuredServerUrl
+    ? io(configuredServerUrl, { transports: ['websocket', 'polling'] })
+    : io({ transports: ['websocket', 'polling'] });
+
+let socketConnected = false;
 const soundManager = new SoundManager();
 const animationManager = new AnimationManager();
 
@@ -59,6 +64,20 @@ window.addEventListener('load', () => {
 });
 
 // ============ SOCKET HANDLERS ============
+
+socket.on('connect', () => {
+    socketConnected = true;
+    loginError.textContent = '';
+});
+
+socket.on('connect_error', () => {
+    socketConnected = false;
+    loginError.textContent = 'Unable to reach poker server. This page needs a live backend. Please try again in a moment.';
+});
+
+socket.on('disconnect', () => {
+    socketConnected = false;
+});
 
 socket.on('join_success', (data) => {
     mySeat = data.player.seat;
@@ -172,6 +191,12 @@ function joinGame() {
         loginError.textContent = 'Name must be at least 2 characters';
         return;
     }
+
+    if (!socketConnected) {
+        loginError.textContent = 'Poker server is not connected. If this is GitHub Pages, set window.POKER_SERVER_URL to your deployed backend URL.';
+        return;
+    }
+
     socket.emit('join_game', name);
 }
 

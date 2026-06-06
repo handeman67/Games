@@ -22,6 +22,9 @@
             <div class="login-box">
                 <h2>Private Table</h2>
                 <p class="info">Buy-in: 1,500 chips | Blinds: 1/2</p>
+                <p class="info" style="font-size: 0.85rem; opacity: 0.85;">
+                    Multiplayer requires a live poker backend server.
+                </p>
                 <input type="text" id="username-input" placeholder="Enter nickname" maxlength="12" autocomplete="off">
                 <button id="join-btn" class="btn-primary">Join Table</button>
                 <p class="error-msg" id="login-error"></p>
@@ -141,6 +144,12 @@
         </div>
     </div>
 
+    <script>
+        // For GitHub Pages/static hosting, set this to your deployed backend URL.
+        // Example: window.POKER_SERVER_URL = 'https://your-poker-backend.onrender.com';
+        // Leave blank for same-origin local Node hosting.
+        window.POKER_SERVER_URL = window.POKER_SERVER_URL || '';
+    </script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="./game/SoundManager.js"></script>
     <script src="./game/AnimationManager.js"></script>
