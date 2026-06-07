@@ -81,6 +81,7 @@ avatarEmojiSelect?.addEventListener('change', () => {
         saveAvatarForName(name, selectedAvatar);
     }
     renderAvatarPreview(selectedAvatar);
+    syncAvatarControls(selectedAvatar);
 });
 
 avatarUpload?.addEventListener('change', async (event) => {
@@ -94,6 +95,7 @@ avatarUpload?.addEventListener('change', async (event) => {
         saveAvatarForName(name, selectedAvatar);
     }
     renderAvatarPreview(selectedAvatar);
+    syncAvatarControls(selectedAvatar);
 });
 
 usernameInput?.addEventListener('input', () => {
@@ -239,10 +241,12 @@ function joinGame() {
     const savedAvatar = getAvatarForName(name);
     if (savedAvatar) {
         selectedAvatar = savedAvatar;
-        renderAvatarPreview(selectedAvatar);
     } else {
         saveAvatarForName(name, selectedAvatar || '👤');
     }
+
+    renderAvatarPreview(selectedAvatar);
+    syncAvatarControls(selectedAvatar);
 
     socket.emit('join_game', {
         username: name,
@@ -261,6 +265,16 @@ function updateUI(state) {
     potAmountEl.textContent = state.pot;
     renderCommunityCards(state.communityCards);
     renderSeats(state.players, state.currentPlayerSeat, state.dealerSeat);
+
+    if (myName) {
+        const me = state.players.find((p) => p.name === myName && p.seat === mySeat);
+        if (me && me.avatar) {
+            selectedAvatar = me.avatar;
+            saveAvatarForName(myName, selectedAvatar);
+            renderAvatarPreview(selectedAvatar);
+            syncAvatarControls(selectedAvatar);
+        }
+    }
 }
 
 function updatePrivateState(state) {
@@ -660,8 +674,10 @@ function refreshLocalMemoryUI() {
     if (savedAvatar) {
         selectedAvatar = savedAvatar;
         renderAvatarPreview(savedAvatar);
+        syncAvatarControls(savedAvatar);
     } else {
         renderAvatarPreview(selectedAvatar || '👤');
+        syncAvatarControls(selectedAvatar || '👤');
     }
 }
 
@@ -676,7 +692,7 @@ function fileToDataURL(file) {
 
 function getAvatarMarkup(player, isMe, isAllIn, actionHTML) {
     const fallback = isAllIn ? '🔥' : (isMe ? '⭐' : '👤');
-    const avatarValue = player.avatar || fallback;
+    const avatarValue = normalizeAvatar(player.avatar) || fallback;
 
     if (typeof avatarValue === 'string' && avatarValue.startsWith('data:image/')) {
         return `
@@ -694,4 +710,31 @@ function getAvatarMarkup(player, isMe, isAllIn, actionHTML) {
             ${actionHTML}
         </div>
     `;
+}
+
+function normalizeAvatar(value) {
+    if (!value) return '';
+    const str = String(value).trim();
+
+    if (str.startsWith('data:image/')) return str;
+
+    // If avatar accidentally arrives as object payload text
+    if (str === '[object Object]') return '👤';
+
+    // Keep emoji/symbols
+    return str;
+}
+
+function syncAvatarControls(avatarValue) {
+    const value = normalizeAvatar(avatarValue) || '👤';
+    if (!avatarEmojiSelect) return;
+
+    // For uploaded images, keep select at Default
+    if (value.startsWith('data:image/')) {
+        avatarEmojiSelect.value = '👤';
+        return;
+    }
+
+    const optionExists = Array.from(avatarEmojiSelect.options).some((opt) => opt.value === value);
+    avatarEmojiSelect.value = optionExists ? value : '👤';
 }
