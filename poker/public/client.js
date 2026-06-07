@@ -15,12 +15,21 @@ let privateState = null;
 let chatEnabled = true;
 let soundEnabled = true;
 let pendingBetAction = null;
+let selectedAvatar = '👤';
+
+const LOCAL_CHIPS_PREFIX = 'poker_chip_memory_';
+const LOCAL_AVATAR_PREFIX = 'poker_avatar_memory_';
 
 const loginScreen = document.getElementById('login-screen');
 const gameScreen = document.getElementById('game-screen');
 const usernameInput = document.getElementById('username-input');
 const joinBtn = document.getElementById('join-btn');
 const loginError = document.getElementById('login-error');
+const localChipMemoryLogin = document.getElementById('local-chip-memory-login');
+const localChipMemoryGame = document.getElementById('local-chip-memory-game');
+const avatarEmojiSelect = document.getElementById('avatar-emoji-select');
+const avatarUpload = document.getElementById('avatar-upload');
+const avatarPreview = document.getElementById('avatar-preview');
 
 const gamePhaseEl = document.getElementById('game-phase');
 const potAmountEl = document.getElementById('pot-amount');
@@ -61,6 +70,34 @@ window.addEventListener('load', () => {
         usernameInput.focus();
         usernameInput.select();
     }
+
+    refreshLocalMemoryUI();
+});
+
+avatarEmojiSelect?.addEventListener('change', () => {
+    const name = usernameInput.value.trim();
+    selectedAvatar = avatarEmojiSelect.value || '👤';
+    if (name.length >= 2) {
+        saveAvatarForName(name, selectedAvatar);
+    }
+    renderAvatarPreview(selectedAvatar);
+});
+
+avatarUpload?.addEventListener('change', async (event) => {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+
+    const dataUrl = await fileToDataURL(file);
+    selectedAvatar = dataUrl;
+    const name = usernameInput.value.trim();
+    if (name.length >= 2) {
+        saveAvatarForName(name, selectedAvatar);
+    }
+    renderAvatarPreview(selectedAvatar);
+});
+
+usernameInput?.addEventListener('input', () => {
+    refreshLocalMemoryUI();
 });
 
 // ============ SOCKET HANDLERS ============
@@ -86,6 +123,8 @@ socket.on('join_success', (data) => {
     gameScreen.classList.add('active');
     updateUI(data.gameState);
     addChatMessage('Dealer', `Welcome to the table, ${myName}!`, 'dealer');
+
+    refreshLocalMemoryUI();
 });
 
 socket.on('join_error', (error) => {
@@ -197,7 +236,18 @@ function joinGame() {
         return;
     }
 
-    socket.emit('join_game', name);
+    const savedAvatar = getAvatarForName(name);
+    if (savedAvatar) {
+        selectedAvatar = savedAvatar;
+        renderAvatarPreview(selectedAvatar);
+    } else {
+        saveAvatarForName(name, selectedAvatar || '👤');
+    }
+
+    socket.emit('join_game', {
+        username: name,
+        avatar: selectedAvatar || '👤'
+    });
 }
 
 joinBtn.addEventListener('click', joinGame);
@@ -217,6 +267,11 @@ function updatePrivateState(state) {
     privateState = state;
     renderMyCards(state.myCards);
     updateActionButtons(state.availableActions, state.toCall);
+
+    if (myName) {
+        saveLocalChips(myName, state.myStack);
+        refreshLocalMemoryUI();
+    }
     
     // Show rebuy button if out of chips
     if (state.myStack === 0 && gameState && gameState.phase === 'waiting') {
@@ -278,13 +333,11 @@ function renderSeats(players, currentPlayerSeat, dealerSeat) {
                 actionHTML = `<div class="player-action-label">${player.lastAction}</div>`;
             }
 
+            const avatarMarkup = getAvatarMarkup(player, player.seat === mySeat, player.allIn, actionHTML);
             seatEl.innerHTML = `
                 <div class="chat-bubble" id="bubble-${player.seat}"></div>
                 ${cardsHTML}
-                <div class="avatar">
-                    ${player.allIn ? '🔥' : (player.seat === mySeat ? '⭐' : '👤')}
-                    ${actionHTML}
-                </div>
+                ${avatarMarkup}
                 ${betHTML}
                 <div class="player-info">
                     <div class="player-name">${player.name}${player.seat === mySeat ? ' (You)' : ''}</div>
@@ -538,3 +591,107 @@ soundToggle.addEventListener('change', () => {
     soundManager.enabled = soundEnabled;
     soundLabel.textContent = soundEnabled ? '🔊 Sound' : '🔇 Muted';
 });
+
+function keyForChips(name) {
+    return `${LOCAL_CHIPS_PREFIX}${String(name || '').trim().toLowerCase()}`;
+}
+
+function keyForAvatar(name) {
+    return `${LOCAL_AVATAR_PREFIX}${String(name || '').trim().toLowerCase()}`;
+}
+
+function saveLocalChips(name, chips) {
+    if (!name) return;
+    const payload = {
+        chips: Number.isFinite(chips) ? chips : 0,
+        updatedAt: Date.now()
+    };
+    localStorage.setItem(keyForChips(name), JSON.stringify(payload));
+}
+
+function getLocalChips(name) {
+    if (!name) return null;
+    try {
+        const raw = localStorage.getItem(keyForChips(name));
+        if (!raw) return null;
+        return JSON.parse(raw);
+    } catch {
+        return null;
+    }
+}
+
+function saveAvatarForName(name, avatar) {
+    if (!name || !avatar) return;
+    localStorage.setItem(keyForAvatar(name), avatar);
+}
+
+function getAvatarForName(name) {
+    if (!name) return null;
+    return localStorage.getItem(keyForAvatar(name));
+}
+
+function renderAvatarPreview(avatarValue) {
+    if (!avatarPreview) return;
+    const value = avatarValue || '👤';
+    if (value.startsWith('data:image/')) {
+        avatarPreview.innerHTML = `<img src="${value}" alt="avatar preview">`;
+    } else {
+        avatarPreview.textContent = value;
+    }
+}
+
+function refreshLocalMemoryUI() {
+    const name = (myName || usernameInput.value || '').trim();
+    const memory = getLocalChips(name);
+
+    if (localChipMemoryLogin) {
+        localChipMemoryLogin.textContent = memory
+            ? `Local chip memory: ${memory.chips} chips`
+            : 'Local chip memory: —';
+    }
+
+    if (localChipMemoryGame) {
+        localChipMemoryGame.textContent = memory
+            ? `Local chips: ${memory.chips}`
+            : 'Local chips: —';
+    }
+
+    const savedAvatar = getAvatarForName(name);
+    if (savedAvatar) {
+        selectedAvatar = savedAvatar;
+        renderAvatarPreview(savedAvatar);
+    } else {
+        renderAvatarPreview(selectedAvatar || '👤');
+    }
+}
+
+function fileToDataURL(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+function getAvatarMarkup(player, isMe, isAllIn, actionHTML) {
+    const fallback = isAllIn ? '🔥' : (isMe ? '⭐' : '👤');
+    const avatarValue = player.avatar || fallback;
+
+    if (typeof avatarValue === 'string' && avatarValue.startsWith('data:image/')) {
+        return `
+            <div class="avatar">
+                <img class="avatar-img" src="${avatarValue}" alt="${player.name} avatar" />
+                ${actionHTML}
+            </div>
+        `;
+    }
+
+    const symbol = avatarValue || fallback;
+    return `
+        <div class="avatar">
+            ${symbol}
+            ${actionHTML}
+        </div>
+    `;
+}

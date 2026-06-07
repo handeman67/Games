@@ -3,8 +3,81 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
+
+const DATA_DIR = path.join(__dirname, 'data');
+const MEMORY_FILE = path.join(DATA_DIR, 'poker-memory.json');
+const MAX_HISTORY_ITEMS = 100;
+
+function ensureMemoryStore() {
+    if (!fs.existsSync(DATA_DIR)) {
+        fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
+    if (!fs.existsSync(MEMORY_FILE)) {
+        const initial = {
+            players: {},
+            handHistory: [],
+            meta: { updatedAt: new Date().toISOString() }
+        };
+        fs.writeFileSync(MEMORY_FILE, JSON.stringify(initial, null, 2), 'utf-8');
+    }
+}
+
+function readMemory() {
+    try {
+        ensureMemoryStore();
+        const raw = fs.readFileSync(MEMORY_FILE, 'utf-8');
+        const parsed = JSON.parse(raw);
+        if (!parsed.players) parsed.players = {};
+        if (!Array.isArray(parsed.handHistory)) parsed.handHistory = [];
+        if (!parsed.meta) parsed.meta = {};
+        return parsed;
+    } catch (err) {
+        console.error('Failed reading memory store:', err);
+        return { players: {}, handHistory: [], meta: {} };
+    }
+}
+
+function writeMemory(memory) {
+    try {
+        ensureMemoryStore();
+        memory.meta = { ...(memory.meta || {}), updatedAt: new Date().toISOString() };
+        fs.writeFileSync(MEMORY_FILE, JSON.stringify(memory, null, 2), 'utf-8');
+    } catch (err) {
+        console.error('Failed writing memory store:', err);
+    }
+}
+
+function getPlayerKey(name) {
+    return String(name || '').trim().toLowerCase();
+}
+
+function ensurePlayerStats(memory, playerName) {
+    const key = getPlayerKey(playerName);
+    if (!key) return null;
+    if (!memory.players[key]) {
+        memory.players[key] = {
+            name: String(playerName || '').trim(),
+            handsPlayed: 0,
+            handsWon: 0,
+            chipsWon: 0,
+            chipsLost: 0,
+            netChips: 0,
+            lastSeen: new Date().toISOString()
+        };
+    }
+    return memory.players[key];
+}
+
+function clampHistory(memory) {
+    if (memory.handHistory.length > MAX_HISTORY_ITEMS) {
+        memory.handHistory = memory.handHistory.slice(memory.handHistory.length - MAX_HISTORY_ITEMS);
+    }
+}
+
+ensureMemoryStore();
 
 // Trust reverse proxy headers in production hosts (Render/Railway/Heroku/etc)
 app.set('trust proxy', 1);
@@ -28,6 +101,35 @@ app.get('/health', (req, res) => {
         players: players.length,
         phase: gamePhase
     });
+});
+
+app.get('/stats/:name', (req, res) => {
+    const memory = readMemory();
+    const key = getPlayerKey(req.params.name);
+    if (!key || !memory.players[key]) {
+        return res.status(404).json({ ok: false, error: 'Player stats not found' });
+    }
+    return res.status(200).json({ ok: true, player: memory.players[key] });
+});
+
+app.get('/leaderboard', (req, res) => {
+    const memory = readMemory();
+    const limit = Math.max(1, Math.min(parseInt(req.query.limit, 10) || 10, 100));
+    const leaderboard = Object.values(memory.players)
+        .sort((a, b) => {
+            if (b.netChips !== a.netChips) return b.netChips - a.netChips;
+            return b.chipsWon - a.chipsWon;
+        })
+        .slice(0, limit);
+
+    return res.status(200).json({ ok: true, count: leaderboard.length, leaderboard });
+});
+
+app.get('/history', (req, res) => {
+    const memory = readMemory();
+    const limit = Math.max(1, Math.min(parseInt(req.query.limit, 10) || 20, 100));
+    const history = memory.handHistory.slice(-limit).reverse();
+    return res.status(200).json({ ok: true, count: history.length, history });
 });
 
 // Serve static files
@@ -326,6 +428,7 @@ function getPublicState() {
         players: players.map(p => ({
             seat: p.seat,
             name: p.name,
+            avatar: p.avatar || '👤',
             stack: p.stack,
             currentBet: p.currentBet,
             folded: p.folded,
@@ -839,6 +942,7 @@ function showdown() {
         }
     }
 
+    const potBeforePayout = pot;
     const winAmount = Math.floor(pot / winners.length);
     const remainder = pot % winners.length;
 
@@ -865,6 +969,49 @@ function showdown() {
         pot: pot
     };
 
+    // Persist lifetime stats and hand history
+    const memory = readMemory();
+    const participants = playerHands.map(ph => {
+        const st = ensurePlayerStats(memory, ph.player.name);
+        if (st) {
+            st.handsPlayed += 1;
+            st.chipsLost += ph.player.totalBetThisHand || 0;
+            st.netChips = st.chipsWon - st.chipsLost;
+            st.lastSeen = new Date().toISOString();
+        }
+        return {
+            seat: ph.player.seat,
+            name: ph.player.name,
+            totalBet: ph.player.totalBetThisHand || 0,
+            handName: ph.rankName
+        };
+    });
+
+    winners.forEach(w => {
+        const st = ensurePlayerStats(memory, w.player.name);
+        if (st) {
+            st.handsWon += 1;
+            st.chipsWon += w.winAmount || 0;
+            st.netChips = st.chipsWon - st.chipsLost;
+            st.lastSeen = new Date().toISOString();
+        }
+    });
+
+    memory.handHistory.push({
+        timestamp: new Date().toISOString(),
+        phase: 'showdown',
+        pot: potBeforePayout,
+        winners: winners.map(w => ({
+            seat: w.player.seat,
+            name: w.player.name,
+            handName: w.rankName,
+            winAmount: w.winAmount
+        })),
+        participants
+    });
+    clampHistory(memory);
+    writeMemory(memory);
+
     broadcast('showdown', showdownData);
     pot = 0;
     gamePhase = 'waiting';
@@ -883,6 +1030,7 @@ function checkForWinByDefault() {
     
     if (activePlayers.length === 1) {
         const winner = activePlayers[0];
+        const potBeforePayout = pot;
         winner.stack += pot;
 
         broadcast('win_by_default', {
@@ -892,6 +1040,49 @@ function checkForWinByDefault() {
                 amount: pot
             }
         });
+
+        // Persist default-win stats/history
+        const memory = readMemory();
+
+        players.forEach(p => {
+            if (!p.isActive) return;
+            const st = ensurePlayerStats(memory, p.name);
+            if (!st) return;
+            st.handsPlayed += 1;
+            st.chipsLost += p.totalBetThisHand || 0;
+            st.netChips = st.chipsWon - st.chipsLost;
+            st.lastSeen = new Date().toISOString();
+        });
+
+        const winnerStats = ensurePlayerStats(memory, winner.name);
+        if (winnerStats) {
+            winnerStats.handsWon += 1;
+            winnerStats.chipsWon += potBeforePayout;
+            winnerStats.netChips = winnerStats.chipsWon - winnerStats.chipsLost;
+            winnerStats.lastSeen = new Date().toISOString();
+        }
+
+        memory.handHistory.push({
+            timestamp: new Date().toISOString(),
+            phase: 'win_by_default',
+            pot: potBeforePayout,
+            winners: [{
+                seat: winner.seat,
+                name: winner.name,
+                handName: 'Win by Default',
+                winAmount: potBeforePayout
+            }],
+            participants: players
+                .filter(p => p.isActive)
+                .map(p => ({
+                    seat: p.seat,
+                    name: p.name,
+                    totalBet: p.totalBetThisHand || 0,
+                    folded: !!p.folded
+                }))
+        });
+        clampHistory(memory);
+        writeMemory(memory);
 
         pot = 0;
         gamePhase = 'waiting';
@@ -916,7 +1107,10 @@ io.on('connection', (socket) => {
     console.log(`Player connected: ${socket.id}`);
 
     // Join game
-    socket.on('join_game', (username) => {
+    socket.on('join_game', (payload) => {
+        const username = typeof payload === 'string' ? payload : (payload && payload.username);
+        const avatar = (payload && payload.avatar) || '👤';
+
         if (!username || username.trim().length < 2) {
             socket.emit('join_error', 'Name must be at least 2 characters');
             return;
@@ -947,7 +1141,8 @@ io.on('connection', (socket) => {
             folded: false,
             allIn: false,
             isActive: true,
-            lastAction: null
+            lastAction: null,
+            avatar: avatar
         };
 
         players.push(player);

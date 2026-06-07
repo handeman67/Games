@@ -22,9 +22,30 @@
             <div class="login-box">
                 <h2>Private Table</h2>
                 <p class="info">Buy-in: 1,500 chips | Blinds: 1/2</p>
-                <p class="info" style="font-size: 0.85rem; opacity: 0.85;">
-                    Multiplayer requires a live poker backend server.
+                <p class="info" id="local-chip-memory-login" style="font-size: 0.85rem; opacity: 0.9;">
+                    Local chip memory: —
                 </p>
+                <div class="avatar-picker">
+                    <label for="avatar-emoji-select">Avatar:</label>
+                    <select id="avatar-emoji-select">
+                        <option value="👤">👤 Default</option>
+                        <option value="🕶️">🕶️ Cool</option>
+                        <option value="🤠">🤠 Cowboy</option>
+                        <option value="🧠">🧠 Brainy</option>
+                        <option value="🐯">🐯 Tiger</option>
+                        <option value="🦊">🦊 Fox</option>
+                        <option value="🐼">🐼 Panda</option>
+                        <option value="🐸">🐸 Frog</option>
+                        <option value="🦁">🦁 Lion</option>
+                        <option value="🐵">🐵 Monkey</option>
+                        <option value="🎭">🎭 Mask</option>
+                        <option value="🃏">🃏 Joker</option>
+                    </select>
+                    <input type="file" id="avatar-upload" accept="image/*">
+                </div>
+                <div class="avatar-preview-wrap">
+                    <div id="avatar-preview" class="avatar-preview">👤</div>
+                </div>
                 <input type="text" id="username-input" placeholder="Enter nickname" maxlength="12" autocomplete="off">
                 <button id="join-btn" class="btn-primary">Join Table</button>
                 <p class="error-msg" id="login-error"></p>
@@ -40,6 +61,8 @@
                 <span class="blinds">Blinds: 1/2</span>
                 <span class="separator">|</span>
                 <span class="phase" id="game-phase">Waiting...</span>
+                <span class="separator">|</span>
+                <span id="local-chip-memory-game" class="phase" style="color:#ffd700;">Local chips: —</span>
             </div>
             <div class="controls">
                 <label class="toggle">
