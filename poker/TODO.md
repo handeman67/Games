@@ -16,6 +16,13 @@
 - [x] Fix local chip memory persistence visibility
 
 ## Current Critical Fix (in progress)
-- [ ] Fix rebuy/game-resume logic so table auto-resumes after a busted player rebuys
-- [ ] Verify one full hand completion persists memory (`/stats/:name`, `/leaderboard`, `/history`)
-- [ ] Re-test critical gameplay path after rebuy
+- [x] Fix rebuy/game-resume logic so table auto-resumes after a busted player rebuys
+- [x] Verify one full hand completion persists memory (`/stats/:name`, `/leaderboard`, `/history`)
+- [x] Re-test critical gameplay path after rebuy
+
+## New UI + Notification Work (in progress)
+- [ ] Add chat close/minimize button and left-side dock reopen control
+- [ ] Fix non-operable chat toggle behavior
+- [ ] Persist chat open/closed state in browser localStorage
+- [ ] Add optional SMS notifications (server start + player join) via env-configured provider
+- [ ] Run critical-path verification for chat UI + gameplay + SMS logging

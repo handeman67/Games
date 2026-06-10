@@ -4,12 +4,22 @@ const http = require('http');
 const { Server } = require('socket.io');
 const path = require('path');
 const fs = require('fs');
+const twilio = require('twilio');
 
 const app = express();
 
 const DATA_DIR = path.join(__dirname, 'data');
 const MEMORY_FILE = path.join(DATA_DIR, 'poker-memory.json');
 const MAX_HISTORY_ITEMS = 100;
+
+const SMS_ENABLED = String(process.env.SMS_ENABLED || '').toLowerCase() === 'true';
+const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID || '';
+const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN || '';
+const TWILIO_FROM = process.env.TWILIO_FROM || '';
+const ALERT_TO = process.env.ALERT_TO || '';
+const twilioClient = (SMS_ENABLED && TWILIO_ACCOUNT_SID && TWILIO_AUTH_TOKEN)
+    ? twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+    : null;
 
 function ensureMemoryStore() {
     if (!fs.existsSync(DATA_DIR)) {
@@ -74,6 +84,19 @@ function ensurePlayerStats(memory, playerName) {
 function clampHistory(memory) {
     if (memory.handHistory.length > MAX_HISTORY_ITEMS) {
         memory.handHistory = memory.handHistory.slice(memory.handHistory.length - MAX_HISTORY_ITEMS);
+    }
+}
+
+async function sendSmsAlert(message) {
+    if (!twilioClient || !TWILIO_FROM || !ALERT_TO) return;
+    try {
+        await twilioClient.messages.create({
+            body: message,
+            from: TWILIO_FROM,
+            to: ALERT_TO
+        });
+    } catch (err) {
+        console.error('SMS alert failed:', err.message || err);
     }
 }
 
@@ -1180,6 +1203,8 @@ io.on('connection', (socket) => {
         broadcastGameState();
         broadcast('system_msg', `${username} joined the table!`);
 
+        sendSmsAlert(`[Poker] ${username} joined the table. Players now: ${players.length}.`);
+
         // Auto-start game
         maybeAutoStartFromWaiting(3000);
     });
@@ -1288,6 +1313,10 @@ server.listen(PORT, HOST, () => {
     console.log(`   Blinds: ${SMALL_BLIND}/${BIG_BLIND}`);
     console.log(`   Buy-in: ${STARTING_STACK} chips`);
     console.log(`   Allowed origin: ${allowedOrigin}\n`);
+
+    if (SMS_ENABLED) {
+        sendSmsAlert(`[Poker] Server started on ${HOST}:${PORT}.`);
+    }
 });
 
 // Graceful shutdown for managed hosting platforms

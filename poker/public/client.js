@@ -19,6 +19,7 @@ let selectedAvatar = '👤';
 
 const LOCAL_CHIPS_PREFIX = 'poker_chip_memory_';
 const LOCAL_AVATAR_PREFIX = 'poker_avatar_memory_';
+const CHAT_OPEN_KEY = 'poker_chat_open';
 
 const loginScreen = document.getElementById('login-screen');
 const gameScreen = document.getElementById('game-screen');
@@ -45,6 +46,9 @@ const betInput = document.getElementById('bet-input');
 const rebuyBtn = document.getElementById('rebuy-btn');
 
 const chatToggle = document.getElementById('chat-toggle');
+const chatArea = document.getElementById('chat-area');
+const chatDockBtn = document.getElementById('chat-dock-btn');
+const chatCloseBtn = document.getElementById('chat-close-btn');
 const chatInput = document.getElementById('chat-input');
 const sendBtn = document.getElementById('send-btn');
 const emojiBtn = document.getElementById('emoji-btn');
@@ -72,6 +76,7 @@ window.addEventListener('load', () => {
     }
 
     refreshLocalMemoryUI();
+    applyChatVisibility(getSavedChatOpenState());
 });
 
 avatarEmojiSelect?.addEventListener('change', () => {
@@ -523,6 +528,14 @@ chatInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') sendChat();
 });
 
+chatCloseBtn?.addEventListener('click', () => {
+    applyChatVisibility(false);
+});
+
+chatDockBtn?.addEventListener('click', () => {
+    applyChatVisibility(true);
+});
+
 function sendChat() {
     const msg = chatInput.value.trim();
     if (msg) {
@@ -595,6 +608,12 @@ function showNotification(message, type = 'info') {
 // Settings
 chatToggle.addEventListener('change', () => {
     chatEnabled = chatToggle.checked;
+    // If user toggles chat off, hide chat panel but keep dock visible.
+    if (!chatEnabled) {
+        applyChatVisibility(false, true);
+    } else {
+        applyChatVisibility(getSavedChatOpenState());
+    }
 });
 
 const soundToggle = document.getElementById('sound-toggle');
@@ -737,4 +756,34 @@ function syncAvatarControls(avatarValue) {
 
     const optionExists = Array.from(avatarEmojiSelect.options).some((opt) => opt.value === value);
     avatarEmojiSelect.value = optionExists ? value : '👤';
+}
+
+function getSavedChatOpenState() {
+    try {
+        const raw = localStorage.getItem(CHAT_OPEN_KEY);
+        if (raw === null) return true;
+        return raw === '1';
+    } catch {
+        return true;
+    }
+}
+
+function setSavedChatOpenState(isOpen) {
+    try {
+        localStorage.setItem(CHAT_OPEN_KEY, isOpen ? '1' : '0');
+    } catch {
+        // ignore storage errors
+    }
+}
+
+function applyChatVisibility(isOpen, skipPersist = false) {
+    if (!chatArea || !chatDockBtn) return;
+
+    const shouldShow = !!isOpen && !!chatEnabled;
+    chatArea.classList.toggle('hidden', !shouldShow);
+    chatDockBtn.style.display = shouldShow ? 'none' : 'inline-flex';
+
+    if (!skipPersist) {
+        setSavedChatOpenState(!!isOpen);
+    }
 }

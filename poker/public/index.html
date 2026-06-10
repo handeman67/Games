@@ -131,7 +131,12 @@
         </div>
 
         <!-- Chat -->
-        <div class="chat-area">
+        <button id="chat-dock-btn" class="chat-dock-btn" type="button" title="Open chat">💬 Chat</button>
+        <div class="chat-area" id="chat-area">
+            <div class="chat-header">
+                <span>Table Chat</span>
+                <button id="chat-close-btn" class="chat-close-btn" type="button" title="Minimize chat">✕</button>
+            </div>
             <div id="chat-messages" class="chat-messages"></div>
             <div class="chat-input-container">
                 <input type="text" id="chat-input" placeholder="Type a message..." maxlength="100">
