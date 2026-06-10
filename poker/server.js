@@ -412,6 +412,28 @@ function canStartGame() {
     return playersWithChips.length >= 2;
 }
 
+function maybeAutoStartFromWaiting(delayMs = 1500) {
+    if (gamePhase !== 'waiting' || !canStartGame()) return false;
+
+    // If a hand is already effectively in progress from previous state, do not start another.
+    if (deck.length > 0 || communityCards.length > 0 || pot > 0) {
+        return false;
+    }
+
+    if (delayMs <= 0) {
+        startNewHand();
+        return true;
+    }
+
+    setTimeout(() => {
+        if (gamePhase === 'waiting' && canStartGame() && deck.length === 0 && communityCards.length === 0 && pot === 0) {
+            startNewHand();
+        }
+    }, delayMs);
+
+    return true;
+}
+
 function broadcast(event, data) {
     io.emit(event, data);
 }
@@ -1157,13 +1179,7 @@ io.on('connection', (socket) => {
         broadcast('system_msg', `${username} joined the table!`);
 
         // Auto-start game
-        if (gamePhase === 'waiting' && canStartGame()) {
-            setTimeout(() => {
-                if (gamePhase === 'waiting' && canStartGame()) {
-                    startNewHand();
-                }
-            }, 3000);
-        }
+        maybeAutoStartFromWaiting(3000);
     });
 
     // Player action
@@ -1217,11 +1233,20 @@ io.on('connection', (socket) => {
         if (gamePhase === 'waiting') {
             player.isActive = true;
             player.folded = false;
+            player.allIn = false;
+            player.cards = [];
+            player.currentBet = 0;
+            player.totalBetThisHand = 0;
+            player.lastAction = null;
         }
 
         socket.emit('rebuy_success', 'Rebuy successful! +1,500 chips');
         broadcastGameState();
         broadcast('system_msg', `${player.name} bought more chips!`);
+
+        // If table is idle and now has enough stacks, resume automatically.
+        // Start immediately to avoid race conditions where no other events fire.
+        maybeAutoStartFromWaiting(0);
     });
 
     // Disconnect
