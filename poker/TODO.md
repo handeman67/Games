@@ -21,8 +21,11 @@
 - [x] Re-test critical gameplay path after rebuy
 
 ## New UI + Notification Work (in progress)
-- [ ] Add chat close/minimize button and left-side dock reopen control
-- [ ] Fix non-operable chat toggle behavior
-- [ ] Persist chat open/closed state in browser localStorage
-- [ ] Add optional SMS notifications (server start + player join) via env-configured provider
-- [ ] Run critical-path verification for chat UI + gameplay + SMS logging
+- [x] Add chat close/minimize button and left-side dock reopen control
+- [x] Fix non-operable chat toggle behavior
+- [x] Persist chat open/closed state in browser localStorage
+- [x] Add optional SMS notifications (server start + player join) via env-configured provider
+- [ ] Disable join/start SMS notifications when `handeman67` is already on table
+- [ ] Add loading page with video placeholder and readiness polling
+- [ ] Wire root Poker button to loading page route
+- [ ] Run critical-path verification for loading flow + conditional SMS behavior

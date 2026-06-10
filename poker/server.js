@@ -100,6 +100,10 @@ async function sendSmsAlert(message) {
     }
 }
 
+function isHandemanPresent() {
+    return players.some((p) => String(p.name || '').trim().toLowerCase() === 'handeman67');
+}
+
 ensureMemoryStore();
 
 // Trust reverse proxy headers in production hosts (Render/Railway/Heroku/etc)
@@ -153,6 +157,10 @@ app.get('/history', (req, res) => {
     const limit = Math.max(1, Math.min(parseInt(req.query.limit, 10) || 20, 100));
     const history = memory.handHistory.slice(-limit).reverse();
     return res.status(200).json({ ok: true, count: history.length, history });
+});
+
+app.get('/ready', (req, res) => {
+    res.status(200).json({ ok: true, service: 'poker-server' });
 });
 
 // Serve static files
@@ -1203,7 +1211,9 @@ io.on('connection', (socket) => {
         broadcastGameState();
         broadcast('system_msg', `${username} joined the table!`);
 
-        sendSmsAlert(`[Poker] ${username} joined the table. Players now: ${players.length}.`);
+        if (!isHandemanPresent()) {
+            sendSmsAlert(`[Poker] ${username} joined the table. Players now: ${players.length}.`);
+        }
 
         // Auto-start game
         maybeAutoStartFromWaiting(3000);
@@ -1314,7 +1324,7 @@ server.listen(PORT, HOST, () => {
     console.log(`   Buy-in: ${STARTING_STACK} chips`);
     console.log(`   Allowed origin: ${allowedOrigin}\n`);
 
-    if (SMS_ENABLED) {
+    if (SMS_ENABLED && !isHandemanPresent()) {
         sendSmsAlert(`[Poker] Server started on ${HOST}:${PORT}.`);
     }
 });
