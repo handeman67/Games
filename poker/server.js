@@ -540,6 +540,8 @@ function startNewHand() {
         return false;
     }
 
+    clearActionTimer();
+
     // Reset deck and community cards
     deck = createDeck();
     communityCards = [];
@@ -1230,23 +1232,24 @@ io.on('connection', (socket) => {
         // Simulate payment success
         player.stack = STARTING_STACK;
         
-        if (gamePhase === 'waiting') {
-            player.isActive = true;
-            player.folded = false;
-            player.allIn = false;
-            player.cards = [];
-            player.currentBet = 0;
-            player.totalBetThisHand = 0;
-            player.lastAction = null;
-        }
+        player.isActive = player.stack > 0;
+        player.folded = false;
+        player.allIn = false;
+        player.cards = [];
+        player.currentBet = 0;
+        player.totalBetThisHand = 0;
+        player.lastAction = null;
 
         socket.emit('rebuy_success', 'Rebuy successful! +1,500 chips');
         broadcastGameState();
         broadcast('system_msg', `${player.name} bought more chips!`);
 
         // If table is idle and now has enough stacks, resume automatically.
-        // Start immediately to avoid race conditions where no other events fire.
-        maybeAutoStartFromWaiting(0);
+        // If for any reason delayed path does not trigger, force-start as fallback.
+        const started = maybeAutoStartFromWaiting(0);
+        if (!started && gamePhase === 'waiting' && canStartGame()) {
+            startNewHand();
+        }
     });
 
     // Disconnect
