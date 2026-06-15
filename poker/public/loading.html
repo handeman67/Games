@@ -6,12 +6,12 @@
     <title>Poker Server Loading</title>
     <style>
         :root {
-            --bg: #0d1117;
-            --panel: #161b22;
-            --text: #e6edf3;
-            --muted: #8b949e;
-            --accent: #58a6ff;
-            --border: #30363d;
+            --bg: #05070d;
+            --text: #f2f5ff;
+            --muted: #b8c0d9;
+            --accent: #6ea8ff;
+            --panel: rgba(9, 14, 28, 0.78);
+            --border: rgba(255, 255, 255, 0.12);
         }
 
         * { box-sizing: border-box; }
@@ -19,135 +19,160 @@
         body {
             margin: 0;
             min-height: 100vh;
-            display: grid;
-            place-items: center;
-            background: radial-gradient(circle at 20% 20%, #1f2937 0%, var(--bg) 55%);
+            background: #04060d;
             color: var(--text);
             font-family: Arial, sans-serif;
-        }
-
-        .wrap {
-            width: min(860px, 92vw);
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            box-shadow: 0 16px 40px rgba(0,0,0,.45);
             overflow: hidden;
         }
 
-        .video-placeholder {
-            position: relative;
+        .stage {
+            position: fixed;
+            inset: 0;
+            display: grid;
+            place-items: center;
+        }
+
+        .gif-layer {
+            position: absolute;
+            inset: 0;
             width: 100%;
-            aspect-ratio: 16 / 9;
-            background: linear-gradient(135deg, #111827, #1f2937);
-            display: grid;
-            place-items: center;
-            color: var(--muted);
-            font-size: 1.1rem;
-            letter-spacing: .2px;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 550ms ease;
+            filter: saturate(1.15) contrast(1.05);
         }
 
-        .play-icon {
-            width: 76px;
-            height: 76px;
-            border-radius: 50%;
-            background: rgba(88,166,255,.2);
-            border: 2px solid rgba(88,166,255,.45);
-            display: grid;
-            place-items: center;
-            margin-bottom: 12px;
+        .gif-layer.active {
+            opacity: 1;
         }
 
-        .play-icon::before {
-            content: '';
-            margin-left: 5px;
-            border-top: 12px solid transparent;
-            border-bottom: 12px solid transparent;
-            border-left: 18px solid var(--accent);
+        .overlay {
+            position: relative;
+            z-index: 2;
+            width: min(760px, 92vw);
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px 20px;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 16px 42px rgba(0, 0, 0, 0.55);
         }
 
-        .body {
-            padding: 18px 20px 22px;
-        }
-
-        .title {
+        h1 {
             margin: 0 0 8px;
             font-size: 1.25rem;
+            letter-spacing: 0.2px;
         }
 
-        .status {
-            margin: 0 0 14px;
+        p {
+            margin: 0;
             color: var(--muted);
-            font-size: .96rem;
+            line-height: 1.45;
+            font-size: 0.95rem;
         }
 
         .row {
             display: flex;
             align-items: center;
             gap: 10px;
+            margin-top: 12px;
         }
 
         .spinner {
-            width: 18px;
-            height: 18px;
-            border: 2px solid rgba(88,166,255,.25);
-            border-top-color: var(--accent);
+            width: 17px;
+            height: 17px;
             border-radius: 50%;
+            border: 2px solid rgba(110, 168, 255, 0.35);
+            border-top-color: var(--accent);
             animation: spin 1s linear infinite;
         }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
+        .ok { color: #5de6a3; }
+        .err { color: #ff7f8a; }
 
-        .ok { color: #3fb950; }
-        .err { color: #f85149; }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-    <div class="wrap">
-        <div class="video-placeholder">
-            <div style="text-align:center">
-                <div class="play-icon"></div>
-                <div>Video Placeholder</div>
-            </div>
-        </div>
-        <div class="body">
-            <h1 class="title">Starting Poker Server...</h1>
-            <p id="status" class="status">Waiting for backend readiness check.</p>
+    <div class="stage">
+        <img id="gif-a" class="gif-layer active" src="./QQxf.gif" alt="Loading animation part 1">
+        <img id="gif-b" class="gif-layer" src="./ALVv.gif" alt="Loading animation part 2">
+
+        <div class="overlay">
+            <h1>Starting Poker Table...</h1>
+            <p id="status">Initializing server and preparing game services.</p>
             <div class="row">
                 <div class="spinner" id="spinner"></div>
-                <small>Preparing table services in background</small>
+                <small id="step">Loading intro sequence...</small>
             </div>
         </div>
     </div>
 
     <script>
+        const gifA = document.getElementById('gif-a');
+        const gifB = document.getElementById('gif-b');
         const statusEl = document.getElementById('status');
-        const spinner = document.getElementById('spinner');
+        const stepEl = document.getElementById('step');
+
+        let introDone = false;
+        let switched = false;
+
+        // Play two GIFs sequentially by switching visibility after a short hold.
+        setTimeout(() => {
+            switched = true;
+            gifA.classList.remove('active');
+            gifB.classList.add('active');
+            stepEl.textContent = 'Finalizing startup...';
+        }, 2200);
+
+        setTimeout(() => {
+            introDone = true;
+            maybeRedirectWhenReady();
+        }, 4400);
 
         async function checkReady() {
+            const res = await fetch('/ready', { cache: 'no-store' });
+            if (!res.ok) throw new Error('not ready');
+            const data = await res.json();
+            return !!(data && data.ok);
+        }
+
+        let ready = false;
+
+        async function pollReady() {
             try {
-                const res = await fetch('/ready', { cache: 'no-store' });
-                if (!res.ok) throw new Error('not ready');
-                const data = await res.json();
-                if (data && data.ok) {
-                    statusEl.textContent = 'Server is ready. Redirecting to table...';
+                ready = await checkReady();
+                if (ready) {
+                    statusEl.textContent = 'Server ready. Waiting for intro to complete...';
+                    statusEl.classList.remove('err');
                     statusEl.classList.add('ok');
-                    setTimeout(() => { window.location.href = '/'; }, 500);
+                    maybeRedirectWhenReady();
                     return;
                 }
                 throw new Error('not ready');
-            } catch (err) {
-                statusEl.textContent = 'Server not ready yet. Retrying...';
+            } catch {
+                statusEl.textContent = switched
+                    ? 'Server still warming up. Retrying...'
+                    : 'Checking backend readiness...';
                 statusEl.classList.remove('ok');
                 statusEl.classList.add('err');
                 setTimeout(() => {
                     statusEl.classList.remove('err');
-                    checkReady();
+                    pollReady();
                 }, 1000);
             }
         }
 
-        checkReady();
+        function maybeRedirectWhenReady() {
+            if (ready && introDone) {
+                statusEl.textContent = 'Server ready. Entering table...';
+                statusEl.classList.add('ok');
+                setTimeout(() => { window.location.href = '/'; }, 500);
+            }
+        }
+
+        pollReady();
     </script>
 </body>
 </html>

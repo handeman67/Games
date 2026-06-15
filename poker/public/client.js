@@ -159,6 +159,7 @@ socket.on('game_state', (state) => {
     }
 
     updateUI(state);
+    updateRebuyVisibility();
 
     // Deal animations
     if (oldPhase === 'waiting' && newPhase === 'preflop') {
@@ -291,13 +292,8 @@ function updatePrivateState(state) {
         saveLocalChips(myName, state.myStack);
         refreshLocalMemoryUI();
     }
-    
-    // Show rebuy button if out of chips
-    if (state.myStack === 0 && gameState && gameState.phase === 'waiting') {
-        rebuyBtn.style.display = 'block';
-    } else {
-        rebuyBtn.style.display = 'none';
-    }
+
+    updateRebuyVisibility();
 }
 
 function renderSeats(players, currentPlayerSeat, dealerSeat) {
@@ -786,4 +782,19 @@ function applyChatVisibility(isOpen, skipPersist = false) {
     if (!skipPersist) {
         setSavedChatOpenState(!!isOpen);
     }
+}
+
+function updateRebuyVisibility() {
+    if (!rebuyBtn) return;
+
+    // Must be the local player's private state and only while table is waiting.
+    const myStack = Number(privateState?.myStack);
+    const isWaiting = gameState?.phase === 'waiting';
+
+    // Defensive: verify local player seat exists in public state and matches local identity.
+    const localPublicPlayer = (gameState?.players || []).find((p) => p.seat === mySeat);
+    const isLocalSeatValid = !!localPublicPlayer && String(localPublicPlayer.name || '').trim() === String(myName || '').trim();
+
+    const shouldShow = isLocalSeatValid && isWaiting && myStack === 0;
+    rebuyBtn.style.display = shouldShow ? 'block' : 'none';
 }

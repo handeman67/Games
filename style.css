@@ -45,18 +45,19 @@
 
         ul {
             list-style: none;
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            flex-wrap: wrap;
-            justify-content: center;
+            display: grid;
+            grid-template-rows: repeat(3, minmax(100px, 1fr));
+            grid-template-columns: repeat(3, minmax(200px, 1fr));
             gap: 16px;
-            max-width: 1000px;
+            width:100%;
+            /* max-width: 1000px; */
         }
 
         li {
             display: inline-block;
              flex-grow: 1;
+             grid-row:auto span 1;
+             grid-column:auto span 1;
         }
 
         a {
@@ -92,8 +93,10 @@
 
         @media (max-width: 768px) {
             ul {
+                display:flex;
                 flex-direction: column;
                 align-items: stretch;
+                width:100%;
             }
 
             a {
