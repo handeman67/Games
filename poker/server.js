@@ -977,7 +977,7 @@ function showdown() {
     clearActionTimer();
 
     const activePlayers = getActivePlayersInHand();
-    
+
     const playerHands = activePlayers.map(player => {
         const evaluation = evaluateHand(player.cards, communityCards);
         return {
@@ -986,42 +986,102 @@ function showdown() {
         };
     });
 
-    playerHands.sort((a, b) => b.score - a.score);
+    // Build a quick lookup by seat for hand compare / display
+    const handBySeat = new Map(playerHands.map(ph => [ph.player.seat, ph]));
 
-    const winners = [playerHands[0]];
-    for (let i = 1; i < playerHands.length; i++) {
-        if (playerHands[i].score === playerHands[0].score) {
-            winners.push(playerHands[i]);
-        } else {
-            break;
+    // Build side pots from total committed chips this hand (all players who put chips in)
+    const contenders = players
+        .filter(p => (p.totalBetThisHand || 0) > 0)
+        .map(p => ({
+            seat: p.seat,
+            name: p.name,
+            committed: p.totalBetThisHand || 0,
+            folded: !!p.folded
+        }));
+
+    const uniqueLevels = [...new Set(contenders.map(c => c.committed))]
+        .filter(v => v > 0)
+        .sort((a, b) => a - b);
+
+    const sidePots = [];
+    let prevLevel = 0;
+
+    for (const level of uniqueLevels) {
+        const eligibleAtLevel = contenders.filter(c => c.committed >= level);
+        const layer = level - prevLevel;
+        const potAmount = layer * eligibleAtLevel.length;
+        if (potAmount > 0) {
+            sidePots.push({
+                amount: potAmount,
+                eligibleSeats: eligibleAtLevel.filter(c => !c.folded).map(c => c.seat)
+            });
         }
+        prevLevel = level;
     }
 
-    const potBeforePayout = pot;
-    const winAmount = Math.floor(pot / winners.length);
-    const remainder = pot % winners.length;
+    // Award each side pot independently
+    const payoutBySeat = new Map();
 
-    winners.forEach((w, index) => {
-        const bonus = index === 0 ? remainder : 0;
-        w.player.stack += winAmount + bonus;
-        w.winAmount = winAmount + bonus;
+    for (const sidePot of sidePots) {
+        const eligibleHands = sidePot.eligibleSeats
+            .map(seat => handBySeat.get(seat))
+            .filter(Boolean);
+
+        if (eligibleHands.length === 0) {
+            // all eligible were folded; skip
+            continue;
+        }
+
+        eligibleHands.sort((a, b) => b.score - a.score);
+        const bestScore = eligibleHands[0].score;
+        const winners = eligibleHands.filter(h => h.score === bestScore);
+
+        const baseShare = Math.floor(sidePot.amount / winners.length);
+        let remainder = sidePot.amount % winners.length;
+
+        // deterministic remainder by seat order
+        winners.sort((a, b) => a.player.seat - b.player.seat);
+
+        winners.forEach((w) => {
+            const bonus = remainder > 0 ? 1 : 0;
+            if (remainder > 0) remainder -= 1;
+            const gain = baseShare + bonus;
+            payoutBySeat.set(w.player.seat, (payoutBySeat.get(w.player.seat) || 0) + gain);
+        });
+    }
+
+    // Apply payouts to stacks
+    payoutBySeat.forEach((gain, seat) => {
+        const p = players.find(pl => pl.seat === seat);
+        if (p) p.stack += gain;
     });
 
+    // Winners summary for UI/history: players with positive payout
+    const winnersSummary = [...payoutBySeat.entries()]
+        .filter(([, amount]) => amount > 0)
+        .map(([seat, amount]) => {
+            const ph = handBySeat.get(seat);
+            return {
+                seat,
+                name: ph?.player?.name || players.find(p => p.seat === seat)?.name || `Seat ${seat}`,
+                cards: ph?.player?.cards || [],
+                handName: ph?.rankName || 'Winning Hand',
+                winAmount: amount
+            };
+        })
+        .sort((a, b) => b.winAmount - a.winAmount);
+
+    const potBeforePayout = pot;
+
     const showdownData = {
-        winners: winners.map(w => ({
-            seat: w.player.seat,
-            name: w.player.name,
-            cards: w.player.cards,
-            handName: w.rankName,
-            winAmount: w.winAmount
-        })),
+        winners: winnersSummary,
         allHands: playerHands.map(ph => ({
             seat: ph.player.seat,
             name: ph.player.name,
             cards: ph.player.cards,
             handName: ph.rankName
         })),
-        pot: pot
+        pot: potBeforePayout
     };
 
     // Persist lifetime stats and hand history
@@ -1042,8 +1102,8 @@ function showdown() {
         };
     });
 
-    winners.forEach(w => {
-        const st = ensurePlayerStats(memory, w.player.name);
+    winnersSummary.forEach(w => {
+        const st = ensurePlayerStats(memory, w.name);
         if (st) {
             st.handsWon += 1;
             st.chipsWon += w.winAmount || 0;
@@ -1056,10 +1116,10 @@ function showdown() {
         timestamp: new Date().toISOString(),
         phase: 'showdown',
         pot: potBeforePayout,
-        winners: winners.map(w => ({
-            seat: w.player.seat,
-            name: w.player.name,
-            handName: w.rankName,
+        winners: winnersSummary.map(w => ({
+            seat: w.seat,
+            name: w.name,
+            handName: w.handName,
             winAmount: w.winAmount
         })),
         participants

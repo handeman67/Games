@@ -167,6 +167,10 @@ socket.on('game_state', (state) => {
         const playerEls = playerSeats.map(s => document.querySelector(`.seat[data-seat="${s}"]`)).filter(el => el);
         animationManager.dealCards(dealerButton, playerEls, soundManager);
     }
+
+    if (oldPhase === 'preflop' && newPhase === 'flop') {
+        triggerFlopAnimation();
+    }
 });
 
 socket.on('private_state', (state) => {
@@ -400,6 +404,17 @@ function renderCommunityCards(cards) {
         }
         communityCardsEl.appendChild(cardEl);
     }
+}
+
+function triggerFlopAnimation() {
+    if (!communityCardsEl) return;
+    communityCardsEl.classList.remove('flop-animate');
+    // force reflow so animation restarts
+    void communityCardsEl.offsetWidth;
+    communityCardsEl.classList.add('flop-animate');
+    setTimeout(() => {
+        communityCardsEl.classList.remove('flop-animate');
+    }, 900);
 }
 
 function renderMyCards(cards) {

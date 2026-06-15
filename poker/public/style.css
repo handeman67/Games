@@ -226,7 +226,10 @@ body {
 .card.red { color: var(--red); }
 .card.black { color: #1a1a2e; }
 .card.placeholder { background: rgba(255,255,255,0.1); border: 2px dashed rgba(255,255,255,0.3); box-shadow: none; }
-.card.back { background: linear-gradient(135deg, #1e3a5f, #0d2137); border: 2px solid #fff; }
+.card.back {
+    background: #0d2137 url('./playingcard.png') center/cover no-repeat;
+    border: 2px solid #fff;
+}
 .card .value { font-size: 1.1rem; }
 .card .suit-symbol { font-size: 1.4rem; }
 
@@ -735,10 +738,29 @@ body {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
 }
 
+.community-cards.flop-animate .card:not(.placeholder) {
+    animation: flopReveal 420ms ease both;
+}
+
+.community-cards.flop-animate .card:not(.placeholder):nth-child(1) { animation-delay: 0ms; }
+.community-cards.flop-animate .card:not(.placeholder):nth-child(2) { animation-delay: 120ms; }
+.community-cards.flop-animate .card:not(.placeholder):nth-child(3) { animation-delay: 240ms; }
+
+@keyframes flopReveal {
+    0% {
+        transform: translateY(-14px) rotateY(90deg);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0) rotateY(0deg);
+        opacity: 1;
+    }
+}
+
 .card-back {
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #1e3a5f, #0d2137);
+    background: #0d2137 url('./playingcard.png') center/cover no-repeat;
     border: 2px solid #fff;
     border-radius: 4px;
     display: flex;
