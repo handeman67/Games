@@ -225,6 +225,21 @@ socket.on('action_error', (error) => {
     showNotification(error, 'error');
 });
 
+socket.on('timer_start', (data) => {
+    if (data && data.seat !== undefined) {
+        startActionTimerUI(data.seat, data.duration || 30000);
+    }
+});
+
+socket.on('rebuy_success', (msg) => {
+    showNotification(msg, 'success');
+    refreshLocalMemoryUI();
+});
+
+socket.on('rebuy_error', (msg) => {
+    showNotification(msg, 'error');
+});
+
 // ============ UI FUNCTIONS ============
 
 function addChatMessage(name, message, type = '') {
@@ -374,6 +389,51 @@ function renderSeats(players, currentPlayerSeat, dealerSeat) {
     } else {
         dealerButton.style.display = 'none';
     }
+}
+
+let turnTimerInterval = null;
+
+function startActionTimerUI(seat, duration = 30000) {
+    if (turnTimerInterval) {
+        clearInterval(turnTimerInterval);
+        turnTimerInterval = null;
+    }
+
+    document.querySelectorAll('.turn-timer-bar').forEach(el => el.remove());
+
+    const seatEl = document.querySelector(`.seat[data-seat="${seat}"]`);
+    if (!seatEl) return;
+
+    const timerBar = document.createElement('div');
+    timerBar.className = 'turn-timer-bar';
+    timerBar.innerHTML = `<div class="turn-timer-fill"></div>`;
+    seatEl.appendChild(timerBar);
+
+    const fillEl = timerBar.querySelector('.turn-timer-fill');
+    const startTime = Date.now();
+
+    turnTimerInterval = setInterval(() => {
+        const elapsed = Date.now() - startTime;
+        const remaining = Math.max(0, duration - elapsed);
+        const percent = (remaining / duration) * 100;
+
+        if (fillEl) {
+            fillEl.style.width = `${percent}%`;
+            if (percent < 30) {
+                fillEl.style.backgroundColor = '#ff4d4d';
+            } else if (percent < 60) {
+                fillEl.style.backgroundColor = '#ffd700';
+            } else {
+                fillEl.style.backgroundColor = '#4cd964';
+            }
+        }
+
+        if (remaining <= 0) {
+            clearInterval(turnTimerInterval);
+            turnTimerInterval = null;
+            timerBar.remove();
+        }
+    }, 100);
 }
 
 function positionDealerButton(seat) {

@@ -1,7 +1,39 @@
 {
-  "players": {},
-  "handHistory": [],
+  "players": {
+    "player7484": {
+      "name": "Player7484",
+      "handsPlayed": 1,
+      "handsWon": 1,
+      "chipsWon": 8,
+      "chipsLost": 4,
+      "netChips": 4,
+      "lastSeen": "2026-07-28T02:01:52.675Z"
+    }
+  },
+  "handHistory": [
+    {
+      "timestamp": "2026-07-28T02:01:52.675Z",
+      "phase": "win_by_default",
+      "pot": 8,
+      "winners": [
+        {
+          "seat": 1,
+          "name": "Player7484",
+          "handName": "Win by Default",
+          "winAmount": 8
+        }
+      ],
+      "participants": [
+        {
+          "seat": 1,
+          "name": "Player7484",
+          "totalBet": 4,
+          "folded": false
+        }
+      ]
+    }
+  ],
   "meta": {
-    "updatedAt": "2026-06-07T06:00:14.424Z"
+    "updatedAt": "2026-07-28T02:01:52.676Z"
   }
 }

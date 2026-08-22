@@ -836,6 +836,27 @@ body {
     animation: playerGlow 1.2s infinite;
 }
 
+/* TURN TIMER BAR */
+.turn-timer-bar {
+    position: absolute;
+    bottom: -10px;
+    left: 5%;
+    width: 90%;
+    height: 6px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    overflow: hidden;
+    z-index: 10;
+}
+
+.turn-timer-fill {
+    height: 100%;
+    width: 100%;
+    background-color: #4cd964;
+    transition: width 0.1s linear, background-color 0.3s ease;
+}
+
 /* CONTROLS */
 .controls {
     display: flex;

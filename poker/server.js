@@ -1319,6 +1319,11 @@ io.on('connection', (socket) => {
             return;
         }
 
+        if (gamePhase !== 'waiting') {
+            socket.emit('rebuy_error', 'Rebuy is only allowed between hands');
+            return;
+        }
+
         if (player.stack > 0) {
             socket.emit('rebuy_error', 'You can only rebuy when you have 0 chips');
             return;
@@ -1354,17 +1359,37 @@ io.on('connection', (socket) => {
             const player = players[playerIndex];
             players.splice(playerIndex, 1);
 
+            if (playerIndex < dealerIndex) {
+                dealerIndex--;
+            }
             if (players.length > 0 && dealerIndex >= players.length) {
                 dealerIndex = 0;
+            }
+
+            const wasCurrentPlayer = (playerIndex === currentPlayerIndex);
+            if (playerIndex < currentPlayerIndex) {
+                currentPlayerIndex--;
             }
 
             broadcast('system_msg', `${player.name} left the table.`);
             
             if (gamePhase !== 'waiting' && gamePhase !== 'showdown') {
-                if (playerIndex === currentPlayerIndex) {
-                    advanceGame();
+                const wonByDefault = checkForWinByDefault();
+                if (!wonByDefault && wasCurrentPlayer && players.length > 0) {
+                    if (currentPlayerIndex >= players.length) {
+                        currentPlayerIndex = 0;
+                    }
+                    if (isBettingRoundComplete()) {
+                        advancePhase();
+                    } else {
+                        const nextValid = getNextActivePlayerIndex(currentPlayerIndex - 1 < 0 ? players.length - 1 : currentPlayerIndex - 1);
+                        if (nextValid !== -1) {
+                            currentPlayerIndex = nextValid;
+                        }
+                        broadcastGameState();
+                        startActionTimer();
+                    }
                 }
-                checkForWinByDefault();
             }
             
             broadcastGameState();
@@ -1375,7 +1400,7 @@ io.on('connection', (socket) => {
 
 // ============ START SERVER ============
 const PORT = process.env.PORT || 3000;
-const HOST = process.env.HOST || '0.0.0.0';
+const HOST = process.env.HOST || '127.0.0.1';
 
 server.listen(PORT, HOST, () => {
     console.log(`\n🃏 Texas Hold'em Poker Server`);
