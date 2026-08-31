@@ -190,11 +190,36 @@ class Dot {
         
         this.lastPos.set(this.pos.x, this.pos.y);
         
-        // Normal movement
-        this.pos.x += this.sp;
-        if (this.pos.x < 0 || this.pos.x > width - SIZE) {
-          this.drop();
+        // Check if there's a mushroom in the next position
+        let nextX = this.pos.x + this.sp;
+        let currentY = this.pos.y;
+        let tileCol = Math.floor(nextX / SIZE);
+        let tileRow = Math.floor(currentY / SIZE);
+        
+        // Check if the next tile has a mushroom
+        let hasMushroom = false;
+        if (typeof field !== 'undefined' && field) {
+          for (let tile of field) {
+            if (tile.x === tileCol && tile.y === tileRow) {
+              if (tile.mushroom && !tile.mushroom.isDestroyed) {
+                hasMushroom = true;
+              }
+              break;
+            }
+          }
         }
+        
+        // If mushroom ahead, drop. Otherwise move normally.
+        if (hasMushroom) {
+          this.drop();
+        } else {
+          // Normal movement
+          this.pos.x += this.sp;
+          if (this.pos.x < 0 || this.pos.x > width - SIZE) {
+            this.drop();
+          }
+        }
+        
         if (this.pos.y < 0 || this.pos.y > height - SIZE) {
           this.pos.x = 0;
           this.pos.y = 0;
@@ -206,7 +231,7 @@ class Dot {
         
         // Calculate distance to previous segment
         let distToPrev = dist(this.pos.x, this.pos.y, targetX, targetY);
-        let idealDistance = SIZE * 0.8; // Ideal spacing between segments
+        let idealDistance = SIZE; // Ideal spacing between segments (barely touching)
         
         // Adjust follow speed based on distance
         let followSpeed;

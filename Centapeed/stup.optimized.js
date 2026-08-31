@@ -14,6 +14,7 @@
 var player = [];
 var lasers = [];
 var dot = [];
+var field = [];  // Array of Tile objects for drawing
 var FIELD = [];
 var TYPE = ["BARRIER", "BISCUIT", "OPEN", "OPEN1", "OPEN2", "CHERRY", "CHERRY"];
 var mush = [];
@@ -21,6 +22,19 @@ var level = 1;
 var score = 0;
 var highScore = 0;
 var rgb;
+var gameStarted = false; // Flag to prevent level complete on startup
+// particleSystem is declared in Particles.js as a global
+
+// FPS tracking variables
+var frameCount = 0;
+var lastFpsTime = 0;
+var currentFps = 60;
+
+// Global image variables - declared at file scope for proper access
+var smile, sleep, flustered, satisfied, Grr, blush, big, sick;
+var mushroom, mushroom1, mushroom2;
+var spider, grass, grass1, grass3, stinkbug;
+
 // Adjust grid size based on screen width for better mobile experience
 const sizes = window.innerWidth < 600 ? 15 : 30; // Fewer columns on mobile = bigger tiles
 
@@ -107,39 +121,155 @@ var spatialGrid = {
   }
 };
 
-window.addEventListener('deviceorientation', function (e) {
-  var absolute = e.absolute;
-  var alpha = e.alpha;
-  var beta = e.beta;
-  var gamma = e.gamma;
-  var direction = 1;
-});
+// OPTIMIZATION: Async image loading with fallback support
+// Images load in parallel instead of blocking game startup
+const IMAGE_ASSETS = {
+  player: [
+    'img/800px-Smiley_green_alien_deep_sleep.svg.png',
+    'img/800px-Smiley_green_alien_flustered.svg.png',
+    'img/800px-Smiley_green_alien_satisfied.svg.png',
+    'img/800px-Smiley_green_alien_GRRR.svg.png',
+    'img/Smiley_green_alien_blush.svg.png',
+    'img/Smiley_green_alien_big_eyes.svg.png',
+    'img/Smiley_green_alien_sickoff.svg.png'
+  ],
+  mushrooms: [
+    'img/mushroom.svg',
+    'img/mushroom1.svg',
+    'img/mushroom2.svg'
+  ],
+  environment: [
+    'img/spider.svg',
+    'img/grass.svg',
+    'img/grass1.svg',
+    'img/grass3.svg',
+    'img/stink-bug.svg'
+  ]
+};
+
+// Map file paths to global variable names
+const IMAGE_VAR_MAP = {
+  'img/800px-Smiley_green_alien_deep_sleep.svg.png': ['smile', 'sleep'],
+  'img/800px-Smiley_green_alien_flustered.svg.png': ['flustered'],
+  'img/800px-Smiley_green_alien_satisfied.svg.png': ['satisfied'],
+  'img/800px-Smiley_green_alien_GRRR.svg.png': ['Grr'],
+  'img/Smiley_green_alien_blush.svg.png': ['blush'],
+  'img/Smiley_green_alien_big_eyes.svg.png': ['big'],
+  'img/Smiley_green_alien_sickoff.svg.png': ['sick'],
+  'img/mushroom.svg': ['mushroom'],
+  'img/mushroom1.svg': ['mushroom1'],
+  'img/mushroom2.svg': ['mushroom2'],
+  'img/spider.svg': ['spider'],
+  'img/grass.svg': ['grass'],
+  'img/grass1.svg': ['grass1'],
+  'img/grass3.svg': ['grass3'],
+  'img/stink-bug.svg': ['stinkbug']
+};
+
+let imageCache = {};
+let imagesLoaded = 0;
+let imagesNeeded = 0;
+
+/**
+ * Optimized async image loading
+ * OPTIMIZATION: Loads images in parallel, game starts while images load
+ */
+async function loadImagesAsync() {
+  let allAssets = [
+    ...IMAGE_ASSETS.player,
+    ...IMAGE_ASSETS.mushrooms,
+    ...IMAGE_ASSETS.environment
+  ];
+  
+  imagesNeeded = allAssets.length;
+  
+  // Create promises for all image loads
+  let promises = allAssets.map((path) => {
+    return new Promise((resolve) => {
+      // Load with timeout to prevent hanging
+      let timeout = setTimeout(() => {
+        console.warn(`Image load timeout: ${path}`);
+        resolve(null);
+      }, 5000);
+      
+      try {
+        loadImage(path, 
+          (img) => {
+            clearTimeout(timeout);
+            imageCache[path] = img;
+            imagesLoaded++;
+            resolve(img);
+          },
+          (err) => {
+            clearTimeout(timeout);
+            console.warn(`Failed to load: ${path}`, err);
+            resolve(null);
+          }
+        );
+      } catch(e) {
+        clearTimeout(timeout);
+        resolve(null);
+      }
+    });
+  });
+  
+  // Load all in parallel
+  await Promise.all(promises);
+  
+  console.log(`Images loaded: ${imagesLoaded}/${imagesNeeded}`);
+  
+  // Assign to global variables using proper mapping
+  for (let [path, varNames] of Object.entries(IMAGE_VAR_MAP)) {
+    let img = imageCache[path];
+    if (img) {
+      varNames.forEach(varName => {
+        window[varName] = img;
+        // Also set on global scope for compatibility
+        globalThis[varName] = img;
+      });
+      console.log(`✓ Loaded: ${path}`);
+    } else {
+      console.warn(`✗ Failed to load: ${path}`);
+    }
+  }
+  
+  // Verify key variables loaded
+  console.log(`smile: ${smile ? '✓' : '✗'}, Grr: ${Grr ? '✓' : '✗'}, mushroom: ${mushroom ? '✓' : '✗'}`);
+}
 
 function preload() {
-  smile = loadImage('img/800px-Smiley_green_alien_deep_sleep.svg.png'),
-    sleep = loadImage('img/800px-Smiley_green_alien_deep_sleep.svg.png'),
-    flustered = loadImage('img/800px-Smiley_green_alien_flustered.svg.png'),
-    satisfied = loadImage('img/800px-Smiley_green_alien_satisfied.svg.png'),
-    Grr = loadImage('img/800px-Smiley_green_alien_GRRR.svg.png'),
-    blush = loadImage('img/Smiley_green_alien_blush.svg.png'),
-    big = loadImage('img/Smiley_green_alien_big_eyes.svg.png'),
-    sick = loadImage('img/Smiley_green_alien_sickoff.svg.png'),
-    mushroom = loadImage('img/mushroom.svg'),
-    mushroom1 = loadImage('img/mushroom1.svg'),
-    mushroom2 = loadImage('img/mushroom2.svg'),
-    spider = loadImage('img/spider.svg'),
-    grass = loadImage('img/grass.svg'),
-    grass1 = loadImage('img/grass1.svg'),
-    grass3 = loadImage('img/grass3.svg'),
-    stinkbug = loadImage('img/stink-bug.svg')
+  // Return promise so p5.js waits for image loading before calling setup()
+  return loadImagesAsync();
 }
+
+let setupRetries = 0;
+const MAX_SETUP_RETRIES = 5;
 
 function setup() {
   angleMode(DEGREES);
   const canvas = createCanvas(w, h).parent("#canv");
   
+  // OPTIMIZATION: Verify images are loaded before proceeding
+  // If images still loading, wait a bit and retry
+  if ((!smile || !mushroom || !Grr) && setupRetries < MAX_SETUP_RETRIES) {
+    console.warn(`Images not ready (attempt ${setupRetries + 1}/${MAX_SETUP_RETRIES}), retrying...`);
+    setupRetries++;
+    setTimeout(setup, 100);
+    return;
+  }
+  
+  // If we've exhausted retries, log error but continue (use fallbacks)
+  if (!smile || !mushroom || !Grr) {
+    console.error('Warning: Some images failed to load. Game may have rendering issues.');
+  }
+  
   // Initialize spatial grid
   spatialGrid.init();
+  
+  // Initialize particle system for explosions and effects
+  if (typeof ParticleSystem !== 'undefined') {
+    particleSystem = new ParticleSystem(1000);
+  }
   
   // Load high score from localStorage
   loadHighScore();
@@ -147,6 +277,9 @@ function setup() {
   PlayerLoad();
   DotLoad();
   FieldLoad();
+  
+  // Mark game as started after initial setup
+  gameStarted = true;
   
   // OPTIMIZATION: Initialize all mushroom bitmaps once
   initializeAllMushrooms();
@@ -223,10 +356,24 @@ function updateDisplay() {
   document.getElementById('level').textContent = level;
   document.getElementById('lives').textContent = player[0] ? player[0].lives : 0;
   document.getElementById('highscore').textContent = highScore;
+  document.getElementById('fps').textContent = Math.round(currentFps);
+}
+
+// Calculate FPS
+function updateFps() {
+  frameCount++;
+  let now = millis();
+  
+  // Update FPS every 500ms
+  if (now - lastFpsTime > 500) {
+    currentFps = frameCount * 1000 / (now - lastFpsTime);
+    frameCount = 0;
+    lastFpsTime = now;
+  }
 }
 
 function FieldLoad() {
-  field = [];
+  field = []; // Clear and reinitialize the global field array
   fieldSet();
   fieldLoad();
 
@@ -249,20 +396,21 @@ function FieldLoad() {
     const obs = cols * fieldRows;
     
     for (var f = 0; f < obs; f++) {
-      // 60% grass (types 2, 3, 4), 40% mushrooms (types 1, 5, 6)
+      // 75% grass (types 2, 3, 4), 25% mushrooms (types 1, 5, 6)
+      // Type 6 is explosive mushroom (8% of all tiles)
       let rand = random();
-      if (rand < 0.6) {
-        // 60% chance for grass
+      if (rand < 0.75) {
+        // 75% chance for grass
         num = floor(random(2, 5)); // Types 2, 3, or 4 (grass)
       } else {
-        // 40% chance for mushrooms
+        // 25% chance for mushrooms
         let mushroomRand = random();
-        if (mushroomRand < 0.5) {
-          num = 1; // Type 1 mushroom
-        } else if (mushroomRand < 0.75) {
-          num = 5; // Type 5 mushroom
+        if (mushroomRand < 0.4) {
+          num = 1; // Type 1 mushroom (10% of all tiles)
+        } else if (mushroomRand < 0.7) {
+          num = 5; // Type 5 mushroom (7% of all tiles)
         } else {
-          num = 6; // Type 6 mushroom
+          num = 6; // Type 6 explosive mushroom (8% of all tiles)
         }
       }
       FIELD.push(num);
@@ -272,7 +420,7 @@ function FieldLoad() {
 
 // OPTIMIZATION: Initialize all mushroom bitmaps once during setup
 function initializeAllMushrooms() {
-  for (let tile of field) {
+  for (let tile of FIELD) {
     if (tile.mushroom && !tile.mushroom.currentImage) {
       let img;
       switch(tile.type) {
@@ -296,13 +444,13 @@ function DotLoad() {
     let segmentCount = floor(random(8, 13)); // 8-12 segments per centipede
     let startX = width / 4 + SIZE * c * 15;
     let startY = SIZE * 2;
-    let speed = 0.8;
+    let speed = 0.8 + level * 0.1; // Increase speed by 10% per level
     
     let prevSegment = null;
     
     for (let s = 0; s < segmentCount; s++) {
       let isHead = (s === 0);
-      let segX = startX - (s * SIZE * 0.8); // Space segments slightly apart
+      let segX = startX - (s * SIZE * 1.2); // Space segments further apart (20% extra spacing)
       let segY = startY;
       
       let segment = new Dot(segX, segY, SIZE, speed, isHead, s);
@@ -330,6 +478,9 @@ function PlayerLoad() {
 function draw() {
   // UPDATE PHASE
   updateGame();
+  
+  // Update FPS counter
+  updateFps();
   
   // DRAW PHASE
   background(0);
@@ -389,9 +540,9 @@ function updateGame() {
     }
   }
   
-  // Respawn centipedes if all destroyed
+  // Respawn centipedes if all destroyed (only after game has started)
   let aliveDots = dot.filter(d => !d.isDestroyed).length;
-  if (aliveDots === 0 && dot.length === 0) {
+  if (gameStarted && aliveDots === 0 && dot.length === 0) {
     // Level complete bonus
     score += SCORES.LEVEL_COMPLETE;
     level++;
@@ -406,13 +557,13 @@ function updateGame() {
       let segmentCount = floor(random(8, 13));
       let startX = width / 4 + SIZE * c * 15;
       let startY = SIZE * 2;
-      let speed = 0.8 + level * 0.05; // Slower base speed, slower increase
+      let speed = 0.8 + level * 0.1; // Increase speed by 10% per level
       
       let prevSegment = null;
       
       for (let s = 0; s < segmentCount; s++) {
         let isHead = (s === 0);
-        let segX = startX - (s * SIZE * 0.8);
+        let segX = startX - (s * SIZE * 1.2); // Space segments further apart (20% extra spacing)
         let segY = startY;
         
         let segment = new Dot(segX, segY, SIZE, speed, isHead, s);
@@ -430,6 +581,11 @@ function updateGame() {
     // Update display
     updateDisplay();
   }
+  
+  // Update particle system
+  if (particleSystem) {
+    particleSystem.update();
+  }
 }
 
 // Regenerate mushrooms for new level - completely random new field
@@ -441,7 +597,7 @@ function regenerateMushrooms() {
     if (rand < 0.6) {
       // 60% chance for grass
       tile.type = floor(random(2, 5)); // Types 2, 3, or 4 (grass)
-      tile.mushroom = null;
+      tile.mushroom = null; // Clear mushroom
     } else {
       // 40% chance for mushrooms
       let mushroomRand = random();
@@ -452,7 +608,10 @@ function regenerateMushrooms() {
       } else {
         tile.type = 6; // Type 6 mushroom
       }
-      tile.initMushroom();
+      // Initialize mushroom for this tile
+      if (tile.initMushroom) {
+        tile.initMushroom();
+      }
     }
   }
 }
@@ -499,6 +658,81 @@ function drawGame() {
   for (let d of dot) {
     d.show();
   }
+  
+  // Draw particle system effects
+  if (particleSystem) {
+    particleSystem.draw();
+  }
+}
+
+// Helper function for distance calculation
+function distance(x1, y1, x2, y2) {
+  return sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+}
+
+/**
+ * Trigger mushroom explosion - destroys nearby mushrooms and damages nearby centipedes
+ */
+function triggerMushroomExplosion(explosiveTile, laser) {
+  const EXPLOSION_RADIUS = SIZE * 3; // Explosion affects 3x3 area
+  const explosionX = explosiveTile.x * SIZE + SIZE / 2;
+  const explosionY = explosiveTile.y * SIZE + SIZE / 2;
+  
+  // Destroy nearby mushrooms
+  for (let tile of field) {
+    if (!tile || !tile.mushroom) continue;
+    
+    let tileX = tile.x * SIZE + SIZE / 2;
+    let tileY = tile.y * SIZE + SIZE / 2;
+    let dist = distance(explosionX, explosionY, tileX, tileY);
+    
+    if (dist < EXPLOSION_RADIUS && tile !== explosiveTile) {
+      // Destroy mushroom instantly
+      if (tile.mushroom && !tile.mushroom.isDestroyed) {
+        // Create particle explosion for this mushroom with its colors
+        if (particleSystem && tile.mushroom.colorCache && tile.mushroom.colorCache.length > 0) {
+          particleSystem.createExplosion(tileX, tileY, 8, tile.mushroom.colorCache, 2, 5);
+        }
+        
+        tile.mushroom.isDestroyed = true;
+        tile.type = floor(random(2, 5)); // Convert to grass
+        tile.mushroom = null;
+        score += SCORES.MUSHROOM_DESTROYED;
+      }
+    }
+  }
+  
+  // Damage nearby centipedes
+  for (let d = 0; d < dot.length; d++) {
+    if (!dot[d] || dot[d].isDestroyed) continue;
+    
+    let dotX = dot[d].pos.x + SIZE / 2;
+    let dotY = dot[d].pos.y + SIZE / 2;
+    let dist = distance(explosionX, explosionY, dotX, dotY);
+    
+    if (dist < EXPLOSION_RADIUS) {
+      // Damage centipede
+      dot[d].destroySegment();
+      if (dot[d].isHead) {
+        score += SCORES.CENTIPEDE_HEAD;
+      } else {
+        score += SCORES.CENTIPEDE_BODY;
+      }
+    }
+  }
+  
+  // Create explosion effect
+  if (typeof particleSystem !== 'undefined') {
+    particleSystem.createExplosion(explosionX, explosionY, 20, 
+      [color(255, 100, 0), color(255, 200, 0), color(255, 255, 100)], 3, 8);
+  }
+  
+  // Destroy the explosive mushroom
+  if (explosiveTile.mushroom) {
+    explosiveTile.mushroom.isDestroyed = true;
+    explosiveTile.mushroom = null;
+  }
+  explosiveTile.type = floor(random(2, 5)); // Convert to grass
 }
 
 // OPTIMIZATION: Spatial partitioning for collision detection
@@ -518,17 +752,27 @@ function checkCollisions() {
       // Only check mushroom tiles
       if (tile.type === 1 || tile.type === 5 || tile.type === 6) {
         if (tile.hits(lasers[l])) {
-          tile.takeDamage(25);
-          laserHit = true;
-          
-          // Score for hitting mushroom
-          score += SCORES.MUSHROOM;
-          
-          // If mushroom is destroyed, convert to grass
-          if (tile.mushroom && tile.mushroom.isDestroyed && tile.mushroom.shouldRemove()) {
-            tile.type = floor(random(2, 5)); // Convert to grass (types 2, 3, or 4)
-            tile.mushroom = null; // Remove mushroom reference
-            score += SCORES.MUSHROOM_DESTROYED; // Bonus for destroying mushroom
+          // Check if this is an explosive mushroom (type 6)
+          if (tile.type === 6) {
+            // Create explosion effect
+            triggerMushroomExplosion(tile, lasers[l]);
+            laserHit = true;
+            score += SCORES.MUSHROOM_DESTROYED * 2; // Double bonus for explosive mushroom
+          } else {
+            // Normal mushroom damage
+            tile.takeDamage(25);
+            laserHit = true;
+            
+            // Score for hitting mushroom
+            score += SCORES.MUSHROOM;
+            
+            // If mushroom is destroyed, convert to grass immediately
+            // (don't wait on particles to finish - they draw independently of the tile)
+            if (tile.mushroom && tile.mushroom.isDestroyed) {
+              tile.type = floor(random(2, 5)); // Convert to grass (types 2, 3, or 4)
+              tile.mushroom = null; // Remove mushroom reference
+              score += SCORES.MUSHROOM_DESTROYED; // Bonus for destroying mushroom
+            }
           }
           
           updateDisplay();

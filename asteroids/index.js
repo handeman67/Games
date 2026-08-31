@@ -2306,7 +2306,10 @@ function draw() {
     }
   }
 
-  // Fire button now fires directly in Joystick.touchStarted, so no need to check isFiring() here
+  // Handle mobile fire button (allows holding to continuously fire while moving)
+  if (Joystick.isMobile() && leftJoystick && leftJoystick.isActive) {
+    leftJoystick.fireLaser();
+  }
 
   drawShip();
   drawAsteroid();
@@ -2569,22 +2572,26 @@ class Joystick {
            (window.innerWidth <= 768 && window.innerHeight <= 1024);
   }
 
-isTouchInRadius(touch) {
+  isTouchInRadius(touch) {
     const dx = touch.x - this.basePos.x;
     const dy = touch.y - this.basePos.y;
-    return Math.sqrt(dx * dx + dy * dy) <= this.radius;
+    // Base visual radius is this.radius * 2 (diameter is this.radius * 4)
+    return Math.sqrt(dx * dx + dy * dy) <= this.radius * 2;
   }
   
   isTrackingTouch(touch) {
-    return this.touchId === touch.identifier;
+    const id = touch.id !== undefined ? touch.id : touch.identifier;
+    return this.touchId !== null && this.touchId !== undefined && this.touchId === id;
   }
+
   /**
    * Handle touch start event
    */
   touchStarted(touch) {
+    const id = touch.id !== undefined ? touch.id : touch.identifier;
     if (this.isTouchInRadius(touch)) {
       this.isActive = true;
-      this.touchId = touch.identifier;
+      this.touchId = id;
       
       // Only update stick position for movement joystick
       if (this.isMovement) {
@@ -2614,8 +2621,9 @@ isTouchInRadius(touch) {
    * Handle touch end event
    */
   touchEnded(touch) {
+    const id = touch.id !== undefined ? touch.id : touch.identifier;
     // Only process if this touch belongs to this joystick
-    if (this.touchId === touch.identifier) {
+    if (this.touchId !== null && this.touchId !== undefined && this.touchId === id) {
       this.isActive = false;
       this.touchId = null;
       this.isFiring = false;
@@ -2792,29 +2800,24 @@ function initJoysticks() {
 /**
  * Handle touch events for joysticks
  */
-function handleJoystickTouches(touches, eventType) {
+function handleJoystickTouches(touchesList, eventType) {
   if (!Joystick.isMobile() || !leftJoystick || !rightJoystick) return;
 
-  for (let touch of touches) {
+  for (let touch of touchesList) {
     if (eventType === 'start') {
-      // Check BOTH joysticks independently - remove else-if to allow both to activate
-      if (leftJoystick.isTouchInRadius(touch) && !leftJoystick.isTrackingTouch(touch)) {
+      // Check BOTH controls independently so either/both can activate
+      if (leftJoystick.isTouchInRadius(touch) && !leftJoystick.isActive) {
         leftJoystick.touchStarted(touch);
         leftJoystick.fireLaser();
       }
-      if (rightJoystick.isTouchInRadius(touch) && !rightJoystick.isTrackingTouch(touch)) {
+      if (rightJoystick.isTouchInRadius(touch) && !rightJoystick.isActive) {
         rightJoystick.touchStarted(touch);
       }
     } else if (eventType === 'move') {
-      // Check BOTH joysticks independently
-      // if (leftJoystick.isTrackingTouch(touch)) {
-      //   leftJoystick.touchMoved(touch);
-      // }
       if (rightJoystick.isTrackingTouch(touch)) {
         rightJoystick.touchMoved(touch);
       }
     } else if (eventType === 'end') {
-      // Check BOTH joysticks independently
       if (leftJoystick.isTrackingTouch(touch)) {
         leftJoystick.touchEnded(touch);
       }
@@ -2853,15 +2856,18 @@ function touchMoved() {
 }
 
 function touchEnded() {
-  // When a touch ends, we need to check ALL joysticks to see which one was tracking it
-  // The 'touches' array only contains remaining touches, not the one that ended
+  // When a touch ends, check ALL joysticks to see if their tracked touch is still active
   if (!Joystick.isMobile() || !leftJoystick || !rightJoystick) return false;
   
-  // Check each joystick to see if it should deactivate
-  // We can't rely on the touches array here since the ended touch is not in it
-  // Instead, check if the joystick's tracked touch is still in the touches array
-  let leftTouchStillActive = touches.some(t => t.identifier === leftJoystick.touchId);
-  let rightTouchStillActive = touches.some(t => t.identifier === rightJoystick.touchId);
+  // Check each joystick to see if its tracked touch is still in the active touches array
+  let leftTouchStillActive = touches.some(t => {
+    let id = t.id !== undefined ? t.id : t.identifier;
+    return leftJoystick.touchId !== null && leftJoystick.touchId !== undefined && leftJoystick.touchId === id;
+  });
+  let rightTouchStillActive = touches.some(t => {
+    let id = t.id !== undefined ? t.id : t.identifier;
+    return rightJoystick.touchId !== null && rightJoystick.touchId !== undefined && rightJoystick.touchId === id;
+  });
   
   // If the joystick's touch is not in the remaining touches, it ended
   if (leftJoystick.isActive && !leftTouchStillActive) {

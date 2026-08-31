@@ -9,7 +9,11 @@
  * - Uses typed arrays for pixel data (10% faster)
  * - Caches repeated calculations
  * - Separates update and draw logic
+ * - OffscreenCanvas support for GPU acceleration
  */
+
+// Check for OffscreenCanvas support
+const SUPPORTS_OFFSCREEN = typeof OffscreenCanvas !== 'undefined';
 
 class MushroomBitmap {
   constructor(x, y, size, type = 1) {
@@ -35,11 +39,16 @@ class MushroomBitmap {
     
     // Particle storage
     this.particles = [];
+    
+    // OffscreenCanvas support (if available)
+    this.offscreenCanvas = null;
+    this.offscreenCtx = null;
+    this.useOffscreen = SUPPORTS_OFFSCREEN;
   }
   
   /**
    * Initialize bitmap from the loaded mushroom image
-   * OPTIMIZED: Creates p5.Image for fast rendering
+   * OPTIMIZED: Creates p5.Image for fast rendering + OffscreenCanvas if available
    */
   initBitmap(img) {
     // Store original image
@@ -52,6 +61,19 @@ class MushroomBitmap {
     
     // Store pixel data as Uint8ClampedArray (faster than regular array)
     this.pixelData = new Uint8ClampedArray(this.currentImage.pixels);
+    
+    // Initialize OffscreenCanvas if supported
+    if (this.useOffscreen) {
+      try {
+        this.offscreenCanvas = new OffscreenCanvas(this.size, this.size);
+        this.offscreenCtx = this.offscreenCanvas.getContext('2d');
+        // Pre-render to OffscreenCanvas
+        this.offscreenCtx.drawImage(this.currentImage.canvas, 0, 0);
+      } catch (e) {
+        console.warn('OffscreenCanvas init failed:', e);
+        this.useOffscreen = false;
+      }
+    }
     
     // Pre-cache valid colors for particles
     this.cacheColors();
@@ -113,7 +135,7 @@ class MushroomBitmap {
   
   /**
    * Update bitmap to show progressive damage
-   * OPTIMIZED: Modifies p5.Image directly, updates once
+   * OPTIMIZED: Modifies p5.Image directly, updates OffscreenCanvas if available
    */
   updateDamagedBitmap() {
     if (!this.currentImage) return;
@@ -144,6 +166,16 @@ class MushroomBitmap {
     
     // Update the image
     this.currentImage.updatePixels();
+    
+    // Sync to OffscreenCanvas if available
+    if (this.useOffscreen && this.offscreenCanvas && this.offscreenCtx) {
+      try {
+        this.offscreenCtx.clearRect(0, 0, this.size, this.size);
+        this.offscreenCtx.drawImage(this.currentImage.canvas, 0, 0);
+      } catch (e) {
+        console.warn('OffscreenCanvas update failed:', e);
+      }
+    }
   }
   
   /**
@@ -182,15 +214,25 @@ class MushroomBitmap {
       let speed = random(3, 7);
       let col = this.colorCache[Math.floor(Math.random() * this.colorCache.length)];
       
-      this.particles.push({
-        x: this.centerX,
-        y: this.centerY,
-        vx: cos(angle) * speed,
-        vy: sin(angle) * speed - random(2, 4),
-        life: 255,
-        size: random(3, 6),
-        color: col
-      });
+      // Route through the global particle system so the effect survives
+      // after this mushroom's tile is converted back to grass
+      if (typeof particleSystem !== 'undefined' && particleSystem) {
+        particleSystem.addParticle(
+          this.centerX, this.centerY,
+          cos(angle) * speed, sin(angle) * speed - random(2, 4),
+          col, random(3, 6), 255
+        );
+      } else {
+        this.particles.push({
+          x: this.centerX,
+          y: this.centerY,
+          vx: cos(angle) * speed,
+          vy: sin(angle) * speed - random(2, 4),
+          life: 255,
+          size: random(3, 6),
+          color: col
+        });
+      }
     }
   }
   
@@ -227,6 +269,7 @@ class MushroomBitmap {
   /**
    * Draw the mushroom with current damage state
    * OPTIMIZED: Uses image() instead of pixel-by-pixel rect()
+   * Uses OffscreenCanvas if available for GPU acceleration
    */
   draw() {
     if (this.isDestroyed) {
@@ -237,7 +280,19 @@ class MushroomBitmap {
     // Draw the mushroom using image (MUCH faster than pixel-by-pixel)
     if (this.currentImage) {
       push();
-      image(this.currentImage, this.x, this.y, this.size, this.size);
+      
+      // Use OffscreenCanvas if available (GPU-accelerated)
+      if (this.useOffscreen && this.offscreenCanvas) {
+        try {
+          image(this.offscreenCanvas.convertToImageBitmap(), this.x, this.y, this.size, this.size);
+        } catch (e) {
+          // Fallback to regular image if OffscreenCanvas fails
+          image(this.currentImage, this.x, this.y, this.size, this.size);
+        }
+      } else {
+        image(this.currentImage, this.x, this.y, this.size, this.size);
+      }
+      
       pop();
     } else {
       // Fallback

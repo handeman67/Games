@@ -1,29 +1,91 @@
 /**
  * Particles.js
  * Global particle system for managing all particle effects
+ * 
+ * OPTIMIZATION: Object pooling to reduce garbage collection pressure
+ * and improve performance during heavy particle effects
  */
 
 class ParticleSystem {
-  constructor() {
+  constructor(poolSize = 1000) {
     this.particles = [];
+    this.pool = [];
+    this.poolSize = poolSize;
+    
+    // Pre-allocate particle pool
+    this.initializePool();
+  }
+  
+  /**
+   * Initialize object pool with reusable particle objects
+   * OPTIMIZATION: Pre-allocate particles to avoid allocation during runtime
+   */
+  initializePool() {
+    for (let i = 0; i < this.poolSize; i++) {
+      this.pool.push({
+        x: 0,
+        y: 0,
+        vx: 0,
+        vy: 0,
+        life: 0,
+        maxLife: 0,
+        size: 0,
+        color: null,
+        gravity: 0.3,
+        drag: 0.99,
+        active: false
+      });
+    }
+  }
+  
+  /**
+   * Get a particle from the pool or create a new one
+   * OPTIMIZATION: Reuse particles instead of creating new ones
+   */
+  getParticleFromPool() {
+    if (this.pool.length > 0) {
+      return this.pool.pop();
+    }
+    // Fallback: create new if pool is empty
+    return {
+      x: 0,
+      y: 0,
+      vx: 0,
+      vy: 0,
+      life: 0,
+      maxLife: 0,
+      size: 0,
+      color: null,
+      gravity: 0.3,
+      drag: 0.99,
+      active: false
+    };
+  }
+  
+  /**
+   * Return particle to pool for reuse
+   */
+  returnParticleToPool(particle) {
+    particle.active = false;
+    this.pool.push(particle);
   }
   
   /**
    * Add a particle to the system
+   * OPTIMIZATION: Uses pooled particles instead of creating new objects
    */
   addParticle(x, y, vx, vy, col, size = 3, life = 255) {
-    this.particles.push({
-      x: x,
-      y: y,
-      vx: vx,
-      vy: vy,
-      life: life,
-      maxLife: life,
-      size: size,
-      color: col,
-      gravity: 0.3,
-      drag: 0.99
-    });
+    let p = this.getParticleFromPool();
+    p.x = x;
+    p.y = y;
+    p.vx = vx;
+    p.vy = vy;
+    p.life = life;
+    p.maxLife = life;
+    p.size = size;
+    p.color = col;
+    p.active = true;
+    this.particles.push(p);
   }
   
   /**
@@ -70,6 +132,7 @@ class ParticleSystem {
   
   /**
    * Update all particles
+   * OPTIMIZATION: Efficient removal using swap-and-pop, returns to pool
    */
   update() {
     for (let i = this.particles.length - 1; i >= 0; i--) {
@@ -89,7 +152,11 @@ class ParticleSystem {
       
       // Remove dead particles or off-screen particles
       if (p.life <= 0 || p.y > height + 50 || p.x < -50 || p.x > width + 50) {
-        this.particles.splice(i, 1);
+        // Return to pool instead of discarding
+        this.returnParticleToPool(p);
+        // Swap with last and pop (faster than splice)
+        this.particles[i] = this.particles[this.particles.length - 1];
+        this.particles.pop();
       }
     }
   }
