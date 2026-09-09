@@ -21,6 +21,7 @@ var mush = [];
 var level = 1;
 var score = 0;
 var highScore = 0;
+var gameOver = false;
 var rgb;
 var gameStarted = false; // Flag to prevent level complete on startup
 // particleSystem is declared in Particles.js as a global
@@ -42,6 +43,7 @@ const sizes = window.innerWidth < 600 ? 15 : 30; // Fewer columns on mobile = bi
 const SCORES = {
   CENTIPEDE_HEAD: 100,
   CENTIPEDE_BODY: 10,
+  SPIDER: 50,
   MUSHROOM: 1,
   MUSHROOM_DESTROYED: 5,
   LEVEL_COMPLETE: 1000
@@ -51,6 +53,16 @@ const CENTIPEDE_BASE_SPEED = 1.7;
 const CENTIPEDE_LEVEL_SPEED_INCREASE = 0.10;
 const CENTIPEDE_SEGMENT_GAP = 0.5;
 const CENTIPEDE_HIT_STATE_FRAMES = 12;
+const CENTIPEDE_TURN_COMPRESSION = 0.55;
+const CENTIPEDE_TURN_COMPRESSION_FRAMES = 12;
+const SPIDER_TRANSFORM_DELAY = 5000;
+const SPIDER_DESCENT_SPEED = 3.4;
+const SPIDER_ASCENT_SPEED = 1.8;
+const SPIDER_HORIZONTAL_SPEED = 0.65;
+const SPIDER_MUSHROOM_CHANCE = 0.55;
+const SPIDER_MUSHROOM_OLD_DELAY = 8000;
+const SPIDER_MUSHROOM_DUSTY_CHANCE = 0.12;
+const LEVEL_SPIDER_BASE_COUNT = 1;
 
 function getCentipedeSpeed() {
   return CENTIPEDE_BASE_SPEED + level * CENTIPEDE_LEVEL_SPEED_INCREASE;
@@ -278,6 +290,7 @@ function setup() {
   PlayerLoad();
   DotLoad();
   FieldLoad();
+  spawnLevelSpiders();
   
   // Mark game as started after initial setup
   gameStarted = true;
@@ -290,6 +303,10 @@ function setup() {
   
   // Setup touch controls
   setupTouchControls();
+
+  document.getElementById('restart-game').addEventListener('click', () => {
+    window.location.reload();
+  });
 }
 
 // Setup touch controls for mobile
@@ -351,6 +368,21 @@ function saveHighScore() {
   }
 }
 
+function endGame() {
+  if (gameOver) return;
+
+  gameOver = true;
+  isFiring = false;
+  touchActive = false;
+  saveHighScore();
+  updateDisplay();
+
+  document.getElementById('game-over-score').textContent = score;
+  document.getElementById('game-over-high-score').textContent = highScore;
+  document.getElementById('game-over').hidden = false;
+  document.getElementById('restart-game').focus();
+}
+
 // Update the display elements
 function updateDisplay() {
   document.getElementById('score').textContent = score;
@@ -358,6 +390,38 @@ function updateDisplay() {
   document.getElementById('lives').textContent = player[0] ? player[0].lives : 0;
   document.getElementById('highscore').textContent = highScore;
   document.getElementById('fps').textContent = Math.round(currentFps);
+}
+
+function addSpiderMushroom(x, y) {
+  let column = constrain(Math.floor(x / SIZE), 0, cols - 1);
+  let row = constrain(Math.floor(y / SIZE), 0, rows - 1);
+  let existingTile = field.find((tile) => tile.x === column && tile.y === row);
+
+  if (existingTile) return;
+
+  let mushroomTile = new Tile(column, row, 5);
+  mushroomTile.spawnedBySpiderAt = millis();
+  field.push(mushroomTile);
+  spatialGrid.addTile(mushroomTile, row * cols + column);
+}
+
+function ageSpiderMushrooms() {
+  let now = millis();
+  for (let tile of field) {
+    if (!tile.spawnedBySpiderAt || !tile.mushroom || tile.mushroom.isDestroyed) continue;
+
+    let age = now - tile.spawnedBySpiderAt;
+    if (age >= SPIDER_MUSHROOM_OLD_DELAY && !tile.spiderMushroomAged) {
+      tile.spiderMushroomAged = true;
+      tile.spiderMushroomIsDusty = random() < SPIDER_MUSHROOM_DUSTY_CHANCE;
+    }
+
+    let nextType = tile.spiderMushroomAged ? (tile.spiderMushroomIsDusty ? 6 : 1) : 5;
+    if (tile.type !== nextType) {
+      tile.type = nextType;
+      tile.initMushroom();
+    }
+  }
 }
 
 // Calculate FPS
@@ -468,6 +532,16 @@ function DotLoad() {
   }
 }
 
+function spawnLevelSpiders() {
+  let spiderCount = LEVEL_SPIDER_BASE_COUNT + level - 1;
+
+  for (let index = 0; index < spiderCount; index++) {
+    let spiderDot = new Dot(random(0, width - SIZE), random(0, height - SIZE), SIZE, 0, false, 0);
+    spiderDot.transformIntoSpider();
+    dot.push(spiderDot);
+  }
+}
+
 function PlayerLoad() {
   for (let p = 0; p < 1; p++) {
     let s = 4;
@@ -489,8 +563,11 @@ function draw() {
 }
 
 function updateGame() {
+  if (gameOver) return;
+
   // Handle continuous firing
   handleFiring();
+  ageSpiderMushrooms();
   
   // Update player
   for (let p of player) {
@@ -541,15 +618,12 @@ function updateGame() {
     }
   }
   
-  // Respawn centipedes if all destroyed (only after game has started)
-  let aliveDots = dot.filter(d => !d.isDestroyed).length;
-  if (gameStarted && aliveDots === 0 && dot.length === 0) {
+  // Sleeping sections and spiders do not block the next centipede wave.
+  let activeCentipedeSegments = dot.filter(d => !d.isDestroyed && !d.isStunned && !d.isSpider).length;
+  if (gameStarted && activeCentipedeSegments === 0) {
     // Level complete bonus
     score += SCORES.LEVEL_COMPLETE;
     level++;
-    
-    // Regenerate mushroom field for new level
-    regenerateMushrooms();
     
     // Create new centipede chains for next level
     let numCentipedes = 1 + floor(level / 3); // More centipedes at higher levels
@@ -578,6 +652,8 @@ function updateGame() {
         prevSegment = segment;
       }
     }
+
+    spawnLevelSpiders();
     
     // Update display
     updateDisplay();
@@ -655,9 +731,23 @@ function drawGame() {
     l.show();
   }
   
-  // Draw dots
+  // Draw body sections first so enlarged lead sections remain visible on top.
   for (let d of dot) {
-    d.show();
+    if (!d.isHead) {
+      d.show();
+    }
+  }
+
+  for (let d of dot) {
+    if (d.isHead) {
+      d.show();
+    }
+  }
+
+  for (let d of dot) {
+    if (d.isStunned && !d.isExploding) {
+      d.showSleepParticles();
+    }
   }
   
   // Draw particle system effects
@@ -788,15 +878,22 @@ function checkCollisions() {
         if (!dot[d] || dot[d].isDestroyed) continue;
         
         if (lasers[l].hits(dot[d])) {
-          // Score based on segment type
-          if (dot[d].isHead) {
-            score += SCORES.CENTIPEDE_HEAD;
+          if (dot[d].isSpider) {
+            dot[d].explode();
+            score += SCORES.SPIDER;
           } else {
-            score += SCORES.CENTIPEDE_BODY;
+            // The first hit stuns a cat; the second starts its explosion.
+            let isFinishingHit = dot[d].beginShotHit();
+
+            if (isFinishingHit) {
+              if (dot[d].isHead) {
+                score += SCORES.CENTIPEDE_HEAD;
+              } else {
+                score += SCORES.CENTIPEDE_BODY;
+              }
+            }
           }
-          
-          // Let the cat reaction render before this segment breaks apart.
-          dot[d].beginShotHit();
+
           laserHit = true;
           updateDisplay();
           break;
@@ -825,8 +922,7 @@ function checkCollisions() {
         
         // Check for game over
         if (p.lives <= 0) {
-          saveHighScore();
-          // Game over - could add game over screen here
+          endGame();
         }
         break;
       }
@@ -836,7 +932,7 @@ function checkCollisions() {
 
 // Check if dot (centipede segment) hits mushrooms
 function checkDotMushroomCollision(dotObj) {
-  if (!dotObj || !dotObj.isHead) return; // Only heads check collision
+  if (!dotObj || !dotObj.isHead || dotObj.isSpider) return; // Only centipede heads react to mushrooms
   
   // Get nearby tiles using spatial grid
   let nearbyTiles = spatialGrid.getNearbyTiles(dotObj.pos.x, dotObj.pos.y);

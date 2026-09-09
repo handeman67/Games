@@ -42,10 +42,17 @@
     </div>
     <div id="canv"></div>
   </div>
+  <div id="game-over" class="game-over" role="dialog" aria-modal="true" aria-labelledby="game-over-title" hidden>
+    <div class="game-over__panel">
+      <h1 id="game-over-title">Game Over</h1>
+      <p>Score <strong id="game-over-score">0</strong></p>
+      <p>High Score <strong id="game-over-high-score">0</strong></p>
+      <button id="restart-game" type="button">Play Again</button>
+    </div>
+  </div>
 
   <!-- p5.js library - minified for faster loading -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/addons/p5.dom.min.js" defer></script>
   
   <!-- Game system files - must load in order -->
   <script src="src/js/Particles.js" defer></script>

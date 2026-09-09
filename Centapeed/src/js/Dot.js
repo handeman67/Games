@@ -11,7 +11,14 @@ class Dot {
     this.color = color(random(255), random(255), random(255));
     this.hit = false;
     this.isDestroyed = false;
+    this.isStunned = false;
+    this.isExploding = false;
+    this.isSpider = false;
     this.hitStateFrames = 0;
+    this.stunnedAt = 0;
+    this.zParticles = [];
+    this.lastSpiderMushroomRow = -1;
+    this.turnCompressionFrames = 0;
     this.particles = [];
     
     // Centipede chain properties
@@ -41,24 +48,118 @@ class Dot {
         this.showParticles();
         return;
       }
+
+      if (this.isSpider) {
+        push();
+        drawingContext.shadowBlur = SIZE * 0.8;
+        drawingContext.shadowColor = '#52ff71';
+        tint(155, 255, 130);
+        image(spider, this.pos.x, this.pos.y, SIZE, SIZE);
+        noTint();
+        pop();
+        return;
+      }
+
+      let displaySize = this.isHead ? SIZE * 1.5 : SIZE;
+      let displayOffset = this.isHead ? (displaySize - SIZE) / 2 : 0;
       
       push();
       stroke(0, 100, 0);
       strokeWeight(0.005);
       fill('#ffffff55');
-      image(this.segmentImage, this.pos.x, this.pos.y, SIZE, SIZE);
+      image(this.segmentImage, this.pos.x - displayOffset, this.pos.y - displayOffset, displaySize, displaySize);
       pop();
       
       // Show particles even when alive (for hit effects)
       this.showParticles();
     };
 
-    this.beginShotHit = () => {
-      if (this.isDestroyed || this.hitStateFrames > 0) return;
+    this.showSleepParticles = () => {
+      push();
+      textAlign(CENTER, CENTER);
+      textStyle(BOLD);
+      for (let zParticle of this.zParticles) {
+        fill(185, 220, 255, zParticle.life);
+        textSize(zParticle.size);
+        text('Z', zParticle.x, zParticle.y);
+      }
+      pop();
+    };
 
-      this.hit = true;
+    this.updateSleepParticles = () => {
+      if (frameCount % 24 === 0) {
+        this.zParticles.push({
+          x: this.pos.x + SIZE * 0.72,
+          y: this.pos.y + SIZE * 0.2,
+          size: random(10, 16),
+          life: 255
+        });
+      }
+
+      for (let index = this.zParticles.length - 1; index >= 0; index--) {
+        let zParticle = this.zParticles[index];
+        zParticle.y -= 0.45;
+        zParticle.x += sin(frameCount * 0.08 + index) * 0.15;
+        zParticle.life -= 2.5;
+        if (zParticle.life <= 0) {
+          this.zParticles.splice(index, 1);
+        }
+      }
+    };
+
+    this.transformIntoSpider = () => {
+      this.isStunned = false;
+      this.isSpider = true;
+      this.zParticles = [];
+      this.spiderDirection = 1;
+      this.spiderHorizontalDirection = random() < 0.5 ? -1 : 1;
+      this.lastSpiderMushroomRow = Math.floor(this.pos.y / SIZE);
+    };
+
+    this.moveSpider = () => {
+      let speed = this.spiderDirection > 0 ? SPIDER_DESCENT_SPEED : SPIDER_ASCENT_SPEED;
+      this.pos.y += this.spiderDirection * speed;
+      this.pos.x += this.spiderHorizontalDirection * SPIDER_HORIZONTAL_SPEED;
+      let currentRow = Math.floor(this.pos.y / SIZE);
+
+      if (this.spiderDirection > 0 && this.pos.y >= height - SIZE) {
+        this.pos.y = height - SIZE;
+        this.spiderDirection = -1;
+      } else if (this.spiderDirection < 0 && this.pos.y <= 0) {
+        this.pos.y = 0;
+        this.spiderDirection = 1;
+      }
+
+      if (this.pos.x < -SIZE || this.pos.x > width) {
+        this.isDestroyed = true;
+        return;
+      }
+
+      currentRow = Math.floor(this.pos.y / SIZE);
+      if (this.spiderDirection > 0 && currentRow !== this.lastSpiderMushroomRow) {
+        if (random() < SPIDER_MUSHROOM_CHANCE) {
+          addSpiderMushroom(this.pos.x, this.pos.y);
+        }
+        this.lastSpiderMushroomRow = currentRow;
+      }
+    };
+
+    this.beginShotHit = () => {
+      if (this.isDestroyed || this.isExploding) return false;
+
+      if (!this.isStunned) {
+        this.hit = true;
+        this.isStunned = true;
+        this.stunnedAt = millis();
+        this.segmentImage = sleep;
+        this.splitAtStunnedSegment();
+        return false;
+      }
+
+      this.isExploding = true;
       this.hitStateFrames = CENTIPEDE_HIT_STATE_FRAMES;
-      this.segmentImage = this.isHead ? Grr : sleep;
+      this.segmentImage = Grr;
+      return true;
     };
     
     ///hit detection
@@ -154,6 +255,19 @@ class Dot {
       return this.isDestroyed && this.particles.length === 0;
     };
 
+    this.splitAtStunnedSegment = () => {
+      if (this.prevSegment) {
+        this.prevSegment.nextSegment = null;
+        this.prevSegment = null;
+      }
+
+      if (this.nextSegment && !this.nextSegment.isDestroyed) {
+        this.nextSegment.becomeHead();
+        this.nextSegment.prevSegment = null;
+        this.nextSegment = null;
+      }
+    };
+
     ///
     this.move = () => {
       if (this.isDestroyed) {
@@ -161,7 +275,23 @@ class Dot {
         return;
       }
 
-      if (this.hitStateFrames > 0) {
+      if (this.isStunned && !this.isExploding) {
+        if (millis() - this.stunnedAt >= SPIDER_TRANSFORM_DELAY) {
+          this.transformIntoSpider();
+        } else {
+          this.updateSleepParticles();
+          this.updateParticles();
+          return;
+        }
+      }
+
+      if (this.isSpider) {
+        this.moveSpider();
+        this.updateParticles();
+        return;
+      }
+
+      if (this.isExploding && this.hitStateFrames > 0) {
         this.hitStateFrames--;
         if (this.hitStateFrames === 0) {
           this.destroySegment();
@@ -243,7 +373,8 @@ class Dot {
         let directionX = this.pos.x - targetX;
         let directionY = this.pos.y - targetY;
         let directionLength = Math.hypot(directionX, directionY);
-        let idealDistance = SIZE * CENTIPEDE_SEGMENT_GAP;
+        let compression = this.prevSegment.turnCompressionFrames > 0 ? CENTIPEDE_TURN_COMPRESSION : 1;
+        let idealDistance = SIZE * CENTIPEDE_SEGMENT_GAP * compression;
 
         if (directionLength === 0) {
           directionX = -Math.sign(this.prevSegment.sp || 1);
@@ -280,6 +411,10 @@ class Dot {
       
       // Update particles
       this.updateParticles();
+
+      if (this.isHead && this.turnCompressionFrames > 0) {
+        this.turnCompressionFrames--;
+      }
     };
     
     // Check if centipede is trapped by mushrooms (all 5 squares blocked)
@@ -443,16 +578,10 @@ class Dot {
     this.drop = () => {
       // Only head can drop (body follows)
       if (this.isHead) {
-        this.pos.y = SIZE + this.pos.y;
+        this.pos.x = constrain(this.pos.x, 0, width - SIZE);
+        this.pos.y = min(this.pos.y + SIZE, height - SIZE);
         this.sp = -this.sp;
-        if (this.pos.y > h) {
-          if (this.dt >= dot.length) {
-            level++;
-            this.sp++;
-            this.pos.y = 100;
-            this.pos.x = width / 2;
-          }
-        }
+        this.turnCompressionFrames = CENTIPEDE_TURN_COMPRESSION_FRAMES;
       }
     };
     
@@ -475,6 +604,10 @@ class Dot {
     // Convert body segment to head
     this.becomeHead = () => {
       this.isHead = true;
+      this.isStunned = false;
+      this.isExploding = false;
+      this.hitStateFrames = 0;
+      this.segmentImage = satisfied;
       this.sp = this.sp || 1.5; // Ensure it has speed
     };
   }
