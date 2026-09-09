@@ -11,6 +11,7 @@ class Dot {
     this.color = color(random(255), random(255), random(255));
     this.hit = false;
     this.isDestroyed = false;
+    this.hitStateFrames = 0;
     this.particles = [];
     
     // Centipede chain properties
@@ -28,13 +29,7 @@ class Dot {
     
     // Get appropriate image for this segment
     this.getSegmentImage = () => {
-      if (this.isHead) {
-        return Grr; // Head - angry face
-      } else {
-        // Body segments - cycle through different faces
-        let bodyImages = [satisfied, flustered, blush, big, sleep];
-        return bodyImages[this.segmentIndex % bodyImages.length];
-      }
+      return satisfied;
     };
     
     // Choose image based on segment type
@@ -56,6 +51,14 @@ class Dot {
       
       // Show particles even when alive (for hit effects)
       this.showParticles();
+    };
+
+    this.beginShotHit = () => {
+      if (this.isDestroyed || this.hitStateFrames > 0) return;
+
+      this.hit = true;
+      this.hitStateFrames = CENTIPEDE_HIT_STATE_FRAMES;
+      this.segmentImage = this.isHead ? Grr : sleep;
     };
     
     ///hit detection
@@ -84,7 +87,7 @@ class Dot {
       
       for (let i = 0; i < particleCount; i++) {
         let angle = random(TWO_PI);
-        let speed = random(3, 8);
+        let speed = random(5, 15);
         
         // Green color variations
         let greenShade = floor(random(3));
@@ -157,6 +160,15 @@ class Dot {
         this.updateParticles();
         return;
       }
+
+      if (this.hitStateFrames > 0) {
+        this.hitStateFrames--;
+        if (this.hitStateFrames === 0) {
+          this.destroySegment();
+          this.updateParticles();
+          return;
+        }
+      }
       
       // Store previous position for following segments
       let prevX = this.pos.x;
@@ -225,13 +237,25 @@ class Dot {
           this.pos.y = 0;
         }
       } else if (this.prevSegment && !this.prevSegment.isDestroyed) {
-        // Body segments follow the previous segment with slight delay
+        // Body segments follow a point behind the previous segment, not its center.
         let targetX = this.prevSegment.pos.x;
         let targetY = this.prevSegment.pos.y;
+        let directionX = this.pos.x - targetX;
+        let directionY = this.pos.y - targetY;
+        let directionLength = Math.hypot(directionX, directionY);
+        let idealDistance = SIZE * CENTIPEDE_SEGMENT_GAP;
+
+        if (directionLength === 0) {
+          directionX = -Math.sign(this.prevSegment.sp || 1);
+          directionY = 0;
+          directionLength = 1;
+        }
+
+        let followTargetX = targetX + (directionX / directionLength) * idealDistance;
+        let followTargetY = targetY + (directionY / directionLength) * idealDistance;
         
         // Calculate distance to previous segment
         let distToPrev = dist(this.pos.x, this.pos.y, targetX, targetY);
-        let idealDistance = SIZE; // Ideal spacing between segments (barely touching)
         
         // Adjust follow speed based on distance
         let followSpeed;
@@ -249,9 +273,9 @@ class Dot {
           followSpeed = 0.3;
         }
         
-        // Smooth following with adaptive interpolation
-        this.pos.x = lerp(this.pos.x, targetX, followSpeed);
-        this.pos.y = lerp(this.pos.y, targetY, followSpeed);
+        // Smoothly follow the spacing target so the visual gap remains stable.
+        this.pos.x = lerp(this.pos.x, followTargetX, followSpeed);
+        this.pos.y = lerp(this.pos.y, followTargetY, followSpeed);
       }
       
       // Update particles
@@ -331,7 +355,7 @@ class Dot {
           if (!tile) continue;
           
           // Check if it's a mushroom
-          if ((tile.type === 1 || tile.type === 5 || tile.type === 6) && 
+          if ((tile.type === 1 || tile.type === 2 || tile.type === 3) && 
               tile.mushroom && !tile.mushroom.isDestroyed) {
             
             let mushroomCenterX = tile.x * SIZE + SIZE / 2;
@@ -451,7 +475,6 @@ class Dot {
     // Convert body segment to head
     this.becomeHead = () => {
       this.isHead = true;
-      this.segmentImage = Grr; // Change to head image
       this.sp = this.sp || 1.5; // Ensure it has speed
     };
   }

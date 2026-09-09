@@ -47,6 +47,15 @@ const SCORES = {
   LEVEL_COMPLETE: 1000
 };
 
+const CENTIPEDE_BASE_SPEED = 1.7;
+const CENTIPEDE_LEVEL_SPEED_INCREASE = 0.10;
+const CENTIPEDE_SEGMENT_GAP = 0.5;
+const CENTIPEDE_HIT_STATE_FRAMES = 12;
+
+function getCentipedeSpeed() {
+  return CENTIPEDE_BASE_SPEED + level * CENTIPEDE_LEVEL_SPEED_INCREASE;
+}
+
 // Responsive canvas sizing
 function getCanvasSize() {
   const wrap = document.getElementsByClassName("wrap")[0];
@@ -126,12 +135,8 @@ var spatialGrid = {
 const IMAGE_ASSETS = {
   player: [
     'img/catsleep.png',
-    'img/catflustered.png',
     'img/catsatisfied.png',
-    'img/catmad.png',
-    'img/catblush.png',
-    'img/catstunned.png',
-    'img/catpreexploded.png'
+    'img/catmad.png'
   ],
   mushrooms: [
     'img/mushroomold.svg',
@@ -150,12 +155,8 @@ const IMAGE_ASSETS = {
 // Map file paths to global variable names
 const IMAGE_VAR_MAP = {
   'img/catsleep.png': ['smile', 'sleep'],
-  'img/catflustered.png': ['flustered'],
   'img/catsatisfied.png': ['satisfied'],
   'img/catmad.png': ['Grr'],
-  'img/catblush.png': ['blush'],
-  'img/catstunned.png': ['big'],
-  'img/catpreexploded.png': ['sick'],
   'img/mushroomold.svg': ['mushroom'],
   'img/mushroomyoung.svg': ['mushroom1'],
   'img/mushroomdusty.svg': ['mushroom2'],
@@ -444,13 +445,13 @@ function DotLoad() {
     let segmentCount = floor(random(8, 13)); // 8-12 segments per centipede
     let startX = width / 4 + SIZE * c * 15;
     let startY = SIZE * 2;
-    let speed = 0.8 + level * 0.1; // Increase speed by 10% per level
+    let speed = getCentipedeSpeed();
     
     let prevSegment = null;
     
     for (let s = 0; s < segmentCount; s++) {
       let isHead = (s === 0);
-      let segX = startX - (s * SIZE * 1.2); // Space segments further apart (20% extra spacing)
+      let segX = startX - (s * SIZE * CENTIPEDE_SEGMENT_GAP);
       let segY = startY;
       
       let segment = new Dot(segX, segY, SIZE, speed, isHead, s);
@@ -557,13 +558,13 @@ function updateGame() {
       let segmentCount = floor(random(8, 13));
       let startX = width / 4 + SIZE * c * 15;
       let startY = SIZE * 2;
-      let speed = 0.8 + level * 0.1; // Increase speed by 10% per level
+      let speed = getCentipedeSpeed();
       
       let prevSegment = null;
       
       for (let s = 0; s < segmentCount; s++) {
         let isHead = (s === 0);
-        let segX = startX - (s * SIZE * 1.2); // Space segments further apart (20% extra spacing)
+        let segX = startX - (s * SIZE * CENTIPEDE_SEGMENT_GAP);
         let segY = startY;
         
         let segment = new Dot(segX, segY, SIZE, speed, isHead, s);
@@ -794,8 +795,8 @@ function checkCollisions() {
             score += SCORES.CENTIPEDE_BODY;
           }
           
-          // Destroy the segment and split the centipede
-          dot[d].destroySegment();
+          // Let the cat reaction render before this segment breaks apart.
+          dot[d].beginShotHit();
           laserHit = true;
           updateDisplay();
           break;
