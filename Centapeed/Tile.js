@@ -11,7 +11,7 @@ class Tile {
             
             // For mushroom tiles, create bitmap representation
             this.mushroom = null;
-            if (type === 1 || type === 5 || type === 6) {
+            if (type === 1 || type === 2 || type === 3) {
                   this.initMushroom();
             }
       }
@@ -21,8 +21,8 @@ class Tile {
        */
       initMushroom() {
             let mushroomType = 1;
-            if (this.type === 5) mushroomType = 2;
-            if (this.type === 6) mushroomType = 3;
+            if (this.type === 2) mushroomType = 2;
+            if (this.type === 3) mushroomType = 3;
             
             this.mushroom = new MushroomBitmap(
                   this.x * SIZE, 

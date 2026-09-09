@@ -125,45 +125,45 @@ var spatialGrid = {
 // Images load in parallel instead of blocking game startup
 const IMAGE_ASSETS = {
   player: [
-    'img/800px-Smiley_green_alien_deep_sleep.svg.png',
-    'img/800px-Smiley_green_alien_flustered.svg.png',
-    'img/800px-Smiley_green_alien_satisfied.svg.png',
-    'img/800px-Smiley_green_alien_GRRR.svg.png',
-    'img/Smiley_green_alien_blush.svg.png',
-    'img/Smiley_green_alien_big_eyes.svg.png',
-    'img/Smiley_green_alien_sickoff.svg.png'
+    'img/catsleep.png',
+    'img/catflustered.png',
+    'img/catsatisfied.png',
+    'img/catmad.png',
+    'img/catblush.png',
+    'img/catstunned.png',
+    'img/catpreexploded.png'
   ],
   mushrooms: [
-    'img/mushroom.svg',
-    'img/mushroom1.svg',
-    'img/mushroom2.svg'
+    'img/mushroomold.svg',
+    'img/mushroomyoung.svg',
+    'img/mushroomdusty.svg'
   ],
   environment: [
     'img/spider.svg',
-    'img/grass.svg',
-    'img/grass1.svg',
-    'img/grass3.svg',
-    'img/stink-bug.svg'
+    'img/grassempty.svg',
+    'img/grassfull.svg',
+    'img/grassheavy.svg',
+    // 'img/stink-bug.svg'
   ]
 };
 
 // Map file paths to global variable names
 const IMAGE_VAR_MAP = {
-  'img/800px-Smiley_green_alien_deep_sleep.svg.png': ['smile', 'sleep'],
-  'img/800px-Smiley_green_alien_flustered.svg.png': ['flustered'],
-  'img/800px-Smiley_green_alien_satisfied.svg.png': ['satisfied'],
-  'img/800px-Smiley_green_alien_GRRR.svg.png': ['Grr'],
-  'img/Smiley_green_alien_blush.svg.png': ['blush'],
-  'img/Smiley_green_alien_big_eyes.svg.png': ['big'],
-  'img/Smiley_green_alien_sickoff.svg.png': ['sick'],
-  'img/mushroom.svg': ['mushroom'],
-  'img/mushroom1.svg': ['mushroom1'],
-  'img/mushroom2.svg': ['mushroom2'],
-  'img/spider.svg': ['spider'],
-  'img/grass.svg': ['grass'],
-  'img/grass1.svg': ['grass1'],
-  'img/grass3.svg': ['grass3'],
-  'img/stink-bug.svg': ['stinkbug']
+  'img/catsleep.png': ['smile', 'sleep'],
+  'img/catflustered.png': ['flustered'],
+  'img/catsatisfied.png': ['satisfied'],
+  'img/catmad.png': ['Grr'],
+  'img/catblush.png': ['blush'],
+  'img/catstunned.png': ['big'],
+  'img/catpreexploded.png': ['sick'],
+  'img/mushroomold.svg': ['mushroom'],
+  'img/mushroomyoung.svg': ['mushroom1'],
+  'img/mushroomdusty.svg': ['mushroom2'],
+  'img/spider.svg':   ['spider'],
+  'img/grassempty.svg': ['grass'],
+  'img/grassfull.svg': ['grass1'],
+  'img/grassheavy.svg': ['grass3'],
+  // 'img/stink-bug.svg': ['stinkbug']
 };
 
 let imageCache = {};

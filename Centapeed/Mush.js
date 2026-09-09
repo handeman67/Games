@@ -1,6 +1,6 @@
 class Mush {
 
-  constructor(x, y, SIZE, type = 1) {
+  constructor(x, y, SIZE, type = 2) {
     this.pos = createVector(x, y);
     this.SIZE = SIZE;
     this.type = type; // 1, 2, or 3 for different mushroom variants

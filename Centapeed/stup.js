@@ -54,22 +54,22 @@ window.addEventListener('deviceorientation', function (e) {
 
 function preload() {
   // myfont = loadFont('img/fontawesome-webfont.woff'),
-  smile = loadImage('img/800px-Smiley_green_alien_deep_sleep.svg.png'),
-    sleep = loadImage('img/800px-Smiley_green_alien_deep_sleep.svg.png'),
-    flustered = loadImage('img/800px-Smiley_green_alien_flustered.svg.png'),
-    satisfied = loadImage('img/800px-Smiley_green_alien_satisfied.svg.png'),
-    Grr = loadImage('img/800px-Smiley_green_alien_GRRR.svg.png'),
-    blush = loadImage('img/Smiley_green_alien_blush.svg.png'),
-    big = loadImage('img/Smiley_green_alien_big_eyes.svg.png'),
-    sick = loadImage('img/Smiley_green_alien_sickoff.svg.png'),
-    mushroom = loadImage('img/mushroom.svg'),
-    mushroom1 = loadImage('img/mushroom1.svg'),
-    mushroom2 = loadImage('img/mushroom2.svg'),
+  smile = loadImage('img/catsmiles.png'),
+    sleep = loadImage('img/catsleep.png'),
+    flustered = loadImage('img/catflustered.png'),
+    satisfied = loadImage('img/catsatisfied.png'),
+    Grr = loadImage('img/catmad.png'),
+    blush = loadImage('img/catblush.png'),
+    big = loadImage('img/catstunned.png'),
+    sick = loadImage('img/catpreexploded.png'),
+    mushroom = loadImage('img/mushroomold.svg'),
+    mushroom1 = loadImage('img/mushroomyong.svg'),
+    mushroom2 = loadImage('img/mushroodusty.svg'),
     spider = loadImage('img/spider.svg'),
-    grass = loadImage('img/grass.svg'),
-    grass1 = loadImage('img/grass1.svg'),
-    grass3 = loadImage('img/grass3.svg'),
-    stinkbug = loadImage('img/stink-bug.svg')
+    grass = loadImage('img/grassempty.svg'),
+    grass1 = loadImage('img/grassfull.svg'),
+    grass3 = loadImage('img/grassheavy.svg'),
+    // stinkbug = loadImage('img/stink-bug.svg')
 
 }
 
