@@ -1,0 +1,424 @@
+{
+  "questions": [
+    {
+      "question": "Per the 2018 IRC, how must the lot be graded around a foundation to drain surface water away from foundation walls?",
+      "answers": [
+        "Fall a minimum of 2 inches within the first 10 feet",
+        "Fall a minimum of 6 inches within the first 10 feet",
+        "Fall a minimum of 12 inches within the first 10 feet",
+        "Be level for the first 10 feet, then slope at any grade",
+        "Fall a minimum of 6 inches within the first 5 feet"
+      ],
+      "correctAnswer": "Fall a minimum of 6 inches within the first 10 feet",
+      "category": "Sitework",
+      "explanation": "IRC R401.3 requires the grade to fall a minimum of 6 inches within the first 10 feet away from foundation walls. Where lot lines or physical barriers prevent that fall, drains or swales must direct water away.",
+      "reference": "2018 IRC R401.3"
+    },
+    {
+      "question": "Under OSHA 29 CFR 1926, at what trench depth is a protective system (shoring, shielding, or sloping) generally required, unless the excavation is entirely in stable rock?",
+      "answers": [
+        "3 feet or more",
+        "4 feet or more",
+        "5 feet or more",
+        "8 feet or more",
+        "10 feet or more"
+      ],
+      "correctAnswer": "5 feet or more",
+      "category": "Sitework",
+      "explanation": "OSHA 1926.652(a) requires a protective system for employees in excavations 5 feet or more in depth, unless the excavation is made entirely in stable rock. A system may also be required at lesser depths if a competent person finds a cave-in hazard.",
+      "reference": "OSHA 29 CFR 1926.652(a)"
+    },
+    {
+      "question": "A footing trench is 30 feet long, 2 feet wide, and 2 feet deep. How many cubic yards of excavation is this, before any allowance for swell or waste?",
+      "answers": [
+        "4.44 cubic yards",
+        "2.22 cubic yards",
+        "3.33 cubic yards",
+        "6.00 cubic yards",
+        "120 cubic yards"
+      ],
+      "correctAnswer": "4.44 cubic yards",
+      "category": "Sitework",
+      "explanation": "Volume = 30 x 2 x 2 = 120 cubic feet. Divide by 27 cubic feet per cubic yard: 120 / 27 = 4.44 cubic yards.",
+      "reference": "Estimating math - 1 cubic yard = 27 cubic feet"
+    },
+    {
+      "question": "What is the effect of lowering the water-cement ratio in a concrete mix, all else being equal?",
+      "answers": [
+        "It decreases strength and durability",
+        "It has no effect on strength, only on color",
+        "It increases workability and reduces strength",
+        "It increases strength and durability but reduces workability",
+        "It eliminates the need for curing"
+      ],
+      "correctAnswer": "It increases strength and durability but reduces workability",
+      "category": "Concrete",
+      "explanation": "A lower water-cement ratio produces stronger, more durable concrete, but the mix is stiffer and less workable. Adding water on site to regain workability raises the ratio and weakens the concrete.",
+      "reference": "ACI / Design and Control of Concrete Mixtures - water-cement ratio principle"
+    },
+    {
+      "question": "What is the minimum concrete cover for reinforcing steel that is cast against and permanently exposed to earth, such as in a footing?",
+      "answers": [
+        "3/4 inch",
+        "1-1/2 inches",
+        "2 inches",
+        "6 inches",
+        "3 inches"
+      ],
+      "correctAnswer": "3 inches",
+      "category": "Concrete",
+      "explanation": "Reinforcement cast against and permanently exposed to earth requires 3 inches of concrete cover to protect the steel from corrosion and moisture in the soil.",
+      "reference": "ACI 318 Table - cover for cast-in-place concrete; 2018 IRC R404 / R403 practice"
+    },
+    {
+      "question": "Why is air-entrained concrete specified for exterior flatwork in areas subject to freezing and thawing?",
+      "answers": [
+        "Microscopic air bubbles give freezing water room to expand, reducing scaling and spalling",
+        "It sets faster in cold weather",
+        "It eliminates the need for control joints",
+        "It increases the slump without adding water",
+        "It allows the concrete to be placed without forms"
+      ],
+      "correctAnswer": "Microscopic air bubbles give freezing water room to expand, reducing scaling and spalling",
+      "category": "Concrete",
+      "explanation": "Entrained air creates tiny, evenly distributed bubbles. When water in the concrete freezes and expands, the bubbles relieve internal pressure, greatly improving freeze-thaw durability.",
+      "reference": "2018 IRC R402.2 / Table R402.2 - weathering; ACI concrete durability"
+    },
+    {
+      "question": "Per the 2018 IRC, on undisturbed or compacted soil, what is the minimum depth below undisturbed ground surface for exterior footings in most cases, before local frost-line amendments?",
+      "answers": [
+        "6 inches",
+        "12 inches",
+        "18 inches",
+        "24 inches",
+        "36 inches in all cases"
+      ],
+      "correctAnswer": "12 inches",
+      "category": "Concrete",
+      "explanation": "IRC R403.1.4 requires exterior footings to be placed at least 12 inches below undisturbed ground surface, and deeper where a local frost line requires it. Much of Arizona has no or shallow frost depth, but the 12-inch minimum still applies.",
+      "reference": "2018 IRC R403.1.4"
+    },
+    {
+      "question": "Which mortar type has the highest compressive strength and is typically used below grade, in foundations, and in paving?",
+      "answers": [
+        "Type O",
+        "Type N",
+        "Type S",
+        "Type M",
+        "Type K"
+      ],
+      "correctAnswer": "Type M",
+      "category": "Masonry",
+      "explanation": "Type M mortar is the highest-strength common mortar type (about 2,500 psi minimum) and is used where high compressive strength and durability below grade are needed. Type N is the general-purpose choice for above-grade exterior walls; Type S is medium-high strength; Type O is low strength, mainly interior/non-load-bearing.",
+      "reference": "ACI 530 / ASTM C270 mortar types"
+    },
+    {
+      "question": "In masonry veneer construction, what is the maximum on-center spacing for weep holes in the head joints of the outer wythe?",
+      "answers": [
+        "16 inches on center",
+        "24 inches on center",
+        "33 inches on center",
+        "48 inches on center",
+        "Weep holes are not permitted in veneer"
+      ],
+      "correctAnswer": "33 inches on center",
+      "category": "Masonry",
+      "explanation": "Weep holes must be at least 3/16 inch in diameter and spaced not more than 33 inches on center, located immediately above the flashing so cavity water can drain out.",
+      "reference": "2018 IRC R703.8.6 (masonry veneer weep holes)"
+    },
+    {
+      "question": "What is the primary purpose of grout and vertical reinforcing steel in a reinforced concrete masonry unit (CMU) wall?",
+      "answers": [
+        "To make the wall waterproof",
+        "To fill cells only for sound insulation",
+        "To replace the need for mortar between courses",
+        "To allow the wall to be built without footings",
+        "To bond the units and steel together so the wall resists lateral and vertical loads as a single structural element"
+      ],
+      "correctAnswer": "To bond the units and steel together so the wall resists lateral and vertical loads as a single structural element",
+      "category": "Masonry",
+      "explanation": "Grout fills the CMU cells and bonds the reinforcing steel to the masonry, so the composite wall can resist wind, seismic, and gravity loads. Mortar still bonds the units course to course; grout is a separate, more fluid material poured into cells.",
+      "reference": "ACI 530 / TMS 402 - reinforced masonry"
+    },
+    {
+      "question": "What is a key advantage of cold-formed steel (metal) studs over wood studs?",
+      "answers": [
+        "They are noncombustible and immune to termites and rot",
+        "They provide better thermal insulation than wood",
+        "They are always cheaper than wood",
+        "They can be cut with no eye protection",
+        "They do not need to be aligned plumb"
+      ],
+      "correctAnswer": "They are noncombustible and immune to termites and rot",
+      "category": "Metals",
+      "explanation": "Steel studs do not burn, rot, or attract termites, and they stay straight. Their disadvantages include lower thermal performance (thermal bridging) and the need for proper bracing and screw fastening.",
+      "reference": "2018 IBC / IRC cold-formed steel framing provisions"
+    },
+    {
+      "question": "Per the 2018 IRC, what is the maximum spacing for anchor bolts securing a wood sill plate to a concrete or masonry foundation, and how close to the end of each plate section must a bolt be?",
+      "answers": [
+        "8 feet on center; within 24 inches of the end",
+        "6 feet on center; not less than 4 inches nor more than 12 inches from the end",
+        "4 feet on center; exactly at the end of the plate",
+        "10 feet on center; no end bolt required",
+        "32 inches on center; within 6 inches of the end"
+      ],
+      "correctAnswer": "6 feet on center; not less than 4 inches nor more than 12 inches from the end",
+      "category": "Metals",
+      "explanation": "IRC R403.1.6: sill plates are anchored with at least 1/2-inch bolts embedded at least 7 inches, spaced not more than 6 feet on center, with at least two bolts per plate section and one bolt located not more than 12 inches nor less than 4 inches from each end.",
+      "reference": "2018 IRC R403.1.6"
+    },
+    {
+      "question": "What is the purpose of bridging or blocking between floor joists or open-web steel joists at regular intervals?",
+      "answers": [
+        "To provide a nailing surface for the ceiling below",
+        "To replace the need for a rim joist",
+        "To increase the allowable span beyond the code tables",
+        "To distribute loads, keep joists aligned, and prevent twisting or lateral movement",
+        "It is decorative only"
+      ],
+      "correctAnswer": "To distribute loads, keep joists aligned, and prevent twisting or lateral movement",
+      "category": "Metals",
+      "explanation": "Bridging transfers load between adjacent joists, holds them plumb and in line, and restrains the joist from rolling or twisting under load.",
+      "reference": "Carpentry and framing practice; 2018 IRC R502 / IBC joist provisions"
+    },
+    {
+      "question": "When attaching drywall and track in light-gauge metal framing, which statement is correct?",
+      "answers": [
+        "Nails are the standard fastener for metal studs",
+        "Studs may be left loose in the track with no fastening on load-bearing walls",
+        "Alignment (plumb, level, and in line) is critical, and connections are made with screws or other approved fasteners per the design",
+        "Metal framing never requires bracing because the track holds it",
+        "Any screw length is acceptable regardless of steel thickness"
+      ],
+      "correctAnswer": "Alignment (plumb, level, and in line) is critical, and connections are made with screws or other approved fasteners per the design",
+      "category": "Metals",
+      "explanation": "Metal framing depends on precise alignment and positive screw connections. Load-bearing cold-formed steel walls also require bracing/sheathing designed for lateral loads; loose studs and nails are not an approved connection.",
+      "reference": "2018 IRC R603 / IBC Chapter 22 - cold-formed steel"
+    },
+    {
+      "question": "Per the 2018 IRC, how deep may a notch be cut in the top or bottom of a floor joist, and where are notches restricted?",
+      "answers": [
+        "Up to 1/4 the depth, and not in the middle third of the span",
+        "Up to 1/2 the depth, anywhere along the span",
+        "Up to 1/3 the depth, only in the middle third of the span",
+        "Notches are never permitted in any joist",
+        "Up to 1/6 the depth, only at the bearing point"
+      ],
+      "correctAnswer": "Up to 1/4 the depth, and not in the middle third of the span",
+      "category": "Carpentry",
+      "explanation": "IRC R502.8.1: notches in solid lumber joists may not exceed 1/4 of the member depth, may not be longer than 1/3 the depth, and the tension side of a member 4 inches or greater may not be notched except at the ends. Notches are also kept out of the middle third in standard practice/test references.",
+      "reference": "2018 IRC R502.8.1"
+    },
+    {
+      "question": "Per the 2018 IRC for a residential stairway, what are the maximum riser height and minimum tread depth?",
+      "answers": [
+        "Maximum riser 8-1/4 inches; minimum tread 9 inches",
+        "Maximum riser 7 inches; minimum tread 11 inches",
+        "Maximum riser 9 inches; minimum tread 8 inches",
+        "No riser or tread limits apply to residential stairs",
+        "Maximum riser 7-3/4 inches; minimum tread 10 inches"
+      ],
+      "correctAnswer": "Maximum riser 7-3/4 inches; minimum tread 10 inches",
+      "category": "Carpentry",
+      "explanation": "IRC R311.7.5.1 limits riser height to 7-3/4 inches maximum, and R311.7.5.2 requires tread depth of 10 inches minimum, measured horizontally between the vertical planes of the foremost projections of adjacent treads.",
+      "reference": "2018 IRC R311.7.5.1 and R311.7.5.2"
+    },
+    {
+      "question": "Where is fireblocking required in concealed wood-frame construction?",
+      "answers": [
+        "Only in garages",
+        "Only around the chimney",
+        "In concealed spaces of stud walls and partitions, including furred spaces, at ceiling and floor levels and at intervals not exceeding 10 feet horizontally",
+        "Every 24 feet horizontally, with no vertical requirement",
+        "Fireblocking is not required in one- and two-family dwellings"
+      ],
+      "correctAnswer": "In concealed spaces of stud walls and partitions, including furred spaces, at ceiling and floor levels and at intervals not exceeding 10 feet horizontally",
+      "category": "Carpentry",
+      "explanation": "IRC R302.11 requires fireblocking in concealed wall spaces at floor and ceiling levels and horizontally at intervals not exceeding 10 feet, plus around openings and other listed locations, to cut off concealed draft openings.",
+      "reference": "2018 IRC R302.11"
+    },
+    {
+      "question": "In conventional rafter roof framing, what is the function of ceiling joists or rafter ties?",
+      "answers": [
+        "To carry the roofing material",
+        "To resist the outward thrust of the rafters and prevent walls from spreading",
+        "To provide attic ventilation",
+        "To support the ridge board as a structural beam",
+        "They are non-structural and may be omitted if collar ties are used alone"
+      ],
+      "correctAnswer": "To resist the outward thrust of the rafters and prevent walls from spreading",
+      "category": "Carpentry",
+      "explanation": "Rafters push outward at the wall top plate. Ceiling joists/rafter ties tie opposing rafters together and resist that thrust. A conventional ridge board is non-structural; collar ties in the upper third serve a different purpose (uplift/rafter connection) and do not replace rafter ties.",
+      "reference": "2018 IRC R802 - roof-ceiling construction"
+    },
+    {
+      "question": "Per the 2018 IRC, what is the standard minimum net free ventilation area for an attic, expressed as a ratio to the area of the space ventilated?",
+      "answers": [
+        "1/50",
+        "1/100",
+        "1/300 in all cases with no conditions",
+        "1/150",
+        "No ventilation is required if insulation is installed"
+      ],
+      "correctAnswer": "1/150",
+      "category": "Thermal and Moisture Protection",
+      "explanation": "IRC R806.2 requires a minimum net free ventilating area of 1/150 of the area of the vented space. It may be reduced to 1/300 only when the code's conditions are met (e.g., vapor retarder in warm climates / balanced soffit and ridge ventilation as specified).",
+      "reference": "2018 IRC R806.2"
+    },
+    {
+      "question": "What is the primary purpose of flashing at roof valleys, wall intersections, and around openings?",
+      "answers": [
+        "To direct water out and away from joints and prevent moisture intrusion into the building envelope",
+        "To add decorative trim",
+        "To increase the fire rating of the roof",
+        "To replace the need for underlayment",
+        "To support the shingles at edges"
+      ],
+      "correctAnswer": "To direct water out and away from joints and prevent moisture intrusion into the building envelope",
+      "category": "Thermal and Moisture Protection",
+      "explanation": "Flashing is a water-management detail: it intercepts water at vulnerable joints and directs it to the exterior. It works with, and does not replace, underlayment and the water-resistive barrier.",
+      "reference": "2018 IRC R703.4 (flashing) and R905 (roof flashing)"
+    },
+    {
+      "question": "Behind exterior plaster (stucco) over wood framing, what does the code require to protect the framing from moisture?",
+      "answers": [
+        "Nothing - stucco is waterproof by itself",
+        "Paint applied directly to the sheathing",
+        "Plastic sheeting on the interior side only",
+        "A vapor-impermeable coating on the exterior of the stucco",
+        "A water-resistive barrier (with the required layers/integration with flashing for stucco systems)"
+      ],
+      "correctAnswer": "A water-resistive barrier (with the required layers/integration with flashing for stucco systems)",
+      "category": "Thermal and Moisture Protection",
+      "explanation": "Stucco is not waterproof - it cracks and absorbs water. IRC R703.2 requires a water-resistive barrier behind exterior wall coverings, and R703.7.3 / stucco provisions require proper layering and flashing integration (commonly two layers over wood-based sheathing) plus weep screed so water that gets in can drain out.",
+      "reference": "2018 IRC R703.2 and R703.7"
+    },
+    {
+      "question": "Per the 2018 IRC, what are the key requirements for an emergency escape and rescue opening (egress window) in a sleeping room?",
+      "answers": [
+        "Minimum net clear opening 4.0 sq ft; sill not more than 48 inches above the floor",
+        "Minimum net clear opening 6.5 sq ft; sill not more than 36 inches above the floor",
+        "Minimum net clear opening 5.7 sq ft (5.0 sq ft at grade floor openings); minimum height 24 inches; minimum width 20 inches; sill not more than 44 inches above the floor",
+        "Any operable window qualifies regardless of size",
+        "Minimum width 30 inches; no minimum height or area"
+      ],
+      "correctAnswer": "Minimum net clear opening 5.7 sq ft (5.0 sq ft at grade floor openings); minimum height 24 inches; minimum width 20 inches; sill not more than 44 inches above the floor",
+      "category": "Doors and Windows",
+      "explanation": "IRC R310.2.1: minimum net clear opening 5.7 sq ft (5.0 sq ft for grade floor or below-grade openings), minimum net clear height 24 inches, minimum net clear width 20 inches, and maximum sill height 44 inches above the floor. Note the 20 x 24 minimums alone do not meet the area - the opening must satisfy all requirements together.",
+      "reference": "2018 IRC R310.2.1"
+    },
+    {
+      "question": "Which location is a hazardous location where safety (tempered or laminated) glazing is required?",
+      "answers": [
+        "Any small picture window high on a wall",
+        "Glazing in a door, and glazing within 24 inches of a door where the bottom edge is less than 60 inches above the floor (subject to code exceptions)",
+        "Only glazing in shower enclosures",
+        "Only storefront glazing in commercial buildings",
+        "Safety glazing is never required in dwellings"
+      ],
+      "correctAnswer": "Glazing in a door, and glazing within 24 inches of a door where the bottom edge is less than 60 inches above the floor (subject to code exceptions)",
+      "category": "Doors and Windows",
+      "explanation": "IRC R308.4 lists hazardous locations including glazing in doors, glazing adjacent to doors, glazing in guards, and glazing in wet locations such as tub/shower enclosures. Those panes must be safety glazing so they break safely on impact.",
+      "reference": "2018 IRC R308.4"
+    },
+    {
+      "question": "Per the 2018 IRC, what is the minimum fire separation on the garage side of a wall between a dwelling and an attached private garage?",
+      "answers": [
+        "No separation is required",
+        "5/8-inch Type X gypsum on both sides in all cases",
+        "Two layers of 1/2-inch gypsum on the dwelling side only",
+        "1/2-inch gypsum board or equivalent applied to the garage side",
+        "Masonry construction only - gypsum is not permitted"
+      ],
+      "correctAnswer": "1/2-inch gypsum board or equivalent applied to the garage side",
+      "category": "Finishes",
+      "explanation": "IRC Table R302.6 requires not less than 1/2-inch gypsum board or equivalent on the garage side of the dwelling/garage separation. The ceiling requirement is stricter (5/8-inch Type X) where there is habitable space above the garage.",
+      "reference": "2018 IRC R302.6 / Table R302.6"
+    },
+    {
+      "question": "In a wet area such as a tub or shower surround, which backing material practice is correct?",
+      "answers": [
+        "Regular gypsum board may be used as a tile backer in the shower",
+        "No backing is needed - tile adheres directly to studs",
+        "Plywood is the required tile backer in all showers",
+        "Green board eliminates the need for any waterproofing in all cases",
+        "Cement board or other approved tile backing must be used as the substrate in wet areas; regular gypsum is not an approved tile backer there"
+      ],
+      "correctAnswer": "Cement board or other approved tile backing must be used as the substrate in wet areas; regular gypsum is not an approved tile backer there",
+      "category": "Finishes",
+      "explanation": "Gypsum (including water-resistant gypsum in wet tile applications) deteriorates when used as a tile substrate in tub/shower areas. Cementitious backer units or other approved materials per IRC R702.4 / manufacturer instructions are required there.",
+      "reference": "2018 IRC R702.4 - tile backing materials"
+    },
+    {
+      "question": "Under OSHA construction standards, at what height must employees generally be protected by a fall protection system (guardrails, safety net, or personal fall arrest)?",
+      "answers": [
+        "4 feet",
+        "6 feet",
+        "10 feet",
+        "15 feet",
+        "25 feet"
+      ],
+      "correctAnswer": "6 feet",
+      "category": "Safety",
+      "explanation": "OSHA 1926.501(b)(1) requires fall protection for employees on a walking/working surface with an unprotected side or edge 6 feet or more above a lower level. (General industry uses 4 feet - do not confuse the two on the trade test.)",
+      "reference": "OSHA 29 CFR 1926.501(b)(1)"
+    },
+    {
+      "question": "For a portable extension ladder used to access an upper landing, how far must the side rails extend above the landing, and what is the proper setup angle ratio?",
+      "answers": [
+        "Extend 1 foot; angle ratio 3 to 1",
+        "Extend 5 feet; angle ratio 6 to 1",
+        "No extension is required if the ladder is tied off at the bottom only",
+        "Extend 3 feet; placed so the base is out 1 foot for every 4 feet of working length (4 to 1)",
+        "Extend 3 feet; base out 1 foot for every 2 feet of length"
+      ],
+      "correctAnswer": "Extend 3 feet; placed so the base is out 1 foot for every 4 feet of working length (4 to 1)",
+      "category": "Safety",
+      "explanation": "OSHA 1926.1053 requires side rails to extend at least 3 feet above the upper landing surface (or grab rails provided), and non-self-supporting ladders are set at about a 4:1 angle - base out one-quarter of the working length.",
+      "reference": "OSHA 29 CFR 1926.1053(a)(1) and (b)(5)"
+    },
+    {
+      "question": "Under OSHA excavation rules, how far must excavated spoil and materials be kept back from the edge of an excavation, and what is required for worker entry/exit in trenches 4 feet or deeper?",
+      "answers": [
+        "Spoil may be at the edge; no exit requirement",
+        "At least 6 feet from the edge; exit within 50 feet",
+        "At least 2 feet from the edge; a ladder, ramp, or other safe exit within 25 feet of lateral travel",
+        "At least 1 foot from the edge; exit anywhere in the trench",
+        "Spoil distance is up to the foreman; exits only for trenches over 10 feet"
+      ],
+      "correctAnswer": "At least 2 feet from the edge; a ladder, ramp, or other safe exit within 25 feet of lateral travel",
+      "category": "Safety",
+      "explanation": "OSHA 1926.651(j)(2) requires spoil/materials at least 2 feet from the excavation edge (or retained). 1926.651(c)(2) requires a stairway, ladder, ramp, or other safe means of egress in trench excavations 4 feet or more deep, located so workers travel no more than 25 feet laterally.",
+      "reference": "OSHA 29 CFR 1926.651(c)(2) and (j)(2)"
+    },
+    {
+      "question": "Per the 2018 IRC, what is the minimum ceiling height for habitable rooms in a dwelling (with limited exceptions for kitchens, bathrooms, and sloped ceilings)?",
+      "answers": [
+        "7 feet",
+        "6 feet 8 inches",
+        "7 feet 6 inches",
+        "8 feet",
+        "9 feet"
+      ],
+      "correctAnswer": "7 feet",
+      "category": "General Building Code",
+      "explanation": "IRC R305.1 requires habitable rooms to have a ceiling height of not less than 7 feet, with specific exceptions (bathrooms/toilet rooms/laundry may be 6 feet 8 inches, and portions under beams/sloped ceilings follow the code's rules).",
+      "reference": "2018 IRC R305.1"
+    },
+    {
+      "question": "Per the 2018 IRC, where a porch, deck, or raised floor is more than 30 inches above the floor or grade below, what is the minimum height of the required guard, and what opening limit applies?",
+      "answers": [
+        "Guard 30 inches high; openings may pass a 6-inch sphere",
+        "Guard 42 inches high in all dwellings; openings may not pass a 2-inch sphere",
+        "Guard 24 inches high; no opening limit",
+        "Guards are not required on residential decks",
+        "Guard 36 inches high; openings may not pass a 4-inch sphere (with code exceptions for stairs and required structural members)"
+      ],
+      "correctAnswer": "Guard 36 inches high; openings may not pass a 4-inch sphere (with code exceptions for stairs and required structural members)",
+      "category": "General Building Code",
+      "explanation": "IRC R312.1.1 requires guards where the surface is more than 30 inches above the floor/grade below. R312.1.2 sets the residential guard height at not less than 36 inches, and R312.1.3 generally limits openings so a 4-inch-diameter sphere cannot pass through, with stated exceptions.",
+      "reference": "2018 IRC R312.1.1, R312.1.2, and R312.1.3"
+    }
+  ]
+}
