@@ -4,285 +4,62 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Carpentry Quiz</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
-  <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/@emotion/react@11.11.4/dist/emotion-react.umd.min.js"></script>
-  <script crossorigin src="https://unpkg.com/@emotion/styled@11.11.0/dist/emotion-styled.umd.min.js"></script>
-  <script crossorigin src="https://unpkg.com/@mui/material@5.15.20/umd/material-ui.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
-  <style>
-    body { margin: 0; background: #f5f5f5; }
-    #root:empty::after {
-      content: "Loading quiz…";
-      display: block; text-align: center; padding: 3em;
-      font-family: Roboto, sans-serif; color: #666;
-    }
-  </style>
+  <link rel="stylesheet" href="mui-lite.css" />
 </head>
 <body>
-  <div id="root"></div>
+  <header class="appbar">
+    <div class="appbar-inner">
+      <span aria-hidden="true" style="font-size: 22px;">&#10003;</span>
+      <h1>Carpentry Quiz</h1>
+      <span class="score-chip" id="scoreChip">Score: 0</span>
+    </div>
+  </header>
 
-  <script type="text/babel" data-presets="react">
-    const { useState, useEffect } = React;
-    const {
-      AppBar, Toolbar, Typography, Container, Card, CardContent, Button,
-      Select, MenuItem, FormControl, InputLabel, RadioGroup, FormControlLabel,
-      Radio, LinearProgress, Chip, Stack, Box, Alert, CircularProgress,
-      CssBaseline, ThemeProvider, createTheme, Paper,
-    } = MaterialUI;
+  <main class="container">
+    <section class="card">
+      <div class="picker">
+        <div class="select-wrap">
+          <label for="testSelect">Choose a test</label>
+          <select id="testSelect"></select>
+        </div>
+        <button class="btn btn-outlined" id="nextTestBtn" type="button">Next test</button>
+      </div>
+      <p class="muted" id="testInfo"></p>
+    </section>
 
-    // Same 10 tests as before: the 9 that were in the app, plus the KB-2.
-    const QUIZ_SETS = [
-      { path: "J_son/c0.json", label: "Carpentry / IBC" },
-      { path: "J_son/c1.json", label: "Carpentry (30 questions)" },
-      { path: "J_son/c2.json", label: "Carpentry basics" },
-      { path: "J_son/c3.json", label: "IBC" },
-      { path: "J_son/s0.json", label: "Stairs" },
-      { path: "J_son/s1.json", label: "Stairs 2" },
-      { path: "J_son/s2.json", label: "Stairs 3" },
-      { path: "J_son/s3.json", label: "Stairs / IBC" },
-      { path: "J_son/s4.json", label: "Stairs / Arizona" },
-      { path: "J_son/kb2.json", label: "Arizona KB-2 (30 questions)" },
-    ];
-    const LETTERS = ["A", "B", "C", "D", "E"];
+    <p id="loading">Loading quiz…</p>
+    <div class="alert error" id="errorBox" hidden></div>
 
-    // Accepts both JSON shapes:
-    //   old: { question, answers: [...5], correctAnswer: "text" }  (c1 uses a number)
-    //   KB-2: { question, choices: [...5], answerIndex: 1 }
-    function normalizeQuestion(raw) {
-      const answers = (raw.answers || raw.choices || []).slice(0, 5);
-      let correct = raw.correctAnswer;
-      if (typeof correct === "number") correct = answers[correct];
-      if (typeof raw.answerIndex === "number") correct = answers[raw.answerIndex];
-      if (typeof correct === "string" && !answers.includes(correct)) {
-        const found = correct.split(/\s+or\s+/).find((p) => answers.includes(p));
-        if (found) correct = found;
-      }
-      return {
-        question: raw.question,
-        answers,
-        correctAnswer: correct,
-        category: raw.category || "",
-        explanation: raw.explanation || "",
-        reference: raw.reference || "",
-      };
-    }
+    <div id="quizArea">
+      <div class="progress-row">
+        <span id="progressText"></span>
+        <span id="progressScore"></span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
 
-    const theme = createTheme({
-      palette: {
-        primary: { main: "#1565c0" },
-        secondary: { main: "#00796b" },
-        background: { default: "#f5f5f5" },
-      },
-      typography: { fontFamily: "Roboto, Arial, sans-serif" },
-    });
+      <nav class="nav" id="navButtons" aria-label="Questions"></nav>
 
-    function QuizApp() {
-      const [testPath, setTestPath] = useState(QUIZ_SETS[0].path);
-      const [testLabel, setTestLabel] = useState(QUIZ_SETS[0].label);
-      const [questions, setQuestions] = useState([]);
-      const [current, setCurrent] = useState(0);
-      const [picked, setPicked] = useState({}); // question index -> answer index
-      const [score, setScore] = useState(0);
-      const [loading, setLoading] = useState(true);
-      const [error, setError] = useState("");
+      <section class="card">
+        <span class="chip" id="questionChip"></span>
+        <span class="chip outlined" id="categoryChip" hidden></span>
+        <h2 id="questionText"></h2>
+        <ul class="answers" id="answersList"></ul>
+        <div class="alert" id="feedback" hidden></div>
+      </section>
 
-      useEffect(() => {
-        let cancelled = false;
-        setLoading(true);
-        setError("");
-        fetch(testPath)
-          .then((res) => {
-            if (!res.ok) throw new Error("Could not load " + testPath + " (" + res.status + ")");
-            return res.json();
-          })
-          .then((data) => {
-            if (cancelled) return;
-            setQuestions((data.questions || []).map(normalizeQuestion));
-            setCurrent(0);
-            setPicked({});
-            setScore(0);
-            setLoading(false);
-          })
-          .catch((err) => {
-            if (cancelled) return;
-            setError(err.message);
-            setLoading(false);
-          });
-        return () => { cancelled = true; };
-      }, [testPath]);
+      <div class="qnav">
+        <button class="btn btn-outlined" id="prevBtn" type="button">Previous</button>
+        <button class="btn btn-contained" id="nextQBtn" type="button">Next question</button>
+      </div>
 
-      const test = QUIZ_SETS.find((s) => s.path === testPath) || QUIZ_SETS[0];
-      const q = questions[current];
-      const answeredCount = Object.keys(picked).length;
-      const correctCount = questions.filter((qq, i) => picked[i] !== undefined && qq.answers[picked[i]] === qq.correctAnswer).length;
-      const allAnswered = questions.length > 0 && answeredCount === questions.length;
+      <section class="card complete" id="completeCard" hidden>
+        <h2>Test complete</h2>
+        <p id="completeText"></p>
+        <button class="btn btn-contained" id="tryNextBtn" type="button">Try the next test</button>
+      </section>
+    </div>
+  </main>
 
-      function chooseTest(path) {
-        const chosen = QUIZ_SETS.find((s) => s.path === path);
-        if (chosen) { setTestPath(chosen.path); setTestLabel(chosen.label); }
-      }
-      function nextTest() {
-        const i = QUIZ_SETS.findIndex((s) => s.path === testPath);
-        chooseTest(QUIZ_SETS[(i + 1) % QUIZ_SETS.length].path);
-      }
-      function answer(i) {
-        if (!q || picked[current] !== undefined) return; // one score per question
-        const isRight = q.answers[i] === q.correctAnswer;
-        setPicked((prev) => ({ ...prev, [current]: i }));
-        setScore((s) => s + (isRight ? 5 : -1));
-      }
-
-      return (
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <AppBar position="static">
-            <Toolbar>
-              <span className="material-icons" style={{ marginRight: 8 }}>quiz</span>
-              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                Carpentry Quiz
-              </Typography>
-              <Chip label={"Score: " + score} color="secondary" sx={{ color: "#fff", fontWeight: 700 }} />
-            </Toolbar>
-          </AppBar>
-
-          <Container maxWidth="md" sx={{ py: 3 }}>
-            {/* Test picker */}
-            <Card sx={{ mb: 2 }}>
-              <CardContent>
-                <Stack direction={{ xs: "column", sm: "row" }} spacing={2} alignItems={{ sm: "center" }}>
-                  <FormControl fullWidth>
-                    <InputLabel id="test-label">Choose a test</InputLabel>
-                    <Select labelId="test-label" label="Choose a test" value={testPath}
-                      onChange={(e) => chooseTest(e.target.value)}>
-                      {QUIZ_SETS.map((s) => (
-                        <MenuItem key={s.path} value={s.path}>{s.label}</MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                  <Button variant="outlined" onClick={nextTest} sx={{ whiteSpace: "nowrap" }}>
-                    Next test
-                  </Button>
-                </Stack>
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                  {testLabel} — {questions.length ? questions.length + " questions" : "…"} · +5 for a right answer, −1 for a wrong one
-                </Typography>
-              </CardContent>
-            </Card>
-
-            {loading && (
-              <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
-                <CircularProgress />
-              </Box>
-            )}
-            {error && <Alert severity="error">{error}</Alert>}
-
-            {!loading && !error && q && (
-              <React.Fragment>
-                {/* Progress */}
-                <Box sx={{ mb: 2 }}>
-                  <Stack direction="row" justifyContent="space-between" sx={{ mb: 0.5 }}>
-                    <Typography variant="body2">
-                      Answered {answeredCount} of {questions.length}
-                    </Typography>
-                    <Typography variant="body2">
-                      Correct {correctCount} · Score {score}
-                    </Typography>
-                  </Stack>
-                  <LinearProgress variant="determinate"
-                    value={questions.length ? (answeredCount / questions.length) * 100 : 0} />
-                </Box>
-
-                {/* Question navigator */}
-                <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mb: 2 }}>
-                  {questions.map((qq, i) => {
-                    const p = picked[i];
-                    const color = p === undefined ? "primary" : (qq.answers[p] === qq.correctAnswer ? "success" : "error");
-                    return (
-                      <Button key={i} size="small" variant={i === current ? "contained" : "outlined"}
-                        color={color} onClick={() => setCurrent(i)} sx={{ minWidth: 40 }}>
-                        {i + 1}
-                      </Button>
-                    );
-                  })}
-                </Stack>
-
-                {/* Current question */}
-                <Card>
-                  <CardContent>
-                    <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
-                      <Chip label={"Question " + (current + 1) + " of " + questions.length} color="primary" size="small" />
-                      {q.category && <Chip label={q.category} variant="outlined" size="small" />}
-                    </Stack>
-                    <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
-                      {q.question}
-                    </Typography>
-                    <RadioGroup value={picked[current] === undefined ? "" : String(picked[current])}
-                      onChange={(e) => answer(Number(e.target.value))}>
-                      {q.answers.map((a, i) => {
-                        const isPicked = picked[current] === i;
-                        const isCorrect = a === q.correctAnswer;
-                        const answered = picked[current] !== undefined;
-                        let bg = "#fff";
-                        if (answered && isCorrect) bg = "#e8f5e9";
-                        if (answered && isPicked && !isCorrect) bg = "#ffebee";
-                        return (
-                          <Paper key={i} elevation={isPicked ? 3 : 1}
-                            sx={{ mb: 1, px: 1, backgroundColor: bg, border: isPicked ? "2px solid #1565c0" : "1px solid #e0e0e0" }}>
-                            <FormControlLabel value={String(i)} control={<Radio disabled={answered} />}
-                              label={LETTERS[i] + ". " + a} sx={{ width: "100%", py: 0.5 }} />
-                          </Paper>
-                        );
-                      })}
-                    </RadioGroup>
-
-                    {picked[current] !== undefined && (
-                      <Alert severity={q.answers[picked[current]] === q.correctAnswer ? "success" : "error"} sx={{ mt: 1 }}>
-                        {q.answers[picked[current]] === q.correctAnswer
-                          ? "Correct! +5 points."
-                          : "Not quite — the correct answer is " + q.correctAnswer + ". −1 point."}
-                        {q.explanation && (
-                          <span><br />{q.explanation}</span>
-                        )}
-                        {q.reference && (
-                          <span><br /><i>{q.reference}</i></span>
-                        )}
-                      </Alert>
-                    )}
-                  </CardContent>
-                </Card>
-
-                {/* Question navigation */}
-                <Stack direction="row" justifyContent="space-between" sx={{ mt: 2 }}>
-                  <Button variant="outlined" disabled={current === 0}
-                    onClick={() => setCurrent(current - 1)}>Previous</Button>
-                  <Button variant="contained" disabled={current === questions.length - 1}
-                    onClick={() => setCurrent(current + 1)}>Next question</Button>
-                </Stack>
-
-                {allAnswered && (
-                  <Card sx={{ mt: 2, backgroundColor: "#e3f2fd" }}>
-                    <CardContent>
-                      <Typography variant="h6">Test complete</Typography>
-                      <Typography>
-                        You got {correctCount} of {questions.length} right. Final score: {score}.
-                      </Typography>
-                      <Button variant="contained" sx={{ mt: 1 }} onClick={nextTest}>
-                        Try the next test
-                      </Button>
-                    </CardContent>
-                  </Card>
-                )}
-              </React.Fragment>
-            )}
-          </Container>
-        </ThemeProvider>
-      );
-    }
-
-    ReactDOM.createRoot(document.getElementById("root")).render(<QuizApp />);
-  </script>
+  <script src="app.js"></script>
 </body>
 </html>

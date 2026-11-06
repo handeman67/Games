@@ -1,0 +1,184 @@
+/* conQuiz — lightweight, zero libraries, no external requests.
+   Colors are the White Mountain Handyman admin theme:
+   navy #063b70 / deep navy #032c55 / blue #0a5b9d /
+   gold #f4c21b / green #2f9e44 / pale blue-gray #eaf1f7.
+   Background is a light wood grain drawn in pure CSS (no image). */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  /* Light wood: pale honey base, faint grain lines, plank seams. */
+  background-color: #ecd9b4;
+  background-image:
+    repeating-linear-gradient(93deg, rgba(146, 104, 58, 0.08) 0 2px, transparent 2px 24px, rgba(146, 104, 58, 0.05) 24px 26px, transparent 26px 58px, rgba(120, 82, 40, 0.06) 58px 60px, transparent 60px 96px),
+    repeating-linear-gradient(87deg, rgba(255, 255, 255, 0.25) 0 3px, transparent 3px 40px),
+    repeating-linear-gradient(0deg, transparent 0 118px, rgba(101, 67, 33, 0.20) 118px 120px),
+    linear-gradient(180deg, #f2e4c2, #e3cda2);
+  background-attachment: fixed;
+  color: #1d2b38;
+  font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* Top bar — admin header: deep navy with a gold rule underneath */
+.appbar {
+  background: #032c55;
+  border-bottom: 4px solid #f4c21b;
+  color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+.appbar-inner {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.appbar h1 { margin: 0; font-size: 20px; font-weight: 500; flex: 1; }
+.score-chip {
+  background: #f4c21b;
+  color: #032c55;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+/* Page */
+.container { max-width: 880px; margin: 0 auto; padding: 24px 16px 48px; }
+.card {
+  background: #fff;
+  border: 1px solid #b9ccdc;
+  border-radius: 4px;
+  box-shadow: 0 3px 14px rgba(9, 45, 80, 0.09);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.card h2 { margin: 0 0 12px; font-size: 20px; font-weight: 500; color: #032c55; }
+.muted { color: #667483; font-size: 14px; margin: 8px 0 0; }
+
+/* Test picker */
+.picker { display: flex; gap: 12px; align-items: flex-end; }
+.picker label { display: block; font-size: 12px; color: #667483; margin-bottom: 4px; }
+.select-wrap { flex: 1; }
+select {
+  width: 100%;
+  padding: 12px;
+  font: inherit;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+  border-radius: 4px;
+  background: #fff;
+  color: inherit;
+}
+select:focus { outline: 2px solid #063b70; outline-offset: 0; border-color: #063b70; }
+
+/* Buttons: navy contained, navy outlined */
+.btn {
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn-contained {
+  background: #063b70;
+  color: #fff;
+  border: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+.btn-contained:hover { background: #032c55; }
+.btn-contained:disabled { background: rgba(0, 0, 0, 0.12); color: rgba(0, 0, 0, 0.38); box-shadow: none; cursor: default; }
+.btn-outlined {
+  background: transparent;
+  color: #063b70;
+  border: 1px solid rgba(6, 59, 112, 0.5);
+}
+.btn-outlined:hover { background: rgba(6, 59, 112, 0.08); border-color: #063b70; }
+
+/* Progress */
+.progress-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 4px; }
+.progress-track { height: 4px; background: #d6e2ec; border-radius: 2px; overflow: hidden; margin-bottom: 16px; }
+.progress-fill { height: 100%; background: #063b70; width: 0; transition: width 0.3s ease; }
+
+/* Question navigator */
+.nav { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.nav button {
+  min-width: 40px;
+  height: 36px;
+  padding: 0 8px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 4px;
+  cursor: pointer;
+  background: #fff;
+  color: #063b70;
+  border: 1px solid rgba(6, 59, 112, 0.5);
+}
+.nav button:hover { background: rgba(6, 59, 112, 0.08); }
+.nav button.current { background: #063b70; color: #fff; border-color: #063b70; }
+.nav button.right { background: #2f9e44; border-color: #2f9e44; color: #fff; }
+.nav button.right.current { background: #237a34; }
+.nav button.wrong { background: #dc3e4b; border-color: #dc3e4b; color: #fff; }
+.nav button.wrong.current { background: #b12b38; }
+
+/* Chips */
+.chip {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 16px;
+  background: #063b70;
+  color: #fff;
+  margin: 0 8px 8px 0;
+}
+.chip.outlined { background: transparent; color: #667483; border: 1px solid rgba(0, 0, 0, 0.3); }
+
+/* Answers */
+.answers { list-style: none; margin: 0; padding: 0; }
+.answers li { margin-bottom: 8px; }
+.answers label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+}
+.answers label:hover { box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); }
+.answers label.picked { border: 2px solid #063b70; padding: 9px 11px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25); }
+.answers label.correct { background: #e6f4ea; }
+.answers label.wrong { background: #fdecea; }
+.answers label.answered { cursor: default; }
+.answers input[type="radio"] { accent-color: #063b70; width: 18px; height: 18px; flex-shrink: 0; }
+
+/* Feedback */
+.alert { border-radius: 4px; padding: 12px 16px; margin-top: 12px; font-size: 15px; }
+.alert.success { background: #e6f4ea; color: #1b5e20; }
+.alert.error { background: #fdecea; color: #5f2120; }
+
+/* Question footer + complete card */
+.qnav { display: flex; justify-content: space-between; margin-top: 16px; }
+.complete { background: #eaf1f7; border-top: 3px solid #f4c21b; }
+.complete .btn { margin-top: 8px; }
+
+/* Small screens */
+@media (max-width: 600px) {
+  .container { padding: 16px 12px 32px; }
+  .picker { flex-direction: column; align-items: stretch; }
+  .picker .btn { width: 100%; }
+  .appbar h1 { font-size: 18px; }
+  .card h2 { font-size: 18px; }
+  .qnav .btn { flex: 1; }
+  .qnav { gap: 8px; }
+}
