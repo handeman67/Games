@@ -46,6 +46,71 @@ let current = 0;
 let picked = {}; // question index -> answer index
 let score = 0;
 
+// --- Memory: your spot is saved in this browser (localStorage), per test,
+// so closing the page and coming back picks up where you left off. Scores
+// to beat are saved the same way, also per test, on this device only.
+const PROGRESS_KEY = "conquiz-progress-v1";
+const BEST_KEY = "conquiz-best-v1";
+function readStore(key) {
+  try { return JSON.parse(localStorage.getItem(key)) || {}; }
+  catch (e) { return {}; }
+}
+function writeStore(key, obj) {
+  try { localStorage.setItem(key, JSON.stringify(obj)); } catch (e) { /* private mode */ }
+}
+function saveProgress() {
+  const all = readStore(PROGRESS_KEY);
+  all[testPath] = { current, picked, score, savedAt: Date.now() };
+  all._lastTest = testPath;
+  writeStore(PROGRESS_KEY, all);
+}
+function savedProgressFor(path) {
+  const s = readStore(PROGRESS_KEY)[path];
+  if (!s || typeof s !== "object") return null;
+  if (typeof s.score !== "number" || typeof s.current !== "number") return null;
+  return s;
+}
+function clearProgressFor(path) {
+  const all = readStore(PROGRESS_KEY);
+  delete all[path];
+  writeStore(PROGRESS_KEY, all);
+}
+function bestFor(path) {
+  const b = readStore(BEST_KEY)[path];
+  return b && typeof b === "object" ? b : { best: null, last: null };
+}
+function recordFinish() {
+  // Called when a test is fully answered: remember this score as the last
+  // one, and as the best if it tops the previous best.
+  const all = readStore(BEST_KEY);
+  const prev = bestFor(testPath);
+  all[testPath] = {
+    best: prev.best === null ? score : Math.max(prev.best, score),
+    last: score,
+  };
+  writeStore(BEST_KEY, all);
+}
+function isFinished() {
+  return questions.length > 0 && Object.keys(picked).length === questions.length;
+}
+function updateBestLine() {
+  const b = bestFor(testPath);
+  const parts = [];
+  if (b.best !== null) parts.push("Best score on this test: " + b.best);
+  if (b.last !== null) parts.push("Last score: " + b.last);
+  $("bestLine").textContent = parts.join(" · ");
+}
+function retakeTest() {
+  // Start this test over from question 1 with a clean score. The best and
+  // last scores stay saved, so there is always a score to beat.
+  clearProgressFor(testPath);
+  current = 0;
+  picked = {};
+  setScore(0);
+  saveProgress();
+  renderQuestion();
+}
+
 function correctCount() {
   return questions.filter((q, i) => picked[i] !== undefined && q.answers[picked[i]] === q.correctAnswer).length;
 }
@@ -73,7 +138,7 @@ function renderNav() {
     if (picked[i] !== undefined) {
       b.classList.add(q.answers[picked[i]] === q.correctAnswer ? "right" : "wrong");
     }
-    b.addEventListener("click", () => { current = i; renderQuestion(); });
+    b.addEventListener("click", () => { current = i; saveProgress(); renderQuestion(); });
     nav.appendChild(b);
   });
 }
@@ -148,11 +213,18 @@ function renderQuestion() {
 
   $("prevBtn").disabled = current === 0;
   $("nextQBtn").disabled = current === questions.length - 1;
-  $("completeCard").hidden = !(questions.length && Object.keys(picked).length === questions.length);
+  $("completeCard").hidden = !isFinished();
   if (!$("completeCard").hidden) {
+    const b = bestFor(testPath);
     $("completeText").textContent =
       "You got " + correctCount() + " of " + questions.length + " right. Final score: " + score + ".";
+    $("beatLine").textContent = b.best !== null && score < b.best
+      ? "Score to beat: " + b.best + " — retake it and top it."
+      : (b.best !== null && score >= b.best
+        ? "That's a new best score for this test. Nice work."
+        : "Retake it anytime to beat this score.");
   }
+  updateBestLine();
   renderNav();
   renderProgress();
 }
@@ -162,6 +234,8 @@ function answer(i) {
   const isRight = questions[current].answers[i] === questions[current].correctAnswer;
   picked[current] = i;
   setScore(score + (isRight ? 5 : -1));
+  saveProgress();
+  if (isFinished()) recordFinish();
   renderQuestion();
 }
 
@@ -177,11 +251,25 @@ async function loadSet(path) {
     if (!res.ok) throw new Error("Could not load " + path + " (" + res.status + ")");
     const data = await res.json();
     questions = (data.questions || []).map(normalizeQuestion);
-    current = 0;
-    picked = {};
-    setScore(0);
+    // Pick up where you left off on this test, if there is a saved spot.
+    const saved = savedProgressFor(path);
+    const resumed = saved && Object.keys(saved.picked || {}).length > 0;
+    if (saved) {
+      current = Math.min(saved.current, questions.length - 1);
+      picked = {};
+      Object.keys(saved.picked || {}).forEach((k) => {
+        const qi = Number(k), ai = Number(saved.picked[k]);
+        if (qi >= 0 && qi < questions.length && ai >= 0 && ai < 5) picked[qi] = ai;
+      });
+      setScore(saved.score);
+    } else {
+      current = 0;
+      picked = {};
+      setScore(0);
+    }
     $("testInfo").textContent =
-      chosen.label + " — " + questions.length + " questions · +5 for a right answer, −1 for a wrong one";
+      chosen.label + " — " + questions.length + " questions · +5 for a right answer, −1 for a wrong one" +
+      (resumed ? " · Picked up where you left off." : "");
     renderQuestion();
   } catch (err) {
     $("errorBox").textContent = err.message;
@@ -209,15 +297,19 @@ function setup() {
   });
   sel.addEventListener("change", () => loadSet(sel.value));
   $("nextTestBtn").addEventListener("click", nextTest);
-  $("prevBtn").addEventListener("click", () => { if (current > 0) { current--; renderQuestion(); } });
-  $("nextQBtn").addEventListener("click", () => { if (current < questions.length - 1) { current++; renderQuestion(); } });
+  $("retakeBtn").addEventListener("click", retakeTest);
+  $("retakeBtn2").addEventListener("click", retakeTest);
+  $("prevBtn").addEventListener("click", () => { if (current > 0) { current--; saveProgress(); renderQuestion(); } });
+  $("nextQBtn").addEventListener("click", () => { if (current < questions.length - 1) { current++; saveProgress(); renderQuestion(); } });
   $("tryNextBtn").addEventListener("click", nextTest);
   // One listener for all answers.
   $("answersList").addEventListener("change", (e) => {
     if (e.target && e.target.matches('input[type="radio"]')) answer(Number(e.target.value));
   });
-  // Start on the first existing test, the one that was in the app already.
-  loadSet(QUIZ_SETS[0].path);
+  // Start on the test you were last working on, or the first existing test
+  // (the one that was in the app already) if there is no saved spot.
+  const last = readStore(PROGRESS_KEY)._lastTest;
+  loadSet(QUIZ_SETS.some((s) => s.path === last) ? last : QUIZ_SETS[0].path);
 }
 
 document.addEventListener("DOMContentLoaded", setup);

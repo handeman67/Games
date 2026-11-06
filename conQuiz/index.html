@@ -23,8 +23,10 @@
           <select id="testSelect"></select>
         </div>
         <button class="btn btn-outlined" id="nextTestBtn" type="button">Next test</button>
+        <button class="btn btn-outlined" id="retakeBtn" type="button">Retake test</button>
       </div>
       <p class="muted" id="testInfo"></p>
+      <p class="muted" id="bestLine"></p>
     </section>
 
     <p id="loading">Loading quiz…</p>
@@ -55,7 +57,9 @@
       <section class="card complete" id="completeCard" hidden>
         <h2>Test complete</h2>
         <p id="completeText"></p>
-        <button class="btn btn-contained" id="tryNextBtn" type="button">Try the next test</button>
+        <p id="beatLine"></p>
+        <button class="btn btn-contained" id="retakeBtn2" type="button">Retake this test</button>
+        <button class="btn btn-outlined" id="tryNextBtn" type="button">Try the next test</button>
       </section>
     </div>
   </main>
