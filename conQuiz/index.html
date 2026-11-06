@@ -1,54 +1,288 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carpentry Quiz</title>
-    <link rel="stylesheet" href="style1.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carpentry Quiz</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+  <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/@emotion/react@11.11.4/dist/emotion-react.umd.min.js"></script>
+  <script crossorigin src="https://unpkg.com/@emotion/styled@11.11.0/dist/emotion-styled.umd.min.js"></script>
+  <script crossorigin src="https://unpkg.com/@mui/material@5.15.20/umd/material-ui.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
+  <style>
+    body { margin: 0; background: #f5f5f5; }
+    #root:empty::after {
+      content: "Loading quiz…";
+      display: block; text-align: center; padding: 3em;
+      font-family: Roboto, sans-serif; color: #666;
+    }
+  </style>
 </head>
-
 <body>
+  <div id="root"></div>
 
-    <template id="card">
-        <div id="wrap">
-            <div id="header">
-                <h1 id="title">
-                    Carpentry Quiz
-                </h1>
-                <label for="setSelect">Choose a test:</label>
-                <select id="setSelect"></select>
-                <button id="nextBtn" type="button">Next test</button>
-                <h5>Score:</h5>
-                <div id="score" data-scr="0"></div>
-                <p id="setName"></p>
-                <p id="progress"></p>
-            </div>
-            <div id="main">
-                <fieldset>
-                    <legend id="que">Questions:</legend>
-                    <p id="questions"></p>
-                </fieldset>
-                <fieldset>
-                    <legend id="ans">Answers:</legend>
-                    <div id="answers">
-                        <input type="radio" name="answer" id="answer0">
-                        <label id="label0" for="answer0">A</label>
-                        <input type="radio" name="answer" id="answer1">
-                        <label id="label1" for="answer1">B</label>
-                        <input type="radio" name="answer" id="answer2">
-                        <label id="label2" for="answer2">C</label>
-                        <input type="radio" name="answer" id="answer3">
-                        <label id="label3" for="answer3">D</label>
-                        <input type="radio" name="answer" id="answer4">
-                        <label id="label4" for="answer4">E</label>
-                    </div>
-                </fieldset>
-            </div>
-        </div>
-    </template>
+  <script type="text/babel" data-presets="react">
+    const { useState, useEffect } = React;
+    const {
+      AppBar, Toolbar, Typography, Container, Card, CardContent, Button,
+      Select, MenuItem, FormControl, InputLabel, RadioGroup, FormControlLabel,
+      Radio, LinearProgress, Chip, Stack, Box, Alert, CircularProgress,
+      CssBaseline, ThemeProvider, createTheme, Paper,
+    } = MaterialUI;
 
-    <script src="./index.js"></script>
+    // Same 10 tests as before: the 9 that were in the app, plus the KB-2.
+    const QUIZ_SETS = [
+      { path: "J_son/c0.json", label: "Carpentry / IBC" },
+      { path: "J_son/c1.json", label: "Carpentry (30 questions)" },
+      { path: "J_son/c2.json", label: "Carpentry basics" },
+      { path: "J_son/c3.json", label: "IBC" },
+      { path: "J_son/s0.json", label: "Stairs" },
+      { path: "J_son/s1.json", label: "Stairs 2" },
+      { path: "J_son/s2.json", label: "Stairs 3" },
+      { path: "J_son/s3.json", label: "Stairs / IBC" },
+      { path: "J_son/s4.json", label: "Stairs / Arizona" },
+      { path: "J_son/kb2.json", label: "Arizona KB-2 (30 questions)" },
+    ];
+    const LETTERS = ["A", "B", "C", "D", "E"];
+
+    // Accepts both JSON shapes:
+    //   old: { question, answers: [...5], correctAnswer: "text" }  (c1 uses a number)
+    //   KB-2: { question, choices: [...5], answerIndex: 1 }
+    function normalizeQuestion(raw) {
+      const answers = (raw.answers || raw.choices || []).slice(0, 5);
+      let correct = raw.correctAnswer;
+      if (typeof correct === "number") correct = answers[correct];
+      if (typeof raw.answerIndex === "number") correct = answers[raw.answerIndex];
+      if (typeof correct === "string" && !answers.includes(correct)) {
+        const found = correct.split(/\s+or\s+/).find((p) => answers.includes(p));
+        if (found) correct = found;
+      }
+      return {
+        question: raw.question,
+        answers,
+        correctAnswer: correct,
+        category: raw.category || "",
+        explanation: raw.explanation || "",
+        reference: raw.reference || "",
+      };
+    }
+
+    const theme = createTheme({
+      palette: {
+        primary: { main: "#1565c0" },
+        secondary: { main: "#00796b" },
+        background: { default: "#f5f5f5" },
+      },
+      typography: { fontFamily: "Roboto, Arial, sans-serif" },
+    });
+
+    function QuizApp() {
+      const [testPath, setTestPath] = useState(QUIZ_SETS[0].path);
+      const [testLabel, setTestLabel] = useState(QUIZ_SETS[0].label);
+      const [questions, setQuestions] = useState([]);
+      const [current, setCurrent] = useState(0);
+      const [picked, setPicked] = useState({}); // question index -> answer index
+      const [score, setScore] = useState(0);
+      const [loading, setLoading] = useState(true);
+      const [error, setError] = useState("");
+
+      useEffect(() => {
+        let cancelled = false;
+        setLoading(true);
+        setError("");
+        fetch(testPath)
+          .then((res) => {
+            if (!res.ok) throw new Error("Could not load " + testPath + " (" + res.status + ")");
+            return res.json();
+          })
+          .then((data) => {
+            if (cancelled) return;
+            setQuestions((data.questions || []).map(normalizeQuestion));
+            setCurrent(0);
+            setPicked({});
+            setScore(0);
+            setLoading(false);
+          })
+          .catch((err) => {
+            if (cancelled) return;
+            setError(err.message);
+            setLoading(false);
+          });
+        return () => { cancelled = true; };
+      }, [testPath]);
+
+      const test = QUIZ_SETS.find((s) => s.path === testPath) || QUIZ_SETS[0];
+      const q = questions[current];
+      const answeredCount = Object.keys(picked).length;
+      const correctCount = questions.filter((qq, i) => picked[i] !== undefined && qq.answers[picked[i]] === qq.correctAnswer).length;
+      const allAnswered = questions.length > 0 && answeredCount === questions.length;
+
+      function chooseTest(path) {
+        const chosen = QUIZ_SETS.find((s) => s.path === path);
+        if (chosen) { setTestPath(chosen.path); setTestLabel(chosen.label); }
+      }
+      function nextTest() {
+        const i = QUIZ_SETS.findIndex((s) => s.path === testPath);
+        chooseTest(QUIZ_SETS[(i + 1) % QUIZ_SETS.length].path);
+      }
+      function answer(i) {
+        if (!q || picked[current] !== undefined) return; // one score per question
+        const isRight = q.answers[i] === q.correctAnswer;
+        setPicked((prev) => ({ ...prev, [current]: i }));
+        setScore((s) => s + (isRight ? 5 : -1));
+      }
+
+      return (
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <AppBar position="static">
+            <Toolbar>
+              <span className="material-icons" style={{ marginRight: 8 }}>quiz</span>
+              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                Carpentry Quiz
+              </Typography>
+              <Chip label={"Score: " + score} color="secondary" sx={{ color: "#fff", fontWeight: 700 }} />
+            </Toolbar>
+          </AppBar>
+
+          <Container maxWidth="md" sx={{ py: 3 }}>
+            {/* Test picker */}
+            <Card sx={{ mb: 2 }}>
+              <CardContent>
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={2} alignItems={{ sm: "center" }}>
+                  <FormControl fullWidth>
+                    <InputLabel id="test-label">Choose a test</InputLabel>
+                    <Select labelId="test-label" label="Choose a test" value={testPath}
+                      onChange={(e) => chooseTest(e.target.value)}>
+                      {QUIZ_SETS.map((s) => (
+                        <MenuItem key={s.path} value={s.path}>{s.label}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  <Button variant="outlined" onClick={nextTest} sx={{ whiteSpace: "nowrap" }}>
+                    Next test
+                  </Button>
+                </Stack>
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                  {testLabel} — {questions.length ? questions.length + " questions" : "…"} · +5 for a right answer, −1 for a wrong one
+                </Typography>
+              </CardContent>
+            </Card>
+
+            {loading && (
+              <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
+                <CircularProgress />
+              </Box>
+            )}
+            {error && <Alert severity="error">{error}</Alert>}
+
+            {!loading && !error && q && (
+              <React.Fragment>
+                {/* Progress */}
+                <Box sx={{ mb: 2 }}>
+                  <Stack direction="row" justifyContent="space-between" sx={{ mb: 0.5 }}>
+                    <Typography variant="body2">
+                      Answered {answeredCount} of {questions.length}
+                    </Typography>
+                    <Typography variant="body2">
+                      Correct {correctCount} · Score {score}
+                    </Typography>
+                  </Stack>
+                  <LinearProgress variant="determinate"
+                    value={questions.length ? (answeredCount / questions.length) * 100 : 0} />
+                </Box>
+
+                {/* Question navigator */}
+                <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mb: 2 }}>
+                  {questions.map((qq, i) => {
+                    const p = picked[i];
+                    const color = p === undefined ? "primary" : (qq.answers[p] === qq.correctAnswer ? "success" : "error");
+                    return (
+                      <Button key={i} size="small" variant={i === current ? "contained" : "outlined"}
+                        color={color} onClick={() => setCurrent(i)} sx={{ minWidth: 40 }}>
+                        {i + 1}
+                      </Button>
+                    );
+                  })}
+                </Stack>
+
+                {/* Current question */}
+                <Card>
+                  <CardContent>
+                    <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
+                      <Chip label={"Question " + (current + 1) + " of " + questions.length} color="primary" size="small" />
+                      {q.category && <Chip label={q.category} variant="outlined" size="small" />}
+                    </Stack>
+                    <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
+                      {q.question}
+                    </Typography>
+                    <RadioGroup value={picked[current] === undefined ? "" : String(picked[current])}
+                      onChange={(e) => answer(Number(e.target.value))}>
+                      {q.answers.map((a, i) => {
+                        const isPicked = picked[current] === i;
+                        const isCorrect = a === q.correctAnswer;
+                        const answered = picked[current] !== undefined;
+                        let bg = "#fff";
+                        if (answered && isCorrect) bg = "#e8f5e9";
+                        if (answered && isPicked && !isCorrect) bg = "#ffebee";
+                        return (
+                          <Paper key={i} elevation={isPicked ? 3 : 1}
+                            sx={{ mb: 1, px: 1, backgroundColor: bg, border: isPicked ? "2px solid #1565c0" : "1px solid #e0e0e0" }}>
+                            <FormControlLabel value={String(i)} control={<Radio disabled={answered} />}
+                              label={LETTERS[i] + ". " + a} sx={{ width: "100%", py: 0.5 }} />
+                          </Paper>
+                        );
+                      })}
+                    </RadioGroup>
+
+                    {picked[current] !== undefined && (
+                      <Alert severity={q.answers[picked[current]] === q.correctAnswer ? "success" : "error"} sx={{ mt: 1 }}>
+                        {q.answers[picked[current]] === q.correctAnswer
+                          ? "Correct! +5 points."
+                          : "Not quite — the correct answer is " + q.correctAnswer + ". −1 point."}
+                        {q.explanation && (
+                          <span><br />{q.explanation}</span>
+                        )}
+                        {q.reference && (
+                          <span><br /><i>{q.reference}</i></span>
+                        )}
+                      </Alert>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* Question navigation */}
+                <Stack direction="row" justifyContent="space-between" sx={{ mt: 2 }}>
+                  <Button variant="outlined" disabled={current === 0}
+                    onClick={() => setCurrent(current - 1)}>Previous</Button>
+                  <Button variant="contained" disabled={current === questions.length - 1}
+                    onClick={() => setCurrent(current + 1)}>Next question</Button>
+                </Stack>
+
+                {allAnswered && (
+                  <Card sx={{ mt: 2, backgroundColor: "#e3f2fd" }}>
+                    <CardContent>
+                      <Typography variant="h6">Test complete</Typography>
+                      <Typography>
+                        You got {correctCount} of {questions.length} right. Final score: {score}.
+                      </Typography>
+                      <Button variant="contained" sx={{ mt: 1 }} onClick={nextTest}>
+                        Try the next test
+                      </Button>
+                    </CardContent>
+                  </Card>
+                )}
+              </React.Fragment>
+            )}
+          </Container>
+        </ThemeProvider>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<QuizApp />);
+  </script>
 </body>
-
 </html>
