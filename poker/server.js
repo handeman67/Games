@@ -5,6 +5,7 @@ const { Server } = require('socket.io');
 const path = require('path');
 const fs = require('fs');
 const twilio = require('twilio');
+const botManager = require('./bots/manager');
 
 const app = express();
 
@@ -482,6 +483,7 @@ function getPublicState() {
             seat: p.seat,
             name: p.name,
             avatar: p.avatar || '👤',
+            isBot: !!p.isBot,
             stack: p.stack,
             currentBet: p.currentBet,
             folded: p.folded,
@@ -557,6 +559,9 @@ function startActionTimer() {
         seat: currentPlayer.seat,
         duration: ACTION_TIMEOUT
     });
+
+    // Table bots act on their own timer — see bots/manager.js.
+    botManager.onTimerStart(currentPlayer);
 
     actionTimer = setTimeout(() => {
         handleAction(currentPlayer.id, 'fold');
@@ -1087,7 +1092,8 @@ function showdown() {
     // Persist lifetime stats and hand history
     const memory = readMemory();
     const participants = playerHands.map(ph => {
-        const st = ensurePlayerStats(memory, ph.player.name);
+        // Bots don't get lifetime stats — they would flood the leaderboard.
+        const st = ph.player.isBot ? null : ensurePlayerStats(memory, ph.player.name);
         if (st) {
             st.handsPlayed += 1;
             st.chipsLost += ph.player.totalBetThisHand || 0;
@@ -1103,7 +1109,8 @@ function showdown() {
     });
 
     winnersSummary.forEach(w => {
-        const st = ensurePlayerStats(memory, w.name);
+        const winnerPlayer = players.find(p => p.name === w.name);
+        const st = (winnerPlayer && winnerPlayer.isBot) ? null : ensurePlayerStats(memory, w.name);
         if (st) {
             st.handsWon += 1;
             st.chipsWon += w.winAmount || 0;
@@ -1160,7 +1167,7 @@ function checkForWinByDefault() {
         const memory = readMemory();
 
         players.forEach(p => {
-            if (!p.isActive) return;
+            if (!p.isActive || p.isBot) return;
             const st = ensurePlayerStats(memory, p.name);
             if (!st) return;
             st.handsPlayed += 1;
@@ -1169,7 +1176,7 @@ function checkForWinByDefault() {
             st.lastSeen = new Date().toISOString();
         });
 
-        const winnerStats = ensurePlayerStats(memory, winner.name);
+        const winnerStats = winner.isBot ? null : ensurePlayerStats(memory, winner.name);
         if (winnerStats) {
             winnerStats.handsWon += 1;
             winnerStats.chipsWon += potBeforePayout;
@@ -1217,6 +1224,42 @@ function checkForWinByDefault() {
     return false;
 }
 
+// ============ TABLE BOTS ============
+// Removes a player from the table with the same index fixes as a
+// disconnect. Only ever called by the bot manager between hands.
+function removePlayerFromTable(player) {
+    const playerIndex = players.findIndex(p => p.id === player.id);
+    if (playerIndex === -1) return;
+    players.splice(playerIndex, 1);
+    if (playerIndex < dealerIndex) dealerIndex--;
+    if (players.length > 0 && dealerIndex >= players.length) dealerIndex = 0;
+    if (playerIndex < currentPlayerIndex) currentPlayerIndex--;
+    if (currentPlayerIndex >= players.length) currentPlayerIndex = 0;
+    broadcastGameState();
+}
+
+botManager.attach({
+    io,
+    getPlayers: () => players,
+    getPhase: () => gamePhase,
+    getCurrentPlayer: () => players[currentPlayerIndex],
+    getCurrentBet: () => currentBet,
+    getPot: () => pot,
+    getCommunityCards: () => communityCards,
+    getPublicState,
+    getAvailableActions,
+    handleAction,
+    evaluateHand,
+    getFirstAvailableSeat,
+    canStartGame,
+    maybeAutoStartFromWaiting,
+    broadcastGameState,
+    broadcast,
+    removePlayer: removePlayerFromTable,
+    constants: { MAX_PLAYERS, STARTING_STACK, BIG_BLIND }
+});
+botManager.start();
+
 // ============ SOCKET HANDLERS ============
 io.on('connection', (socket) => {
     console.log(`Player connected: ${socket.id}`);
@@ -1241,6 +1284,12 @@ io.on('connection', (socket) => {
         );
         if (existingPlayer) {
             socket.emit('join_error', 'Name already taken');
+            return;
+        }
+
+        // Roster names belong to the table bots (see bots/roster.js).
+        if (botManager.isBotName(username)) {
+            socket.emit('join_error', 'That name belongs to a table bot — pick another');
             return;
         }
 
@@ -1418,6 +1467,7 @@ server.listen(PORT, HOST, () => {
 function shutdown(signal) {
     console.log(`\n${signal} received. Shutting down gracefully...`);
     clearActionTimer();
+    botManager.stop();
     io.close(() => {
         server.close(() => {
             console.log('Server closed.');

@@ -337,6 +337,7 @@ function renderSeats(players, currentPlayerSeat, dealerSeat) {
             if (player.folded) seatEl.classList.add('folded');
             if (player.seat === currentPlayerSeat) seatEl.classList.add('current-turn');
             if (player.allIn) seatEl.classList.add('all-in');
+            if (player.isBot) seatEl.classList.add('bot');
 
             let cardsHTML = '';
             if (player.hasCards) {
@@ -374,7 +375,7 @@ function renderSeats(players, currentPlayerSeat, dealerSeat) {
                 ${avatarMarkup}
                 ${betHTML}
                 <div class="player-info">
-                    <div class="player-name">${player.name}${player.seat === mySeat ? ' (You)' : ''}</div>
+                    <div class="player-name">${player.isBot ? '🤖 ' : ''}${player.name}${player.seat === mySeat ? ' (You)' : ''}</div>
                     <div class="player-stack">${player.stack}</div>
                 </div>
             `;
