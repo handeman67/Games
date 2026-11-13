@@ -1,0 +1,3 @@
+# Real secrets live in Render Environment settings, never in this repo.
+.env
+node_modules/
